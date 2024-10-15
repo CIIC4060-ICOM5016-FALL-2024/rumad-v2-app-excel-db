@@ -27,24 +27,20 @@ def extract_xml(file_path):
 
     return pd.DataFrame(data)
 
-courses_df = extract_xml('ETL/courses.xml')
-
 try:
-    courses_df = extract_xml('ETL/courses.xml')
+    courses_df = extract_xml('ETL/Data/courses.xml')
     
-    meeting_df = pd.read_csv('ETL/meeting.csv')
-    print(meeting_df)
-    sections_df = pd.read_csv('ETL/sections.csv')
+    meeting_df = pd.read_csv('ETL/Data/meeting.csv')
+
+    sections_df = pd.read_csv('ETL/Data/sections.csv')
     
-    with open('ETL/rooms.json', 'r') as f:
+    with open('ETL/Data/rooms.json', 'r') as f:
         rooms_data = json.load(f)
 
-    data = [(building, room['number'], room['capacity']) for building, rooms in rooms_data.items() for room in rooms]
-
-    rooms_df = pd.DataFrame(data, columns=['building', 'room_number', 'capacity'])
-    print(rooms_df)
+    data = [(building, room['id'], room['number'], room['capacity']) for building, rooms in rooms_data.items() for room in rooms]
+    rooms_df = pd.DataFrame(data, columns=['building', 'id', 'room_number', 'capacity'])
         
-    conn = sqlite3.connect('ETL/requisites.db')
+    conn = sqlite3.connect('ETL/Data/requisites.db')
     requisites_df = pd.read_sql_query("SELECT * FROM requisites", conn)
     conn.close()
 
