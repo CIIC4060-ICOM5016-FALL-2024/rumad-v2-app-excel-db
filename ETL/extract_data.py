@@ -3,14 +3,20 @@ import pandas as pd
 import sqlite3
 import json
 
-def extract_xml(file_path):
-    tree = ET.parse(file_path)
+
+def get_courses(file_path):
+    """
+
+    :param file_path:
+    :return:
+    """
+    tree = ET.parse(file_path + '/courses.xml')
     root = tree.getroot()
-    data = []
-    
+    courses_set = []
+
     for course in root.findall('Courses'):
         record_data = {}
-        
+
         classes = course.find('classes')
         if classes is not None:
             record_data['code'] = classes.find('code').text
@@ -22,33 +28,56 @@ def extract_xml(file_path):
         record_data['syllabus'] = course.find('syllabus').text
         record_data['term'] = course.find('term').text
         record_data['years'] = course.find('years').text
-        
-        data.append(record_data)
 
-    return pd.DataFrame(data)
+        courses_set.append(record_data)
 
-try:
-    courses_df = extract_xml('ETL/Data/courses.xml')
-    
-    meeting_df = pd.read_csv('ETL/Data/meeting.csv')
+    return pd.DataFrame(courses_set)
 
-    sections_df = pd.read_csv('ETL/Data/sections.csv')
-    
-    with open('ETL/Data/rooms.json', 'r') as f:
-        rooms_data = json.load(f)
 
-    data = [(building, room['id'], room['number'], room['capacity']) for building, rooms in rooms_data.items() for room in rooms]
-    rooms_df = pd.DataFrame(data, columns=['building', 'id', 'room_number', 'capacity'])
-        
-    conn = sqlite3.connect('ETL/Data/requisites.db')
-    requisites_df = pd.read_sql_query("SELECT * FROM requisites", conn)
+def get_sections(file_path):
+    """
+
+    :param file_path:
+    :return:
+    """
+    sections_csv = pd.read_csv(file_path + '/sections.csv')
+    return pd.DataFrame(sections_csv)
+
+
+def get_meetings(file_path):
+    """
+
+    :param file_path:
+    :return:
+    """
+    meeting_csv = pd.read_csv(file_path + '/meeting.csv')
+    return pd.DataFrame(meeting_csv)
+
+
+def get_rooms(file_path):
+    """
+
+    :param file_path:
+    :return:
+    """
+    with open(file_path + '/rooms.json', 'r') as json_file:
+        rooms_json = json.load(json_file)
+    rooms_set = []
+    for building in rooms_json:
+        for room in rooms_json[building]:
+            room['building'] = building
+            rooms_set.append(room)
+    return pd.DataFrame(rooms_set)
+
+
+def get_requisites(file_path):
+    """
+
+    :param file_path:
+    :return:
+    """
+    conn = sqlite3.connect(file_path + '/requisites.db')
+    requisites = pd.read_sql_query('SELECT * FROM requisites', conn)
     conn.close()
+    return requisites
 
-except FileNotFoundError as e:
-    print(f"File not found: {e.filename}")
-except sqlite3.Error as e:
-    print(f"Database error: {e}")
-except json.JSONDecodeError:
-    print("Error decoding JSON file.")
-except Exception as e:
-    print(f"An error occurred: {e}")
