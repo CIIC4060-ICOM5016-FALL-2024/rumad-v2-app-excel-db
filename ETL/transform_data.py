@@ -9,6 +9,13 @@ def offset_ids(courses_df):
     :return: a new dataframe where cid >= 2
     """
     # Anthony codes here
+
+    #remove empty rows
+    courses_df.dropna()
+    #remove classes that have a id less than 2
+    for x in courses_df.index:
+        if int(courses_df.loc[x, 'classid']) < 2:
+                courses_df.drop(x,inplace=True)
     return courses_df
 
 
@@ -105,5 +112,13 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     :return: a new dataframe where the sections are valid
     """
     # Anthony codes here
+    #transform classid from a str list to an int list
+    classid_list = [int(i) for i in courses_df['classid'].values.tolist()]
+
+    for x in sections_df.index:
+        #check if room, class and meeting exist. If not, delete the record.
+        if sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist() or sections_df.loc[x, 'class_id'] not in classid_list or sections_df.loc[x,'meeting_id'] not in meetings_df['mid'].values.tolist():
+            print(sections_df.loc[x,:])
+            sections_df.drop(x, inplace=True)
     return sections_df
 
