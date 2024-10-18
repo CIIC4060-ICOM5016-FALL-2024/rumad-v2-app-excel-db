@@ -3,7 +3,6 @@ import pandas as pd
 import sqlite3
 import json
 
-
 def get_courses(file_path):
     """
 
@@ -80,4 +79,3 @@ def get_requisites(file_path):
     requisites = pd.read_sql_query('SELECT * FROM requisites', conn)
     conn.close()
     return requisites
-
