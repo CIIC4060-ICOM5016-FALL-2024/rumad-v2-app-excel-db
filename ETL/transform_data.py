@@ -1,6 +1,5 @@
 import pandas as pd
 import extract_data
-from ETL.extract_data import get_sections
 
 
 def remove_conflicting_classrooms(sections_df):
@@ -13,6 +12,21 @@ def remove_conflicting_classrooms(sections_df):
     same academic term (Fall, Spring, V1, V2)
     """
     # Anthony codes here
+    sections_df = sections_df.sort_values(by=['sid'])
+    classrooms_checker = []
+
+    for index, section in sections_df.iterrows():
+        #Take into account academic term
+        curr_section = (section['semester'], section['year'], section['meeting_id'], section['room_id'])
+        # Conflicting section, drop from the frame.
+        if curr_section in classrooms_checker:
+            print(f'{classrooms_checker}')
+            print(f'{curr_section} is already taken')
+            sections_df.drop(index, inplace=True)
+        else:
+            classrooms_checker.append(curr_section)
+
+
     return sections_df
 
 
@@ -40,7 +54,8 @@ def remove_conflicting_sections(sections_df):
         # Conflicting section, drop from the frame.
 
         if meeting in class_meeting_ids[section['class_id']]:
-            print(f'{class_meeting_ids[section['class_id']]} ')
+            section_placeholder = section['class_id']
+            print(f'{class_meeting_ids[section_placeholder]} ')
             print(f'{meeting} is already taken')
             sections_df.drop(index, inplace=True)
         else:
@@ -102,13 +117,14 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     # Anthony codes here
     #transform classid from a str list to an int list
-    classid_list = [int(i) for i in courses_df['classid'].values.tolist()]
+    class_id_list = [int(i) for i in courses_df['classid'].values.tolist()]
 
     for x in sections_df.index:
         #check if room, class and meeting exist. If not, delete the record.
-        if sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist() or sections_df.loc[x, 'class_id'] not in classid_list or sections_df.loc[x,'meeting_id'] not in meetings_df['mid'].values.tolist():
-            print(sections_df.loc[x,:])
+        if sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist() or sections_df.loc[x, 'class_id'] not in class_id_list or sections_df.loc[x,'meeting_id'] not in meetings_df['mid'].values.tolist():
             sections_df.drop(x, inplace=True)
+
     return sections_df
 
-remove_conflicting_sections(get_sections('Data'))
+
+
