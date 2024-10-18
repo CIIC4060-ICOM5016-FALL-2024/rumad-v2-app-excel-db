@@ -1,22 +1,6 @@
 import pandas as pd
 import extract_data
-
-
-def offset_ids(courses_df):
-    """
-    The classes data starts with id 2.
-    :param courses_df: the daframe of the courses
-    :return: a new dataframe where cid >= 2
-    """
-    # Anthony codes here
-
-    #remove empty rows
-    courses_df.dropna()
-    #remove classes that have a id less than 2
-    for x in courses_df.index:
-        if int(courses_df.loc[x, 'classid']) < 2:
-                courses_df.drop(x,inplace=True)
-    return courses_df
+from ETL.extract_data import get_sections
 
 
 def remove_conflicting_classrooms(sections_df):
@@ -47,15 +31,20 @@ def remove_conflicting_sections(sections_df):
 
     class_meeting_ids = {}
 
-    # Doesn't handle academic term. Need to modify.
     for index, section in sections_df.iterrows():
         if section['class_id'] not in class_meeting_ids:
             class_meeting_ids[section['class_id']] = []
+
+        #Take into account academic term
+        meeting = (section['semester'], section['year'], section['meeting_id'])
         # Conflicting section, drop from the frame.
-        if section['meeting_id'] in class_meeting_ids[section['class_id']]:
+
+        if meeting in class_meeting_ids[section['class_id']]:
+            print(f'{class_meeting_ids[section['class_id']]} ')
+            print(f'{meeting} is already taken')
             sections_df.drop(index, inplace=True)
         else:
-            class_meeting_ids[section['class_id']].append(section['meeting_id'])
+            class_meeting_ids[section['class_id']].append(meeting)
 
     return sections_df
 
@@ -122,3 +111,4 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
             sections_df.drop(x, inplace=True)
     return sections_df
 
+remove_conflicting_sections(get_sections('Data'))
