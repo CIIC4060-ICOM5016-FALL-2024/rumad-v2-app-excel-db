@@ -1,6 +1,5 @@
-import pandas as pd
-import extract_data
-from ETL.extract_data import get_sections
+from ETL.extract_data import get_sections, get_meetings
+from datetime import datetime
 
 
 def remove_conflicting_classrooms(sections_df):
@@ -40,8 +39,6 @@ def remove_conflicting_sections(sections_df):
         # Conflicting section, drop from the frame.
 
         if meeting in class_meeting_ids[section['class_id']]:
-            print(f'{class_meeting_ids[section['class_id']]} ')
-            print(f'{meeting} is already taken')
             sections_df.drop(index, inplace=True)
         else:
             class_meeting_ids[section['class_id']].append(meeting)
@@ -111,4 +108,22 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
             sections_df.drop(x, inplace=True)
     return sections_df
 
-remove_conflicting_sections(get_sections('Data'))
+def correct_meeting_duration(meetings_df):
+    """
+    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
+    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+    :param meetings_df: the dataframe of the meetings
+    """
+    for index, meeting in meetings_df.iterrows():
+        time_start = datetime.strptime(meeting['start'], '%H:%M:%S')
+        time_end = datetime.strptime(meeting['end'], '%H:%M:%S')
+        if meeting['day'] == "MJ" and str(time_end - time_start) != "1:15:00":
+            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['day'] == "LWV" and str(time_end - time_start) != "0:50:00":
+            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+
+if __name__ == '__main__':
+    remove_conflicting_sections(get_sections('Data'))
+    correct_meeting_duration(get_meetings('Data'))
