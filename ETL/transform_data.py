@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -16,8 +19,6 @@ def remove_conflicting_classrooms(sections_df):
         curr_section = (section['semester'], section['year'], section['meeting_id'], section['room_id'])
         # Conflicting section, drop from the frame.
         if curr_section in classrooms_checker:
-            print(f'{classrooms_checker}')
-            print(f'{curr_section} is already taken')
             sections_df.drop(index, inplace=True)
         else:
             classrooms_checker.append(curr_section)
@@ -50,8 +51,6 @@ def remove_conflicting_sections(sections_df):
         # Conflicting section, drop from the frame.
 
         if meeting in class_meeting_ids[section['class_id']]:
-            print(f'{class_meeting_ids[section['class_id']]} ')
-            print(f'{meeting} is already taken')
             sections_df.drop(index, inplace=True)
         else:
             class_meeting_ids[section['class_id']].append(meeting)
@@ -121,5 +120,21 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
 
     return sections_df
 
+# I think we can put this in the test suite.
+def correct_meeting_duration(meetings_df):
+    """
+    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
+    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+    :param meetings_df: the dataframe of the meetings
+    """
+    for index, meeting in meetings_df.iterrows():
+        time_start = datetime.strptime(meeting['start'], '%H:%M:%S')
+        time_end = datetime.strptime(meeting['end'], '%H:%M:%S')
+        if meeting['day'] == "MJ" and str(time_end - time_start) != "1:15:00":
+            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['day'] == "LWV" and str(time_end - time_start) != "0:50:00":
+            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
 
