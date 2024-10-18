@@ -1,7 +1,3 @@
-import pandas as pd
-import extract_data
-
-
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -54,8 +50,7 @@ def remove_conflicting_sections(sections_df):
         # Conflicting section, drop from the frame.
 
         if meeting in class_meeting_ids[section['class_id']]:
-            section_placeholder = section['class_id']
-            print(f'{class_meeting_ids[section_placeholder]} ')
+            print(f'{class_meeting_ids[section['class_id']]} ')
             print(f'{meeting} is already taken')
             sections_df.drop(index, inplace=True)
         else:
