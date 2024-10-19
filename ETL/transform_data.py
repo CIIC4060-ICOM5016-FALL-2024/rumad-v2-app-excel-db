@@ -1,29 +1,33 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
-
-from ETL.extract_data import get_meetings
 
 
 def remove_invalid_ids(courses):
-        # remove empty cells
-        courses.dropna()
-        # remove classes that have an id less than 2
-        for x in courses.index:
-            if int(courses.loc[x, 'code']) < 2:
-                #If course is a placeholder, do not delete
-                if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
-                    continue
-                else:
-                    courses.drop(x, inplace=True)
+    """
+    The classes data starts with id 2.
+    :param courses: dataframe of the courses
+    :return: a new dataframe where courses id must be 2 or more
+    """
+    # remove empty cells
+    courses.dropna()
+    # remove classes that have an id less than 2
+    for x in courses.index:
+        if int(courses.loc[x, 'code']) < 2:
+            #If course is a placeholder, do not delete
+            if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
+                continue
+            else:
+                courses.drop(x, inplace=True)
 
-        return courses
+    return courses
+
 
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
     Drops sections with conflicting classrooms after one has been set first.
 
-    :param sections_df: the dataframe of the courses
+    :param sections_df: dataframe of the courses
     :return: a new dataframe where a section does not have conflicting classrooms in the
     same academic term (Fall, Spring, V1, V2)
     """
@@ -48,7 +52,7 @@ def remove_conflicting_sections(sections_df):
     A class cannot have the same section, they must be taught at different hours.
     In case of conflicting hours, the sections with the biggest sid will be removed from
     the set.
-    :param sections_df: the dataframe of the sections
+    :param sections_df: dataframe of the sections
     :return: a new dataframe with no section conflict per class
     """
     sections_df = sections_df.sort_values(by=['sid'])
@@ -71,24 +75,34 @@ def remove_conflicting_sections(sections_df):
     return sections_df
 
 
-def apply_universal_time(sections_df, meetings_df):
+def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Meetings ‘MJ’ are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m. Any section in between
     shall be removed. Any section after the hour must be removed. If any section overlaps, you will
     add the necessary time to not overlap.
-    :param sections_df: the dataframe of the sections
-    :param meetings_df: the dataframe of the meetings
-    :return: a new dataframe where sections respect the universal time
+    :param sections_df: dataframe of the sections
+    :param meetings_df: dataframe of the meetings
+    :return: two new dataframes where sections and meetings respect the universal time
     """
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
     day_end = datetime.strptime("19:45:00", "%H:%M:%S")
-    section_time = datetime.strptime("1:15:00", "%H:%M:%S")
 
-    # We'll use a dictionary to accommodate sections for each classroom.
-    # Common sense? Maybe. Obviously run this function after resolving conflicts, or
-    # it will blow up in our faces.
-    classroom_schedule = {}
+    overlapping = False
+    time_difference = timedelta()
+    for index, meeting in meetings_df.iterrows():
+        if meeting['day'] == 'LWV':
+            # We ignore LWV
+            continue
+        if meeting['start'] < universal_time_end < meeting['end']:
+            overlapping = True
+            time_difference += universal_time_end - meeting['start']
+        elif meeting['start'] <= universal_time_start < meeting['end']:
+            overlapping = True
+            time_difference += universal_time_end - meeting['end']
+        if overlapping:
+            meetings_df.at[index, 'start'] += time_difference
+            meetings_df.at[index, 'end'] += time_difference
 
     for index, section in sections_df.iterrows():
 
@@ -113,46 +127,35 @@ def apply_universal_time(sections_df, meetings_df):
             sections_df.drop(index, inplace=True)
             continue
 
-        # Create that classroom key as a tuple.
-        classroom = (section['room_id'], section['semester'], section['year'])
+    return sections_df, meetings_df
 
-        # Add that specific time classroom
-        if classroom not in classroom_schedule:
-            classroom_schedule[classroom] = []
+# We can also put this in a test suite
+def correct_lwv(meetings_df):
+    """
+    Check the correct hours for all LWV sections.
+    + If the section starts before 7:30am, the section shall be removed.
+    + If section end is after 7:45pm, the section shall be removed.
+    :param meetings_df:
+    """
+    for index, meeting in meetings_df.iterrows():
+        day_start = datetime.strptime("07:30:00", "%H:%M:%S")
+        day_end = datetime.strptime("19:45:00", "%H:%M:%S")
+        if meeting['start'] < day_start:
+            print("Wrong day start:", meeting['start'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['end'] > day_end:
+            print("Wrong day end:", meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
-        # All we have left is valid MJ times and times that need shifting
-        # We need to attach the section id to the meeting so
-        # it can be traced back and updated.
-
-        meeting = meeting.copy()  # To avoid Pandas warnings.
-
-        meeting['sid'] = section['sid']
-        classroom_schedule[classroom].append(meeting)  # it works by the grace of God
-
-    # For simplicity, lets create many new temporary dataframes for
-    # observing the timeline of a classroom in the academic semester
-
-    for classroom in classroom_schedule:
-        print(classroom)
-        classroom_df = pd.DataFrame(classroom_schedule[classroom])
-        classroom_df = classroom_df.sort_values(by=['mid'])
-        print(classroom_df)
-
-        # a backup if a sections goes out of bounds
-        #sections_copy_df = sections_df.copy()
-
-        # We need to find overlapping and subsequent sections and shift their
-        # mid by +1
-        # HOWEVER, how do I 'add' time if I can't change the keys or modify the meetings?
-
-    return sections_df
 
 # I think we can put this in the test suite.
 def correct_meeting_duration(meetings_df):
     """
-    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
-    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
-    :param meetings_df: the dataframe of the meetings
+    Check if LWV classes are of 50 minutes.
+    If false, remove it from the dataframe.
+    Check if MJ classes are of 75 minutes.
+    If false, remove it from the dataframe.
+    :param meetings_df: The dataframe of the meetings
     """
     for index, meeting in meetings_df.iterrows():
         time_start = meeting['start']
@@ -164,17 +167,18 @@ def correct_meeting_duration(meetings_df):
             print("LWV Wrong Time: ", meeting['start'], meeting['end'])
             meetings_df.drop(index, inplace=True)
 
+
 def cap_sections(sections_df, rooms_df):
     """
     Sections cannot be in overcapacity, classrooms have limits.
-    :param sections_df: the dataframe of the sections
-    :param rooms_df: the dataframe of the rooms
+    :param sections_df: dataframe of the sections
+    :param rooms_df: dataframe of the rooms 
     :return: a new dataframe where the section capacity does not exceed the
     classroom capacity
     """
 
     # Merge (left join) sections_df and rooms_df where room_id (sections_df) = id (rooms_df)
-    merged_df = sections_df.merge(rooms_df, left_on = 'room_id', right_on = 'id', how = 'left')
+    merged_df = sections_df.merge(rooms_df, left_on='room_id', right_on='id', how='left')
 
     # Filter out rows where section capacity is greater than the room capacity
     sections_df = merged_df[merged_df['capacity_x'] <= merged_df['capacity_y']]
@@ -195,10 +199,9 @@ def correct_section_term(sections_df, courses_df):
     b. Second semester = Spring
     c. According to demand = Any moment of the year (Summer included)
 
-    :param sections_df: the dataframe of the sections
-    :param courses_df: the dataframe of the courses
-    :return: a new dataframe where the section term is correct according
-    course dataframe
+    :param sections_df: dataframe of the sections
+    :param courses_df: dataframe of the courses
+    :return: a new dataframe where the section term is correct, according to course dataframe
     """
     # Glerys codes here
 
@@ -271,10 +274,10 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     Sections must be taught in a valid classroom and meeting, and the class must exist. If any of
     these values are missing or invalid, you must delete said record.
-    :param courses_df: the dataframe of the courses
-    :param sections_df: the dataframe of the sections
-    :param meetings_df: the dataframe of the meetings
-    :param rooms_df: the dataframe of the rooms
+    :param courses_df: dataframe of the courses
+    :param sections_df: dataframe of the sections
+    :param meetings_df: dataframe of the meetings
+    :param rooms_df: dataframe of the rooms
     :return: a new dataframe where the sections are valid
     """
     # Anthony codes here
@@ -284,12 +287,13 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     for x in sections_df.index:
         # Check if room, class and meeting exist. If not, delete the record.
         if (sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist()
-            or sections_df.loc[x, 'class_id'] not in class_id_list
+                or sections_df.loc[x, 'class_id'] not in class_id_list
                 or sections_df.loc[x, 'meeting_id'] not
                 in meetings_df['mid'].values.tolist()):
             sections_df.drop(x, inplace=True)
 
     return sections_df
+
 
 def add_dummy_record(courses_df):
     """
@@ -298,40 +302,42 @@ def add_dummy_record(courses_df):
     0, 0000, None}
     :param courses_df:
     """
-def get_syllabus(courses_df):
+
+
+def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
+    pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-    It is necessary to download all the course syllabi and store them in the GitHub
-    repository {Department-Code-Class-Name.pdf}
-    :param courses_df:
+     Transform all the data to abide by rumad-v2 requirements.
+    :param sections_df: sections dataframe
+    :param meetings_df: meetings dataframe
+    :param rooms_df: rooms dataframe
+    :param courses_df: courses dataframe
+    :return: new sections, meetings, rooms and courses dataframes where the data is transformed to rumad-v2 requirements
     """
-def transform_data(sections_df, meetings_df, rooms_df, courses_df):
     # 1. The classes data starts with id 2.
-    remove_invalid_ids(courses_df)
+    courses_df = remove_invalid_ids(courses_df) #might not be necessary
+
     # 2. Two sections cannot be taught at the same hour in the same classroom.
-    remove_conflicting_classrooms(sections_df)
+    sections_df = remove_conflicting_classrooms(sections_df)
+
     # 3. A class cannot have the same section, they must be taught at different hours.
-    remove_conflicting_sections(sections_df)
+    sections_df = remove_conflicting_sections(sections_df)
+
     # 4.  Meetings ‘MJ’ are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m.
     #     Any section in between shall be removed. Any section after the hour must
     #     be removed. If any section overlaps, you will add the necessary time to not overlap.
-    apply_universal_time(sections_df, meetings_df)
-    # 5. All ‘LMV’ sections have the correct hours.
-    # TODO
-    # 6. LMV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
-    correct_meeting_duration(meetings_df)
+    sections_df, meetings_df = apply_universal_time(sections_df, meetings_df)
+
     # 7. Sections cannot be in overcapacity, classrooms have limits.
-    cap_sections(sections_df, rooms_df)
+    sections_df = cap_sections(sections_df, rooms_df)
+
     # 8. Courses must be taught in the correct year and correct semester.
     #    {First semester = Fall | Second semester = Spring | According to demand = Any
     #    moment of the year (Summer included)}
-    correct_section_term(sections_df, courses_df)
+    sections_df = correct_section_term(sections_df, courses_df)
+
     # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
     #    If any of these values are missing or invalid, you must delete said record.
-    delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df)
-    # 10. There is a dummy record for the courses that require the department’s director
-    #     approval { Authorization from the Director of the Department, None, None, None,
-    #     0, 0000, None}
-    add_dummy_record(courses_df) # TODO
-    # 11. It is necessary to download all the course syllabi and store them in the GitHub
-    #     repository {Department-Code-Class-Name.pdf}
-    get_syllabus(courses_df) # TODO
+    sections_df = delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df)
+
+    return sections_df, meetings_df, rooms_df, courses_df

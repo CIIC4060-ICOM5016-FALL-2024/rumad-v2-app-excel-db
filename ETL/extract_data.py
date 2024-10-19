@@ -90,3 +90,10 @@ def get_requisites(file_path):
     requisites = pd.read_sql_query('SELECT * FROM requisites', conn)
     conn.close()
     return requisites
+
+def get_syllabus(courses_df):
+    """
+    It is necessary to download all the course syllabi and store them in the GitHub
+    repository {Department-Code-Class-Name.pdf}
+    :param courses_df:
+    """
