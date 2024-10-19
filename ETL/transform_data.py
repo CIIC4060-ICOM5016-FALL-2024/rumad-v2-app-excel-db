@@ -1,16 +1,20 @@
+from datetime import datetime
 import pandas as pd
-import extract_data
 
 
-def offset_ids(courses_df):
-    """
-    The classes data starts with id 2.
-    :param courses_df: the daframe of the courses
-    :return: a new dataframe where cid >= 2
-    """
-    # Anthony codes here
-    return courses_df
+def remove_invalid_ids(courses):
+        # remove empty cells
+        courses.dropna()
+        # remove classes that have an id less than 2
+        for x in courses.index:
+            if int(courses.loc[x, 'code']) < 2:
+                #If course is a placeholder, do not delete
+                if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
+                    continue
+                else:
+                    courses.drop(x, inplace=True)
 
+        return courses
 
 def remove_conflicting_classrooms(sections_df):
     """
@@ -22,6 +26,18 @@ def remove_conflicting_classrooms(sections_df):
     same academic term (Fall, Spring, V1, V2)
     """
     # Anthony codes here
+    sections_df = sections_df.sort_values(by=['sid'])
+    classrooms_checker = []
+
+    for index, section in sections_df.iterrows():
+        #Take into account academic term
+        curr_section = (section['semester'], section['year'], section['meeting_id'], section['room_id'])
+        # Conflicting section, drop from the frame.
+        if curr_section in classrooms_checker:
+            sections_df.drop(index, inplace=True)
+        else:
+            classrooms_checker.append(curr_section)
+
     return sections_df
 
 
@@ -33,22 +49,22 @@ def remove_conflicting_sections(sections_df):
     :param sections_df: the dataframe of the sections
     :return: a new dataframe with no section conflict per class
     """
-
-    # This way, rows with the same meeting_id and class_id but higher
-    # sid's will be deleted.
     sections_df = sections_df.sort_values(by=['sid'])
 
     class_meeting_ids = {}
 
-    # Doesn't handle academic term. Need to modify.
     for index, section in sections_df.iterrows():
         if section['class_id'] not in class_meeting_ids:
             class_meeting_ids[section['class_id']] = []
+
+        #Take into account academic term and year
+        meeting = (section['semester'], section['year'], section['meeting_id'])
+
         # Conflicting section, drop from the frame.
-        if section['meeting_id'] in class_meeting_ids[section['class_id']]:
+        if meeting in class_meeting_ids[section['class_id']]:
             sections_df.drop(index, inplace=True)
         else:
-            class_meeting_ids[section['class_id']].append(section['meeting_id'])
+            class_meeting_ids[section['class_id']].append(meeting)
 
     return sections_df
 
@@ -62,9 +78,89 @@ def apply_universal_time(sections_df, meetings_df):
     :param meetings_df: the dataframe of the meetings
     :return: a new dataframe where sections respect the universal time
     """
-    # Edimar codes here
+    universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
+    universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
+    day_end = datetime.strptime("19:45:00", "%H:%M:%S")
+    section_time = datetime.strptime("1:15:00", "%H:%M:%S")
+
+    # We'll use a dictionary to accommodate sections for each classroom.
+    # Common sense? Maybe. Obviously run this function after resolving conflicts, or
+    # it will blow up in our faces.
+    classroom_schedule = {}
+
+    for index, section in sections_df.iterrows():
+
+        # Try to locate meeting. This ignores nonexistent ones
+        try:
+            meeting = meetings_df.loc[section['meeting_id'] - 1]  # to offset for the dataframe index
+        except KeyError:
+            continue
+
+        # Do our checks now to not add trash to the dictionary
+        if meeting['day'] == 'LWV':
+            # We ignore LWV
+            continue
+
+        if meeting['start'] > day_end or meeting['end'] > day_end:
+            # Can't add time for these sections.
+            sections_df.drop(index, inplace=True)
+            continue
+
+        if meeting['start'] >= universal_time_start and meeting['end'] < universal_time_end:
+            # Completely inside the universal time. Can't save it.
+            sections_df.drop(index, inplace=True)
+            continue
+
+        # Create that classroom key as a tuple.
+        classroom = (section['room_id'], section['semester'], section['year'])
+
+        # Add that specific time classroom
+        if classroom not in classroom_schedule:
+            classroom_schedule[classroom] = []
+
+        # All we have left is valid MJ times and times that need shifting
+        # We need to attach the section id to the meeting so
+        # it can be traced back and updated.
+
+        meeting = meeting.copy()  # To avoid Pandas warnings.
+
+        meeting['sid'] = section['sid']
+        classroom_schedule[classroom].append(meeting)  # it works by the grace of God
+
+    # For simplicity, lets create many new temporary dataframes for
+    # observing the timeline of a classroom in the academic semester
+
+    for classroom in classroom_schedule:
+        print(classroom)
+        classroom_df = pd.DataFrame(classroom_schedule[classroom])
+        classroom_df = classroom_df.sort_values(by=['mid'])
+        print(classroom_df)
+
+        # a backup if a sections goes out of bounds
+        #sections_copy_df = sections_df.copy()
+
+        # We need to find overlapping and subsequent sections and shift their
+        # mid by +1
+        # HOWEVER, how do I 'add' time if I can't change the keys or modify the meetings?
+
     return sections_df
 
+# I think we can put this in the test suite.
+def correct_meeting_duration(meetings_df):
+    """
+    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
+    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+    :param meetings_df: the dataframe of the meetings
+    """
+    for index, meeting in meetings_df.iterrows():
+        time_start = meeting['start']
+        time_end = meeting['end']
+        if meeting['day'] == "MJ" and str(time_end - time_start) != "1:15:00":
+            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['day'] == "LWV" and str(time_end - time_start) != "0:50:00":
+            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
 def cap_sections(sections_df, rooms_df):
     """
@@ -74,7 +170,7 @@ def cap_sections(sections_df, rooms_df):
     :return: a new dataframe where the section capacity does not exceed the
     classroom capacity
     """
-    
+
     # Merge (left join) sections_df and rooms_df where room_id (sections_df) = id (rooms_df)
     merged_df = sections_df.merge(rooms_df, left_on = 'room_id', right_on = 'id', how = 'left')
 
@@ -103,7 +199,7 @@ def correct_section_term(sections_df, courses_df):
     course dataframe
     """
     # Glerys codes here
-    
+
     # Convert class_id and classid to string, and strip leading zeros from classid
     sections_df['class_id'] = sections_df['class_id'].astype(str)
     courses_df['classid'] = courses_df['classid'].astype(str).str.lstrip('0')
@@ -117,16 +213,16 @@ def correct_section_term(sections_df, courses_df):
 
         if course_year_rule == 'Odd Years' and section_year % 2 != 0:
             return True
-        
+
         elif course_year_rule == 'Even Years' and section_year % 2 == 0:
             return True
-        
+
         elif course_year_rule == 'Every Year' and section_year != 0:
             return True
-        
+
         elif course_year_rule == 'According to Demand' and section_year != 0:
             return True
-        
+
         return False
 
     def is_valid_term(row):
@@ -168,6 +264,7 @@ def correct_section_term(sections_df, courses_df):
 
     return sections_df
 
+
 def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     Sections must be taught in a valid classroom and meeting, and the class must exist. If any of
@@ -179,4 +276,14 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     :return: a new dataframe where the sections are valid
     """
     # Anthony codes here
+    #transform classid from a str list to an int list
+    class_id_list = [int(i) for i in courses_df['classid'].values.tolist()]
+
+    for x in sections_df.index:
+        #check if room, class and meeting exist. If not, delete the record.
+        if sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist() or sections_df.loc[
+            x, 'class_id'] not in class_id_list or sections_df.loc[x, 'meeting_id'] not in meetings_df[
+            'mid'].values.tolist():
+            sections_df.drop(x, inplace=True)
+
     return sections_df
