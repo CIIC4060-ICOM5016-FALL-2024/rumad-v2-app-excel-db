@@ -1,19 +1,21 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 
-def remove_invalid_ids(courses):
-        # remove empty cells
-        courses.dropna()
-        # remove classes that have an id less than 2
-        for x in courses.index:
-            if int(courses.loc[x, 'code']) < 2:
-                #If course is a placeholder, do not delete
-                if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
-                    continue
-                else:
-                    courses.drop(x, inplace=True)
 
-        return courses
+def remove_invalid_ids(courses):
+    # remove empty cells
+    courses.dropna()
+    # remove classes that have an id less than 2
+    for x in courses.index:
+        if int(courses.loc[x, 'code']) < 2:
+            #If course is a placeholder, do not delete
+            if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
+                continue
+            else:
+                courses.drop(x, inplace=True)
+
+    return courses
+
 
 def remove_conflicting_classrooms(sections_df):
     """
@@ -75,17 +77,27 @@ def apply_universal_time(sections_df, meetings_df):
     add the necessary time to not overlap.
     :param sections_df: the dataframe of the sections
     :param meetings_df: the dataframe of the meetings
-    :return: a new dataframe where sections respect the universal time
+    :return: two new dataframes where sections and meetings respect the universal time
     """
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
     day_end = datetime.strptime("19:45:00", "%H:%M:%S")
-    section_time = datetime.strptime("1:15:00", "%H:%M:%S")
 
-    # We'll use a dictionary to accommodate sections for each classroom.
-    # Common sense? Maybe. Obviously run this function after resolving conflicts, or
-    # it will blow up in our faces.
-    classroom_schedule = {}
+    overlapping = False
+    time_difference = timedelta()
+    for index, meeting in meetings_df.iterrows():
+        if meeting['day'] == 'LWV':
+            # We ignore LWV
+            continue
+        if meeting['start'] < universal_time_end < meeting['end']:
+            overlapping = True
+            time_difference += universal_time_end - meeting['start']
+        elif meeting['start'] <= universal_time_start < meeting['end']:
+            overlapping = True
+            time_difference += universal_time_end - meeting['end']
+        if overlapping:
+            meetings_df.at[index, 'start'] += time_difference
+            meetings_df.at[index, 'end'] += time_difference
 
     for index, section in sections_df.iterrows():
 
@@ -110,39 +122,8 @@ def apply_universal_time(sections_df, meetings_df):
             sections_df.drop(index, inplace=True)
             continue
 
-        # Create that classroom key as a tuple.
-        classroom = (section['room_id'], section['semester'], section['year'])
+    return sections_df, meetings_df
 
-        # Add that specific time classroom
-        if classroom not in classroom_schedule:
-            classroom_schedule[classroom] = []
-
-        # All we have left is valid MJ times and times that need shifting
-        # We need to attach the section id to the meeting so
-        # it can be traced back and updated.
-
-        meeting = meeting.copy()  # To avoid Pandas warnings.
-
-        meeting['sid'] = section['sid']
-        classroom_schedule[classroom].append(meeting)  # it works by the grace of God
-
-    # For simplicity, lets create many new temporary dataframes for
-    # observing the timeline of a classroom in the academic semester
-
-    for classroom in classroom_schedule:
-        print(classroom)
-        classroom_df = pd.DataFrame(classroom_schedule[classroom])
-        classroom_df = classroom_df.sort_values(by=['mid'])
-        print(classroom_df)
-
-        # a backup if a sections goes out of bounds
-        #sections_copy_df = sections_df.copy()
-
-        # We need to find overlapping and subsequent sections and shift their
-        # mid by +1
-        # HOWEVER, how do I 'add' time if I can't change the keys or modify the meetings?
-
-    return sections_df
 
 def correct_lwv(meetings_df):
     """
@@ -178,6 +159,7 @@ def correct_meeting_duration(meetings_df):
             print("LWV Wrong Time: ", meeting['start'], meeting['end'])
             meetings_df.drop(index, inplace=True)
 
+
 def cap_sections(sections_df, rooms_df):
     """
     Sections cannot be in overcapacity, classrooms have limits.
@@ -188,7 +170,7 @@ def cap_sections(sections_df, rooms_df):
     """
 
     # Merge (left join) sections_df and rooms_df where room_id (sections_df) = id (rooms_df)
-    merged_df = sections_df.merge(rooms_df, left_on = 'room_id', right_on = 'id', how = 'left')
+    merged_df = sections_df.merge(rooms_df, left_on='room_id', right_on='id', how='left')
 
     # Filter out rows where section capacity is greater than the room capacity
     sections_df = merged_df[merged_df['capacity_x'] <= merged_df['capacity_y']]
@@ -298,7 +280,7 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     for x in sections_df.index:
         # Check if room, class and meeting exist. If not, delete the record.
         if (sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist()
-            or sections_df.loc[x, 'class_id'] not in class_id_list
+                or sections_df.loc[x, 'class_id'] not in class_id_list
                 or sections_df.loc[x, 'meeting_id'] not
                 in meetings_df['mid'].values.tolist()):
             sections_df.drop(x, inplace=True)
