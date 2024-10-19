@@ -170,7 +170,19 @@ def cap_sections(sections_df, rooms_df):
     :return: a new dataframe where the section capacity does not exceed the
     classroom capacity
     """
-    # Glerys codes here
+
+    # Merge (left join) sections_df and rooms_df where room_id (sections_df) = id (rooms_df)
+    merged_df = sections_df.merge(rooms_df, left_on = 'room_id', right_on = 'id', how = 'left')
+
+    # Filter out rows where section capacity is greater than the room capacity
+    sections_df = merged_df[merged_df['capacity_x'] <= merged_df['capacity_y']]
+
+    # Eliminate extra columns from join
+    sections_df = sections_df.drop(columns=['capacity_y', 'id', 'number', 'building'])
+
+    # Rename column back to capacity
+    sections_df = sections_df.rename(columns={'capacity_x': 'capacity'})
+
     return sections_df
 
 
@@ -187,6 +199,69 @@ def correct_section_term(sections_df, courses_df):
     course dataframe
     """
     # Glerys codes here
+
+    # Convert class_id and classid to string, and strip leading zeros from classid
+    sections_df['class_id'] = sections_df['class_id'].astype(str)
+    courses_df['classid'] = courses_df['classid'].astype(str).str.lstrip('0')
+
+    # Merge tables
+    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='classid')
+
+    def is_valid_year(row):
+        section_year = row['year']
+        course_year_rule = row['years']
+
+        if course_year_rule == 'Odd Years' and section_year % 2 != 0:
+            return True
+
+        elif course_year_rule == 'Even Years' and section_year % 2 == 0:
+            return True
+
+        elif course_year_rule == 'Every Year' and section_year != 0:
+            return True
+
+        elif course_year_rule == 'According to Demand' and section_year != 0:
+            return True
+
+        return False
+
+    def is_valid_term(row):
+        section_semester = row['semester']
+        course_term_rule = row['term']
+
+        if course_term_rule == "According to Demand":
+            return True
+
+        elif course_term_rule == "First Semester":
+            if section_semester == "Fall":
+                return True
+            else:
+                return False
+
+        elif course_term_rule == "Second Semester":
+            if section_semester == "Spring":
+                return True
+            else:
+                return False
+
+        elif course_term_rule == "First Semester, Second Semester":
+            if section_semester in ["Fall", "Spring"]:
+                return True
+            else:
+                return False
+
+        return False
+
+    merged_df['valid_year'] = merged_df.apply(is_valid_year, axis=1)
+    merged_df['valid_term'] = merged_df.apply(is_valid_term, axis=1)
+
+    # Only keep rows that are valid in both year and term
+    validated_df = merged_df[(merged_df['valid_year']) & (merged_df['valid_term'])]
+
+    # Keep original sections_df with only valid sections based on 'sid'
+    valid_sids = validated_df['sid'].unique()
+    sections_df = sections_df[sections_df['sid'].isin(valid_sids)]
+
     return sections_df
 
 
@@ -201,61 +276,15 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     :return: a new dataframe where the sections are valid
     """
     # Anthony codes here
-    #transform classid from a str list to an int list
+    # transform classid from a str list to an int list
     class_id_list = [int(i) for i in courses_df['classid'].values.tolist()]
 
     for x in sections_df.index:
-        #check if room, class and meeting exist. If not, delete the record.
-        if sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist() or sections_df.loc[
-            x, 'class_id'] not in class_id_list or sections_df.loc[x, 'meeting_id'] not in meetings_df[
-            'mid'].values.tolist():
+        # Check if room, class and meeting exist. If not, delete the record.
+        if (sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist()
+            or sections_df.loc[x, 'class_id'] not in class_id_list
+                or sections_df.loc[x, 'meeting_id'] not
+                in meetings_df['mid'].values.tolist()):
             sections_df.drop(x, inplace=True)
 
     return sections_df
-
-def add_dummy_record(courses_df):
-    """
-    There is a dummy record for the courses that require the department’s director
-    approval { Authorization from the Director of the Department, None, None, None,
-    0, 0000, None}
-    :param courses_df:
-    """
-
-def get_syllabus(courses_df):
-    """
-    It is necessary to download all the course syllabi and store them in the GitHub
-    repository {Department-Code-Class-Name.pdf}
-    :param courses_df:
-    """
-
-def transform_data(sections_df, meetings_df, rooms_df, courses_df):
-    # 1. The classes data starts with id 2.
-    # TODO check_class_id()
-    # 2. Two sections cannot be taught at the same hour in the same classroom.
-    remove_conflicting_classrooms(sections_df)
-    # 3. A class cannot have the same section, they must be taught at different hours.
-    remove_conflicting_sections(sections_df)
-    # 4.  Meetings ‘MJ’ are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m.
-    #     Any section in between shall be removed. Any section after the hour must
-    #     be removed. If any section overlaps, you will add the necessary time to not overlap.
-    apply_universal_time(sections_df, meetings_df)
-    # 5. All ‘LMV’ sections have the correct hours.
-    # TODO La real no se q hay q hacer aqui
-    # 6. LMV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
-    correct_meeting_duration(meetings_df)
-    # 7. Sections cannot be in overcapacity, classrooms have limits.
-    cap_sections(sections_df, rooms_df) # TODO
-    # 8. Courses must be taught in the correct year and correct semester.
-    #    {First semester = Fall | Second semester = Spring | According to demand = Any
-    #    moment of the year (Summer included)}
-    correct_section_term(sections_df, courses_df) # TODO
-    # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
-    #    If any of these values are missing or invalid, you must delete said record.
-    delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df)
-    # 10. There is a dummy record for the courses that require the department’s director
-    #     approval { Authorization from the Director of the Department, None, None, None,
-    #     0, 0000, None}
-    add_dummy_record() # TODO
-    # 11. It is necessary to download all the course syllabi and store them in the GitHub
-    #     repository {Department-Code-Class-Name.pdf}
-    get_syllabus() # TODO
