@@ -74,7 +74,19 @@ def cap_sections(sections_df, rooms_df):
     :return: a new dataframe where the section capacity does not exceed the
     classroom capacity
     """
-    # Glerys codes here
+    
+    # Merge (left join) sections_df and rooms_df where room_id (sections_df) = id (rooms_df)
+    merged_df = sections_df.merge(rooms_df, left_on = 'room_id', right_on = 'id', how = 'left')
+
+    # Filter out rows where section capacity is greater than the room capacity
+    sections_df = merged_df[merged_df['capacity_x'] <= merged_df['capacity_y']]
+
+    # Eliminate extra columns from join
+    sections_df = sections_df.drop(columns=['capacity_y', 'id', 'number', 'building'])
+
+    # Rename column back to capacity
+    sections_df = sections_df.rename(columns={'capacity_x': 'capacity'})
+
     return sections_df
 
 
@@ -91,8 +103,70 @@ def correct_section_term(sections_df, courses_df):
     course dataframe
     """
     # Glerys codes here
-    return sections_df
+    
+    # Convert class_id and classid to string, and strip leading zeros from classid
+    sections_df['class_id'] = sections_df['class_id'].astype(str)
+    courses_df['classid'] = courses_df['classid'].astype(str).str.lstrip('0')
 
+    # Merge tables
+    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='classid')
+
+    def is_valid_year(row):
+        section_year = row['year']
+        course_year_rule = row['years']
+
+        if course_year_rule == 'Odd Years' and section_year % 2 != 0:
+            return True
+        
+        elif course_year_rule == 'Even Years' and section_year % 2 == 0:
+            return True
+        
+        elif course_year_rule == 'Every Year' and section_year != 0:
+            return True
+        
+        elif course_year_rule == 'According to Demand' and section_year != 0:
+            return True
+        
+        return False
+
+    def is_valid_term(row):
+        section_semester = row['semester']
+        course_term_rule = row['term']
+
+        if course_term_rule == "According to Demand":
+            return True
+
+        elif course_term_rule == "First Semester":
+            if section_semester == "Fall":
+                return True
+            else:
+                return False
+
+        elif course_term_rule == "Second Semester":
+            if section_semester == "Spring":
+                return True
+            else:
+                return False
+
+        elif course_term_rule == "First Semester, Second Semester":
+            if section_semester in ["Fall", "Spring"]:
+                return True
+            else:
+                return False
+
+        return False
+
+    merged_df['valid_year'] = merged_df.apply(is_valid_year, axis=1)
+    merged_df['valid_term'] = merged_df.apply(is_valid_term, axis=1)
+
+    # Only keep rows that are valid in both year and term
+    validated_df = merged_df[(merged_df['valid_year']) & (merged_df['valid_term'])]
+
+    # Keep original sections_df with only valid sections based on 'sid'
+    valid_sids = validated_df['sid'].unique()
+    sections_df = sections_df[sections_df['sid'].isin(valid_sids)]
+
+    return sections_df
 
 def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
@@ -106,4 +180,3 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     # Anthony codes here
     return sections_df
-

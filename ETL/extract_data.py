@@ -80,4 +80,3 @@ def get_requisites(file_path):
     requisites = pd.read_sql_query('SELECT * FROM requisites', conn)
     conn.close()
     return requisites
-
