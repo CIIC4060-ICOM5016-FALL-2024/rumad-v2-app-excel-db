@@ -1,9 +1,6 @@
 from datetime import datetime
 import pandas as pd
 
-from ETL.extract_data import get_meetings
-
-
 def remove_invalid_ids(courses):
         # remove empty cells
         courses.dropna()
@@ -146,6 +143,23 @@ def apply_universal_time(sections_df, meetings_df):
         # HOWEVER, how do I 'add' time if I can't change the keys or modify the meetings?
 
     return sections_df
+
+def correct_lwv(meetings_df):
+    """
+    Check correct hours for all LWV sections.
+    + If section start is before 7:30am the section shall be removed.
+    + If section end is after 7:45pm the section shall be removed.
+    :param meetings_df:
+    """
+    for index, meeting in meetings_df.iterrows():
+        day_start = datetime.strptime("07:30:00", "%H:%M:%S")
+        day_end = datetime.strptime("19:45:00", "%H:%M:%S")
+        if meeting['start']  <  day_start:
+            print("Wrong day start:", meeting['start'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['end'] > day_end:
+            print("Wrong day end:", meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
 # I think we can put this in the test suite.
 def correct_meeting_duration(meetings_df):
@@ -316,7 +330,7 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df):
     #     be removed. If any section overlaps, you will add the necessary time to not overlap.
     apply_universal_time(sections_df, meetings_df)
     # 5. All ‘LMV’ sections have the correct hours.
-    # TODO
+    correct_lwv(meetings_df)
     # 6. LMV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
     correct_meeting_duration(meetings_df)
     # 7. Sections cannot be in overcapacity, classrooms have limits.
