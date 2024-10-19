@@ -131,6 +131,22 @@ def apply_universal_time(sections_df, meetings_df):
 
     return sections_df
 
+# I think we can put this in the test suite.
+def correct_meeting_duration(meetings_df):
+    """
+    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
+    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+    :param meetings_df: the dataframe of the meetings
+    """
+    for index, meeting in meetings_df.iterrows():
+        time_start = meeting['start']
+        time_end = meeting['end']
+        if meeting['day'] == "MJ" and str(time_end - time_start) != "1:15:00":
+            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['day'] == "LWV" and str(time_end - time_start) != "0:50:00":
+            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
 def cap_sections(sections_df, rooms_df):
     """
@@ -183,20 +199,49 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
 
     return sections_df
 
+def add_dummy_record(courses_df):
+    """
+    There is a dummy record for the courses that require the department’s director
+    approval { Authorization from the Director of the Department, None, None, None,
+    0, 0000, None}
+    :param courses_df:
+    """
 
-# I think we can put this in the test suite.
-def correct_meeting_duration(meetings_df):
+def get_syllabus(courses_df):
     """
-    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
-    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
-    :param meetings_df: the dataframe of the meetings
+    It is necessary to download all the course syllabi and store them in the GitHub
+    repository {Department-Code-Class-Name.pdf}
+    :param courses_df:
     """
-    for index, meeting in meetings_df.iterrows():
-        time_start = meeting['start']
-        time_end = meeting['end']
-        if meeting['day'] == "MJ" and str(time_end - time_start) != "1:15:00":
-            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
-            meetings_df.drop(index, inplace=True)
-        if meeting['day'] == "LWV" and str(time_end - time_start) != "0:50:00":
-            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
-            meetings_df.drop(index, inplace=True)
+
+def transform_data(sections_df, meetings_df, rooms_df, courses_df):
+    # 1. The classes data starts with id 2.
+    # TODO check_class_id()
+    # 2. Two sections cannot be taught at the same hour in the same classroom.
+    remove_conflicting_classrooms(sections_df)
+    # 3. A class cannot have the same section, they must be taught at different hours.
+    remove_conflicting_sections(sections_df)
+    # 4.  Meetings ‘MJ’ are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m.
+    #     Any section in between shall be removed. Any section after the hour must
+    #     be removed. If any section overlaps, you will add the necessary time to not overlap.
+    apply_universal_time(sections_df, meetings_df)
+    # 5. All ‘LMV’ sections have the correct hours.
+    # TODO La real no se q hay q hacer aqui
+    # 6. LMV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
+    correct_meeting_duration(meetings_df)
+    # 7. Sections cannot be in overcapacity, classrooms have limits.
+    cap_sections(sections_df, rooms_df) # TODO
+    # 8. Courses must be taught in the correct year and correct semester.
+    #    {First semester = Fall | Second semester = Spring | According to demand = Any
+    #    moment of the year (Summer included)}
+    correct_section_term(sections_df, courses_df) # TODO
+    # 9. Sections must be taught in a valid classroom and meeting, and the class must exist.
+    #    If any of these values are missing or invalid, you must delete said record.
+    delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df)
+    # 10. There is a dummy record for the courses that require the department’s director
+    #     approval { Authorization from the Director of the Department, None, None, None,
+    #     0, 0000, None}
+    add_dummy_record() # TODO
+    # 11. It is necessary to download all the course syllabi and store them in the GitHub
+    #     repository {Department-Code-Class-Name.pdf}
+    get_syllabus() # TODO
