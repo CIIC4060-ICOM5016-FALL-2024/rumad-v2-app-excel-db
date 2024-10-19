@@ -2,6 +2,8 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 import sqlite3
 import json
+from datetime import datetime
+
 
 def get_courses(file_path):
     """
@@ -50,7 +52,16 @@ def get_meetings(file_path):
     :return:
     """
     meeting_csv = pd.read_csv(file_path + '/meeting.csv')
-    return pd.DataFrame(meeting_csv)
+
+    # Better to do it here
+    # Function to convert 'start' and 'end' to datetime.time objects
+    def convert_time(meeting):
+        meeting['start'] = datetime.strptime(meeting['start'], '%H:%M:%S')
+        meeting['end'] = datetime.strptime(meeting['end'], '%H:%M:%S')
+        return meeting
+
+    meetings_df = meeting_csv.apply(convert_time, axis=1)
+    return meetings_df
 
 
 def get_rooms(file_path):
