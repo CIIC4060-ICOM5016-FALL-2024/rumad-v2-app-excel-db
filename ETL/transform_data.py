@@ -1,6 +1,8 @@
 from datetime import datetime
 import pandas as pd
 
+from ETL.extract_data import get_sections, get_meetings
+
 
 def remove_invalid_ids(courses):
         # remove empty cells
@@ -81,12 +83,6 @@ def apply_universal_time(sections_df, meetings_df):
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
     day_end = datetime.strptime("19:45:00", "%H:%M:%S")
-    section_time = datetime.strptime("1:15:00", "%H:%M:%S")
-
-    # We'll use a dictionary to accommodate sections for each classroom.
-    # Common sense? Maybe. Obviously run this function after resolving conflicts, or
-    # it will blow up in our faces.
-    classroom_schedule = {}
 
     for index, section in sections_df.iterrows():
 
@@ -110,40 +106,23 @@ def apply_universal_time(sections_df, meetings_df):
             # Completely inside the universal time. Can't save it.
             sections_df.drop(index, inplace=True)
             continue
-
-        # Create that classroom key as a tuple.
-        classroom = (section['room_id'], section['semester'], section['year'])
-
-        # Add that specific time classroom
-        if classroom not in classroom_schedule:
-            classroom_schedule[classroom] = []
-
-        # All we have left is valid MJ times and times that need shifting
-        # We need to attach the section id to the meeting so
-        # it can be traced back and updated.
-
-        meeting = meeting.copy()  # To avoid Pandas warnings.
-
-        meeting['sid'] = section['sid']
-        classroom_schedule[classroom].append(meeting)  # it works by the grace of God
-
-    # For simplicity, lets create many new temporary dataframes for
-    # observing the timeline of a classroom in the academic semester
-
-    for classroom in classroom_schedule:
-        print(classroom)
-        classroom_df = pd.DataFrame(classroom_schedule[classroom])
-        classroom_df = classroom_df.sort_values(by=['mid'])
-        print(classroom_df)
-
-        # a backup if a sections goes out of bounds
-        #sections_copy_df = sections_df.copy()
-
-        # We need to find overlapping and subsequent sections and shift their
-        # mid by +1
-        # HOWEVER, how do I 'add' time if I can't change the keys or modify the meetings?
-
-    return sections_df
+    overlapping = False
+    time_difference = datetime.strptime("00:00:00", "%H:%M:%S")
+    for index, meeting in meetings_df.iterrows():
+        if meeting['day'] == 'LWV':
+            # We ignore LWV
+            continue
+        if meeting['start'] < universal_time_end < meeting['end']:
+            overlapping = True
+            time_difference = universal_time_end - meeting['start']
+        elif meeting['start'] <= universal_time_start < meeting['end']:
+            overlapping = True
+            time_difference = universal_time_end - meeting['end']
+        if overlapping:
+            meetings_df.at[index, 'start'] += time_difference
+            meetings_df.at[index, 'end'] += time_difference
+    meetings_df.to_csv('new_meetings.csv', index=False)
+    return sections_df, meetings_df
 
 # I think we can put this in the test suite.
 def correct_meeting_duration(meetings_df):
@@ -288,3 +267,6 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
             sections_df.drop(x, inplace=True)
 
     return sections_df
+
+
+apply_universal_time(get_sections('Data'), get_meetings('Data'))
