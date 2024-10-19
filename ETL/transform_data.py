@@ -2,6 +2,20 @@ from datetime import datetime
 import pandas as pd
 
 
+def remove_invalid_ids(courses):
+        # remove empty cells
+        courses.dropna()
+        # remove classes that have an id less than 2
+        for x in courses.index:
+            if int(courses.loc[x, 'code']) < 2:
+                #If course is a placeholder, do not delete
+                if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
+                    continue
+                else:
+                    courses.drop(x, inplace=True)
+
+        return courses
+
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
