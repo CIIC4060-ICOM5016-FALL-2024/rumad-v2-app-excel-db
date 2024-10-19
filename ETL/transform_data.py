@@ -168,10 +168,10 @@ def correct_section_term(sections_df, courses_df):
 
     # Convert class_id and classid to string, and strip leading zeros from classid
     sections_df['class_id'] = sections_df['class_id'].astype(str)
-    courses_df['classid'] = courses_df['classid'].astype(str).str.lstrip('0')
+    courses_df['cid'] = courses_df['cid'].astype(str).str.lstrip('0')
 
     # Merge tables
-    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='classid')
+    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='cid')
 
     def is_valid_year(row):
         section_year = row['year']
@@ -243,7 +243,7 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     # Anthony codes here
     # transform classid from a str list to an int list
-    class_id_list = [int(i) for i in courses_df['classid'].values.tolist()]
+    class_id_list = [int(i) for i in courses_df['cid'].values.tolist()]
 
     for x in sections_df.index:
         # Check if room, class and meeting exist. If not, delete the record.
