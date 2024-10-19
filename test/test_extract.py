@@ -31,6 +31,21 @@ class TestMeetings(unittest.TestCase):
     def test_empty(self):
         self.assertGreater(len(self.meetings_df), 0)
 
+    def test_meeting_duration(self):
+        meetings_df = self.meetings_df
+        """
+        Check if LWV classes are of 50 minutes.
+        Check if MJ classes are of 75 minutes.
+        :param meetings_df: The dataframe of the meetings
+        """
+        for index, meeting in meetings_df.iterrows():
+            time_start = meeting['start']
+            time_end = meeting['end']
+            if meeting['day'] == "MJ":
+                self.assertEqual("0 days 01:15:00", str(time_end - time_start))
+            if meeting['day'] == "LWV":
+                self.assertEqual("0 days 00:50:00", str(time_end - time_start))
+
 
 class TestRooms(unittest.TestCase):
     rooms_df = get_rooms(file_path)

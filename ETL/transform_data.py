@@ -2,26 +2,6 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 
-def remove_invalid_ids(courses):
-    """
-    The classes data starts with id 2.
-    :param courses: dataframe of the courses
-    :return: a new dataframe where courses id must be 2 or more
-    """
-    # remove empty cells
-    courses.dropna()
-    # remove classes that have an id less than 2
-    for x in courses.index:
-        if int(courses.loc[x, 'code']) < 2:
-            #If course is a placeholder, do not delete
-            if courses.loc[x, 'name'] == "Authorization from the Director of the Department":
-                continue
-            else:
-                courses.drop(x, inplace=True)
-
-    return courses
-
-
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -129,6 +109,7 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
 
     return sections_df, meetings_df
 
+
 # We can also put this in a test suite
 def correct_lwv(meetings_df):
     """
@@ -145,26 +126,6 @@ def correct_lwv(meetings_df):
             meetings_df.drop(index, inplace=True)
         if meeting['end'] > day_end:
             print("Wrong day end:", meeting['end'])
-            meetings_df.drop(index, inplace=True)
-
-
-# I think we can put this in the test suite.
-def correct_meeting_duration(meetings_df):
-    """
-    Check if LWV classes are of 50 minutes.
-    If false, remove it from the dataframe.
-    Check if MJ classes are of 75 minutes.
-    If false, remove it from the dataframe.
-    :param meetings_df: The dataframe of the meetings
-    """
-    for index, meeting in meetings_df.iterrows():
-        time_start = meeting['start']
-        time_end = meeting['end']
-        if meeting['day'] == "MJ" and str(time_end - time_start) != "0 days 01:15:00":
-            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
-            meetings_df.drop(index, inplace=True)
-        if meeting['day'] == "LWV" and str(time_end - time_start) != "0 days 00:50:00":
-            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
             meetings_df.drop(index, inplace=True)
 
 
@@ -314,9 +275,6 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     :param courses_df: courses dataframe
     :return: new sections, meetings, rooms and courses dataframes where the data is transformed to rumad-v2 requirements
     """
-    # 1. The classes data starts with id 2.
-    courses_df = remove_invalid_ids(courses_df) #might not be necessary
-
     # 2. Two sections cannot be taught at the same hour in the same classroom.
     sections_df = remove_conflicting_classrooms(sections_df)
 
