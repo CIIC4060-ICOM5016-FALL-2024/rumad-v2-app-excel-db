@@ -19,7 +19,6 @@ def load_classes(courses, engine):
     })
 
 def load_meeting(meetings, engine):
-    print(meetings)
     meetings['start'] = pd.to_datetime(meetings['start'])
     meetings['end'] = pd.to_datetime(meetings['end'])
     meetings.rename(columns={'start': 'starttime', 'end': 'endtime', 'day': 'cdays'}, inplace=True)
@@ -62,6 +61,7 @@ def load_data():
     requisites = get_requisites('Data')
     rooms = get_rooms('Data')
     sections = get_sections('Data')
+
     # Transform data
     transform_data(sections, meetings, rooms, courses)
 
