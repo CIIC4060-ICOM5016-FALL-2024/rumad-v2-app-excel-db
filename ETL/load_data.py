@@ -62,9 +62,17 @@ def load_data():
     rooms = get_rooms('Data')
     sections = get_sections('Data')
 
+    c = len(courses.values.tolist())
+    m = len(meetings.values.tolist())
+    # re = requisites
+    ro = len(rooms.values.tolist())
+    s = len(sections.values.tolist())
     # Transform data
     transform_data(sections, meetings, rooms, courses)
-
+    print("Courses cleanse before", c,"after",len(courses.values.tolist()))
+    print("Meetings cleanse before", m, "after",len(meetings.values.tolist()))
+    print("Room cleanse before", ro, "after",len(rooms.values.tolist()))
+    print("Sections cleanse before", s, "after",len(sections.values.tolist()))
     # Load data
     engine = create_engine('postgresql+psycopg2://excel:password@localhost:1234/excel_db')
     load_classes(courses, engine)

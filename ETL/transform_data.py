@@ -1,6 +1,8 @@
 from datetime import datetime, timedelta
 import pandas as pd
 
+from ETL.extract_data import get_courses, get_sections, get_meetings, get_rooms
+
 
 def remove_invalid_ids(courses):
     # remove empty cells
@@ -176,11 +178,10 @@ def cap_sections(sections_df, rooms_df):
     sections_df = merged_df[merged_df['capacity_x'] <= merged_df['capacity_y']]
 
     # Eliminate extra columns from join
-    sections_df = sections_df.drop(columns=['capacity_y', 'id', 'number', 'building'])
+    sections_df.drop(columns=['capacity_y', 'id', 'number', 'building'])
 
     # Rename column back to capacity
-    sections_df = sections_df.rename(columns={'capacity_x': 'capacity'})
-
+    sections_df.rename(columns={'capacity_x': 'capacity'})
     return sections_df
 
 
@@ -259,7 +260,7 @@ def correct_section_term(sections_df, courses_df):
     # Keep original sections_df with only valid sections based on 'sid'
     valid_sids = validated_df['sid'].unique()
     sections_df = sections_df[sections_df['sid'].isin(valid_sids)]
-
+    print(sections_df)
     return sections_df
 
 
@@ -273,19 +274,11 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     :param rooms_df: the dataframe of the rooms
     :return: a new dataframe where the sections are valid
     """
-    # Anthony codes here
-    # transform classid from a str list to an int list
-    class_id_list = [int(i) for i in courses_df['classid'].values.tolist()]
-
-    for x in sections_df.index:
-        # Check if room, class and meeting exist. If not, delete the record.
-        if (sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist()
-                or sections_df.loc[x, 'class_id'] not in class_id_list
-                or sections_df.loc[x, 'meeting_id'] not
-                in meetings_df['mid'].values.tolist()):
-            sections_df.drop(x, inplace=True)
-
-    return sections_df
+    for index, section in sections_df.iterrows():
+        if (section['room_id'] not in rooms_df['id'].values.tolist()
+                or section['class_id'] not in courses_df['classid'].values.tolist()
+                or section['meeting_id'] not in meetings_df['mid'].values.tolist()):
+            sections_df.drop(index, inplace=True)
 
 def add_dummy_record(courses_df):
     """
