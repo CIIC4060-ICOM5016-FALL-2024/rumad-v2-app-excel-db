@@ -1,8 +1,9 @@
 import unittest
 import pandas as pd
 from ETL.extract_data import *
-from ETL.transform_data import remove_conflicting_sections, remove_conflicting_classrooms
+from ETL.transform_data import remove_conflicting_sections, remove_conflicting_classrooms, cap_sections
 
+file_path = '../ETL/Data'
 
 class TestRemoveConflictingClassrooms(unittest.TestCase):
     sections = {'sid': [0, 1, 2, 3, 4, 5, 6, 7],
@@ -51,6 +52,36 @@ class TestRemoveConflictingSections(unittest.TestCase):
     def test_remove_conflicting_sections(self):
         sections_df = remove_conflicting_sections(self.sections_df)
         self.assertEqual(sections_df.shape, self.expected_sections_df.shape)
+
+
+class TestCapSections(unittest.TestCase):
+
+    sections_df = get_sections(file_path)
+    rooms_df = get_rooms(file_path)
+
+    def count_overcapacity(self):
+        count = 0
+        for index, section in self.sections_df.iterrows():
+            try:
+                i = self.rooms_df[self.rooms_df['id'] == section['room_id']].index[0]
+                room = self.rooms_df.loc[i]
+            except (KeyError, IndexError):
+                continue
+            if section['capacity'] > room['capacity']:
+                count += 1
+        return count
+
+    def test_cap_sections(self):
+        n_sections_to_remove = self.count_overcapacity()
+        n_sections = self.sections_df.shape[0]
+
+        sections_df = cap_sections(self.sections_df, self.rooms_df)
+
+        sections_under_capacity = sections_df.shape[0]
+
+        n_removed_sections = n_sections - sections_under_capacity
+
+        self.assertEqual(n_removed_sections, n_sections_to_remove)
 
 
 
