@@ -128,6 +128,21 @@ def correct_lwv(meetings_df):
             print("Wrong day end:", meeting['end'])
             meetings_df.drop(index, inplace=True)
 
+def correct_meeting_duration(meetings_df):
+    """
+    Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
+    Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+    :param meetings_df: the dataframe of the meetings
+    """
+    for index, meeting in meetings_df.iterrows():
+        time_start = meeting['start']
+        time_end = meeting['end']
+        if meeting['day'] == "MJ" and str(time_end - time_start) != "0 days 01:15:00":
+            print("MJ Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
+        if meeting['day'] == "LWV" and str(time_end - time_start) != "0 days 00:50:00":
+            print("LWV Wrong Time: ", meeting['start'], meeting['end'])
+            meetings_df.drop(index, inplace=True)
 
 def cap_sections(sections_df, rooms_df):
     """
@@ -273,6 +288,12 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     #     Any section in between shall be removed. Any section after the hour must
     #     be removed. If any section overlaps, you will add the necessary time to not overlap.
     sections_df, meetings_df = apply_universal_time(sections_df, meetings_df)
+
+    # 5. All ‘LMV’ sections have the correct hours.
+    correct_lwv(meetings_df)
+
+    # 6. LMV’ meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
+    correct_meeting_duration(meetings_df)
 
     # 7. Sections cannot be in overcapacity, classrooms have limits.
     sections_df = cap_sections(sections_df, rooms_df)
