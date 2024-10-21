@@ -91,9 +91,9 @@ class TestCorrectSectionTerm(unittest.TestCase):
     courses_df = get_courses(file_path)
 
     def count_incorrect_terms(self):
-        n_incorrect_year = 0
         n_incorrect_term = 0
         n_invalid_course = 0
+        n_dummy_course = 0
         for index, section in self.sections_df.iterrows():
             try:
                 course_index = self.courses_df[self.courses_df['cid'] == section['class_id']].index[0]
@@ -101,37 +101,42 @@ class TestCorrectSectionTerm(unittest.TestCase):
             except (KeyError, IndexError):
                 n_invalid_course += 1
                 continue
+
             if course['years'] == 'Even Years':
                 if section['year'] % 2 != 0:
-                    n_incorrect_year += 1
+                    n_incorrect_term += 1
                     continue
+
             elif course['years'] == 'Odd Years':
                 if section['year'] % 2 == 0:
-                    n_incorrect_year += 1
+                    n_incorrect_term += 1
                     continue
 
-            if course['term'] == 'First Semester' and section['semester'] != 'Fall':
-                n_incorrect_term += 1
-                continue
-            elif course['term'] == 'Second Semester' and section['semester'] != 'Spring':
-                n_incorrect_term += 1
-                continue
-            elif course['term'] == 'First Semester, Second Semester' and (section['semester'] != 'Fall' or section['semester'] != 'Spring'):
-                n_incorrect_term += 1
-                continue
+            if course['term'] == 'First Semester':
+                if section['semester'] != 'Fall':
+                    n_incorrect_term += 1
 
-        return n_incorrect_year, n_incorrect_term, n_invalid_course
+            elif course['term'] == 'Second Semester':
+                if section['semester'] != 'Spring':
+                    n_incorrect_term += 1
+
+            elif course['term'] == 'First Semester, Second Semester':
+                if section['semester'] == 'V1':
+                    n_incorrect_term += 1
+                elif section['semester'] == 'V2':
+                    n_incorrect_term += 1
+
+            elif section['class_id'] == 37:
+                n_dummy_course += 1
+
+        return n_incorrect_term, n_invalid_course, n_dummy_course
 
     def test_correct_section_term(self):
-        n_incorrect_year, n_incorrect_term, n_invalid_course = self.count_incorrect_terms()
+        n_incorrect_term, n_invalid_course, n_dummy_records = self.count_incorrect_terms()
         n_sections = self.sections_df.shape[0]
         sections_df = correct_section_term(self.sections_df, self.courses_df)
         n_removed_sections = n_sections - sections_df.shape[0]
-        print(f'\nThere were {n_incorrect_year} sections with incorrect year')
-        print(f'There were {n_incorrect_term} sections with incorrect term')
-        print(f'There were {n_invalid_course} sections with invalid course')
-        print(f'correct_section_term deleted {n_removed_sections} sections')
-        self.assertEqual(n_incorrect_year + n_incorrect_term + n_invalid_course, n_removed_sections)
+        self.assertEqual(n_incorrect_term + n_invalid_course + n_dummy_records, n_removed_sections)
 
 
 
