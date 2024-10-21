@@ -133,7 +133,7 @@ def cap_sections(sections_df, rooms_df):
     """
     Sections cannot be in overcapacity, classrooms have limits.
     :param sections_df: dataframe of the sections
-    :param rooms_df: dataframe of the rooms 
+    :param rooms_df: dataframe of the rooms
     :return: a new dataframe where the section capacity does not exceed the
     classroom capacity
     """
@@ -241,20 +241,12 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     :param rooms_df: dataframe of the rooms
     :return: a new dataframe where the sections are valid
     """
-    # Anthony codes here
-    # transform classid from a str list to an int list
-    class_id_list = [int(i) for i in courses_df['cid'].values.tolist()]
-
-    for x in sections_df.index:
-        # Check if room, class and meeting exist. If not, delete the record.
-        if (sections_df.loc[x, 'room_id'] not in rooms_df['id'].values.tolist()
-                or sections_df.loc[x, 'class_id'] not in class_id_list
-                or sections_df.loc[x, 'meeting_id'] not
-                in meetings_df['mid'].values.tolist()):
-            sections_df.drop(x, inplace=True)
-
+    for index, section in sections_df.iterrows():
+        if (section['room_id'] not in rooms_df['id'].values.tolist()
+                or section['class_id'] not in courses_df['classid'].values.tolist()
+                or section['meeting_id'] not in meetings_df['mid'].values.tolist()):
+            sections_df.drop(index, inplace=True)
     return sections_df
-
 
 def add_dummy_record(courses_df):
     """
