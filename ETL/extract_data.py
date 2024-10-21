@@ -110,8 +110,8 @@ def get_syllabus(courses_df):
         print(f"Directory '{directory_name} already exists.")
 
     for _, row in courses_df.iterrows():
-        department = row["name"]
-        code = row["code"]
+        department = row["cname"]
+        code = row["ccode"]
         description = row["description"].replace(" ", "-").replace("/", "-")
         syllabus_url = row["syllabus"]
 
@@ -136,3 +136,8 @@ def get_syllabus(courses_df):
             print(f"Saved: {file_path}")
         except requests.exceptions.RequestException as e:
             print(f"Failed to download {file_name}: {e}")
+
+
+if __name__ == "__main__":
+    courses = get_courses("Data")
+    get_syllabus(courses)
