@@ -166,12 +166,8 @@ def correct_section_term(sections_df, courses_df):
     """
     # Glerys codes here
 
-    # Convert class_id and classid to string, and strip leading zeros from classid
-    sections_df['class_id'] = sections_df['class_id'].astype(str)
-    courses_df['cid'] = courses_df['cid'].astype(str).str.lstrip('0')
-
     # Merge tables
-    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='cid')
+    merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='classid')
 
     def is_valid_year(row):
         section_year = row['year']

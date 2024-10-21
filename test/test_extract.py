@@ -15,7 +15,7 @@ class TestCourses(unittest.TestCase):
         """
         The classes data starts with id 2.
         """
-        self.assertEqual(2, self.courses_df['cid'].iloc[0])
+        self.assertEqual(2, self.courses_df['classid'].iloc[0])
 
 
 class TestSections(unittest.TestCase):

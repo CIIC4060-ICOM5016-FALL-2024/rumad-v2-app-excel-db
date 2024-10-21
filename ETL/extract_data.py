@@ -23,10 +23,10 @@ def get_courses(file_path):
             record_data['ccode'] = classes.find('code').text
             record_data['cname'] = classes.find('name').text
 
-        record_data['cid'] = int(course.find('classid').text)
+        record_data['classid'] = int(course.find('classid').text)
         record_data['cred'] = int(course.find('cred').text)
-        record_data['cdesc'] = course.find('description').text
-        record_data['csyllabus'] = course.find('syllabus').text
+        record_data['description'] = course.find('description').text
+        record_data['syllabus'] = course.find('syllabus').text
         record_data['term'] = course.find('term').text
         record_data['years'] = course.find('years').text
 

@@ -96,7 +96,7 @@ class TestCorrectSectionTerm(unittest.TestCase):
         n_dummy_course = 0
         for index, section in self.sections_df.iterrows():
             try:
-                course_index = self.courses_df[self.courses_df['cid'] == section['class_id']].index[0]
+                course_index = self.courses_df[self.courses_df['classid'] == section['class_id']].index[0]
                 course = self.courses_df.loc[course_index]
             except (KeyError, IndexError):
                 n_invalid_course += 1
@@ -148,7 +148,7 @@ class TestDeleteInvalidSections(unittest.TestCase):
         n_invalid_section = 0
         for index, section in self.sections_df.iterrows():
             try:
-                course_index = self.courses_df[self.courses_df['cid'] == section['class_id']].index[0]
+                course_index = self.courses_df[self.courses_df['classid'] == section['class_id']].index[0]
                 course = self.courses_df.loc[course_index]
 
                 meeting_index = self.meetings_df[self.meetings_df['mid'] == section['meeting_id']].index[0]

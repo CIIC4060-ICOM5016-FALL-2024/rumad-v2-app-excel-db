@@ -3,10 +3,13 @@ import pandas as pd
 from ETL.extract_data import get_sections, get_meetings, get_rooms, get_courses, get_requisites
 from ETL.transform_data import transform_data
 
+
 def load_classes(courses, engine):
     courses['cred'] = pd.to_numeric(courses['cred'], errors='coerce')
     courses['cred'] = courses['cred'].fillna(0)
-    courses.rename(columns={'classid': 'cid','name': 'cname', 'code': 'ccode', 'description': 'cdesc', 'syllabus': 'csyllabus'}, inplace=True)
+    courses.rename(
+        columns={'classid': 'cid', 'name': 'cname', 'code': 'ccode', 'description': 'cdesc', 'syllabus': 'csyllabus'},
+        inplace=True)
     courses.to_sql('class', engine, if_exists='replace', index=False, dtype={
         'cid': Integer(),
         'cname': String(),
@@ -17,6 +20,7 @@ def load_classes(courses, engine):
         'cred': Integer(),
         'csyllabus': String()
     })
+
 
 def load_meeting(meetings, engine):
     meetings['start'] = pd.to_datetime(meetings['start'])
@@ -32,8 +36,10 @@ def load_meeting(meetings, engine):
         'cdays': String()
     }, method='multi')
 
+
 def load_requisite(requisites, engine):
     requisites.to_sql('requisite', engine, if_exists='replace', index=False, dtype={})
+
 
 def load_room(rooms, engine):
     rooms.rename(columns={'number': 'room_number'}, inplace=True)
@@ -43,8 +49,10 @@ def load_room(rooms, engine):
         'capacity': Integer(),
     })
 
+
 def load_section(sections, engine):
-    sections.rename(columns={'room_id': 'roomid', 'class_id': 'cid', 'meeting_id': 'mid', 'year':'years'}, inplace=True)
+    sections.rename(columns={'room_id': 'roomid', 'class_id': 'cid', 'meeting_id': 'mid', 'year': 'years'},
+                    inplace=True)
     sections.to_sql('section', engine, if_exists='replace', index=False, dtype={
         'roomid': Integer(),
         'cid': Integer(),
@@ -53,6 +61,7 @@ def load_section(sections, engine):
         'years': String(),
         'capacity': Integer(),
     })
+
 
 def load_data():
     # Extract data
@@ -69,16 +78,17 @@ def load_data():
     s = len(sections.values.tolist())
     # Transform data
     transform_data(sections, meetings, rooms, courses)
-    print("Courses cleanse before", c,"after",len(courses.values.tolist()))
-    print("Meetings cleanse before", m, "after",len(meetings.values.tolist()))
-    print("Room cleanse before", ro, "after",len(rooms.values.tolist()))
-    print("Sections cleanse before", s, "after",len(sections.values.tolist()))
+    print("Courses cleanse before", c, "after", len(courses.values.tolist()))
+    print("Meetings cleanse before", m, "after", len(meetings.values.tolist()))
+    print("Room cleanse before", ro, "after", len(rooms.values.tolist()))
+    print("Sections cleanse before", s, "after", len(sections.values.tolist()))
     # Load data
     engine = create_engine('postgresql+psycopg2://excel:password@localhost:1234/excel_db')
     load_classes(courses, engine)
-    load_meeting(meetings, engine) # DONE
-    load_requisite(requisites, engine) # DONE
-    load_room(rooms, engine) # DONE
-    load_section(sections, engine) # DONE
+    load_meeting(meetings, engine)  # DONE
+    load_requisite(requisites, engine)  # DONE
+    load_room(rooms, engine)  # DONE
+    load_section(sections, engine)  # DONE
+
 
 load_data()
