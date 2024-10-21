@@ -1,10 +1,10 @@
 import unittest
-import pandas as pd
+import os
 from ETL.extract_data import *
 from ETL.transform_data import remove_conflicting_sections, remove_conflicting_classrooms, cap_sections, \
     correct_section_term, delete_invalid_sections
 
-file_path = '../ETL/Data'
+file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../ETL/Data'))
 
 class TestRemoveConflictingClassrooms(unittest.TestCase):
     sections = {'sid': [0, 1, 2, 3, 4, 5, 6, 7],

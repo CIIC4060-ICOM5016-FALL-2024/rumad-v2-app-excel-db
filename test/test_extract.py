@@ -1,8 +1,8 @@
 import unittest
-
+import os
 from ETL.extract_data import *
 
-file_path = '../ETL/Data'
+file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../ETL/Data'))
 
 
 class TestCourses(unittest.TestCase):
