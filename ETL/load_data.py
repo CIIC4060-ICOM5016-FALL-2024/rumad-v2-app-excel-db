@@ -77,7 +77,7 @@ def load_data():
     ro = len(rooms.values.tolist())
     s = len(sections.values.tolist())
     # Transform data
-    sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
+    transform_data(sections, meetings, rooms, courses)
     print("Courses cleanse before", c, "after", len(courses.values.tolist()))
     print("Meetings cleanse before", m, "after", len(meetings.values.tolist()))
     print("Room cleanse before", ro, "after", len(rooms.values.tolist()))
