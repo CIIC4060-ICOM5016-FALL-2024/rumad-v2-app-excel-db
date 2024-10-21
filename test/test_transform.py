@@ -2,7 +2,7 @@ import unittest
 import pandas as pd
 from ETL.extract_data import *
 from ETL.transform_data import remove_conflicting_sections, remove_conflicting_classrooms, cap_sections, \
-    correct_section_term
+    correct_section_term, delete_invalid_sections
 
 file_path = '../ETL/Data'
 
@@ -137,6 +137,40 @@ class TestCorrectSectionTerm(unittest.TestCase):
         sections_df = correct_section_term(self.sections_df, self.courses_df)
         n_removed_sections = n_sections - sections_df.shape[0]
         self.assertEqual(n_incorrect_term + n_invalid_course + n_dummy_records, n_removed_sections)
+
+class TestDeleteInvalidSections(unittest.TestCase):
+    sections_df = get_sections(file_path)
+    courses_df = get_courses(file_path)
+    meetings_df = get_meetings(file_path)
+    rooms_df = get_rooms(file_path)
+
+    def count_invalid_sections(self):
+        n_invalid_section = 0
+        for index, section in self.sections_df.iterrows():
+            try:
+                course_index = self.courses_df[self.courses_df['cid'] == section['class_id']].index[0]
+                course = self.courses_df.loc[course_index]
+
+                meeting_index = self.meetings_df[self.meetings_df['mid'] == section['meeting_id']].index[0]
+                meeting = self.meetings_df.loc[meeting_index]
+
+                room_index = self.rooms_df[self.rooms_df['id'] == section['room_id']].index[0]
+                room = self.rooms_df.loc[room_index]
+
+            except (KeyError, IndexError):
+                n_invalid_section += 1
+                continue
+
+        return n_invalid_section
+
+    def test_delete_invalid_sections(self):
+        n_sections = self.sections_df.shape[0]
+        n_invalid_section = self.count_invalid_sections()
+        sections_df = delete_invalid_sections(self.courses_df, self.sections_df, self.meetings_df, self.rooms_df)
+        n_sections_removed = n_sections - sections_df.shape[0]
+        self.assertEqual(n_invalid_section, n_sections_removed)
+
+
 
 
 
