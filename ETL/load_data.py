@@ -6,6 +6,11 @@ import os
 import requests
 
 def create_db(engine):
+    """
+    Creates tables for classes, meetings, requisites, rooms, sections, and syllabi,
+    setting up relationships and handling ownership and execution errors.
+    :param engine:
+    """
     sql_commands = """
         CREATE TABLE IF NOT EXISTS class (
             cid       SERIAL PRIMARY KEY,
@@ -70,6 +75,13 @@ def create_db(engine):
         print(f"Error creating tables: {e}")  # Print the actual error message
 
 def load_classes(courses, engine):
+    """
+    Loads course data into the 'class' table, ensuring no duplicate entries by filtering existing cids.
+
+    :param courses:
+    :param engine:
+    """
+
     courses['cred'] = pd.to_numeric(courses['cred'], errors='coerce').fillna(0)
     courses.rename(
         columns={'classid': 'cid', 'name': 'cname', 'code': 'ccode', 'description': 'cdesc', 'syllabus': 'csyllabus'},
@@ -93,6 +105,14 @@ def load_classes(courses, engine):
         })
 
 def load_meeting(meetings, engine):
+    """
+    Loads meeting data into the 'meeting' table, converting date columns,
+    renaming fields, and filtering out duplicate mids.
+    
+    :param meetings:
+    :param engine:
+    """
+
     meetings['start'] = pd.to_datetime(meetings['start'])
     meetings['end'] = pd.to_datetime(meetings['end'])
     meetings.rename(columns={'start': 'starttime', 'end': 'endtime', 'day': 'cdays'}, inplace=True)
@@ -111,6 +131,12 @@ def load_meeting(meetings, engine):
         }, method='multi')
 
 def load_requisite(requisites, engine):
+    """
+        Loads meeting data into the 'meeting' table, converting date columns and avoiding duplicate entries based on existing mids.
+    :param requisites:
+    :param engine:
+    """
+
     requisites['preReq'] = requisites['preReq'].map({1: True, 0: False})
     requisites.rename(
         columns={'cid': 'classid', 'requisiteid': 'reqid', 'preReq': 'prereq'},
@@ -125,6 +151,12 @@ def load_requisite(requisites, engine):
         new_requisites.to_sql('requisite', engine, if_exists='append', index=False)
 
 def load_room(rooms, engine):
+    """
+    Loads room data into the 'room' table, renaming columns and filtering out duplicate rids.
+    :param rooms:
+    :param engine:
+    """
+
     rooms.rename(columns={'number': 'room_number', 'id': 'rid'}, inplace=True)
     existing_rids = pd.read_sql_query("SELECT rid FROM room", engine)['rid'].tolist()
 
@@ -138,6 +170,12 @@ def load_room(rooms, engine):
         })
 
 def load_section(sections, engine):
+    """
+    Loads section data into the 'section' table, renaming columns and filtering out duplicate sids.
+    :param sections:
+    :param engine:
+    """
+
     sections.rename(columns={'room_id': 'roomid', 'class_id': 'cid', 'meeting_id': 'mid', 'year': 'years'},
                     inplace=True)
     existing_sids = pd.read_sql_query("SELECT sid FROM section", engine)['sid'].tolist()
@@ -156,9 +194,9 @@ def load_section(sections, engine):
 
 def upload_syllabus(courses):
     """
-    It is necessary to download all the course syllabi and store them in the GitHub
-    repository {Department-Code-Class-Name.pdf}
-    :param courses_df:
+    Uploads all the course syllabi and store them in the GitHub
+    repository syllabuses format: {Department-Code-Class-Name.pdf}
+    :param courses:
     """
 
     directory_name = os.path.abspath("../syllabuses")
@@ -199,6 +237,11 @@ def upload_syllabus(courses):
 
 
 def load_data():
+    """
+    Extracts, transforms, and loads data into the database by fetching course-related data,
+    transforming it, and inserting it into the appropriate tables using a PostgreSQL engine.
+    """
+
     # Extract data
     courses = get_courses('Data')
     meetings = get_meetings('Data')
