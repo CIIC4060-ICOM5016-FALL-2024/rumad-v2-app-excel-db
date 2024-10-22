@@ -9,6 +9,7 @@ def create_db(engine):
     """
     Creates tables for classes, meetings, requisites, rooms, sections, and syllabi,
     setting up relationships and handling ownership and execution errors.
+
     :param engine:
     """
     sql_commands = """
@@ -108,7 +109,7 @@ def load_meeting(meetings, engine):
     """
     Loads meeting data into the 'meeting' table, converting date columns,
     renaming fields, and filtering out duplicate mids.
-    
+
     :param meetings:
     :param engine:
     """
@@ -132,7 +133,8 @@ def load_meeting(meetings, engine):
 
 def load_requisite(requisites, engine):
     """
-        Loads meeting data into the 'meeting' table, converting date columns and avoiding duplicate entries based on existing mids.
+    Loads meeting data into the 'meeting' table, converting date columns and avoiding duplicate entries based on existing mids.
+
     :param requisites:
     :param engine:
     """
@@ -153,6 +155,7 @@ def load_requisite(requisites, engine):
 def load_room(rooms, engine):
     """
     Loads room data into the 'room' table, renaming columns and filtering out duplicate rids.
+
     :param rooms:
     :param engine:
     """
@@ -172,6 +175,7 @@ def load_room(rooms, engine):
 def load_section(sections, engine):
     """
     Loads section data into the 'section' table, renaming columns and filtering out duplicate sids.
+
     :param sections:
     :param engine:
     """
@@ -195,7 +199,9 @@ def load_section(sections, engine):
 def upload_syllabus(courses):
     """
     Uploads all the course syllabi and store them in the GitHub
-    repository syllabuses format: {Department-Code-Class-Name.pdf}
+    repository syllabuses 
+    format: {Department-Code-Class-Name.pdf}
+
     :param courses:
     """
 
