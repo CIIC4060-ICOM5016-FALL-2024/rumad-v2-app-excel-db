@@ -2,6 +2,19 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 
+def drop_id(data):
+    #remove empty cells
+    data.dropna()
+    #remove classes that have an id less than 2
+    for x in data.index:
+        if int(data.loc[x, 'classid']) < 2:
+            if data.loc[x, 'name'] == "Authorization from the Director of the Department":
+                continue
+            else:
+                data.drop(x,inplace=True)
+
+    return data
+
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -66,6 +79,7 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
     """
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
+    day_start = datetime.strptime("7:30:00", "%H:%M:%S")
     day_end = datetime.strptime("19:45:00", "%H:%M:%S")
 
     overlapping = False
@@ -99,6 +113,11 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
 
         if meeting['start'] > day_end or meeting['end'] > day_end:
             # Can't add time for these sections.
+            sections_df.drop(index, inplace=True)
+            continue
+
+        # to be extra safe, check if a section starts before 7:30AM
+        if meeting['start'] < day_start or meeting['end'] < day_start:
             sections_df.drop(index, inplace=True)
             continue
 
@@ -259,13 +278,6 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
             sections_df.drop(index, inplace=True)
     return sections_df
 
-def add_dummy_record(courses_df):
-    """
-    There is a dummy record for the courses that require the department’s director
-    approval { Authorization from the Director of the Department, None, None, None,
-    0, 0000, None}
-    :param courses_df:
-    """
 
 
 def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
@@ -278,6 +290,9 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     :param courses_df: courses dataframe
     :return: new sections, meetings, rooms and courses dataframes where the data is transformed to rumad-v2 requirements
     """
+    # 1. class id starts with id 2
+    courses_df = drop_id(courses_df)
+
     # 2. Two sections cannot be taught at the same hour in the same classroom.
     sections_df = remove_conflicting_classrooms(sections_df)
 

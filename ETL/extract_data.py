@@ -3,8 +3,6 @@ import pandas as pd
 import sqlite3
 import json
 from datetime import datetime
-import os
-import requests
 
 
 def get_courses(file_path):
@@ -92,52 +90,3 @@ def get_requisites(file_path):
     requisites = pd.read_sql_query("SELECT * FROM requisites", conn)
     conn.close()
     return requisites
-
-
-def get_syllabus(courses_df):
-    """
-    It is necessary to download all the course syllabi and store them in the GitHub
-    repository {Department-Code-Class-Name.pdf}
-    :param courses_df:
-    """
-
-    directory_name = os.path.abspath("../syllabuses")
-    # Check if the folder exist if not create it
-    if not os.path.exists(directory_name):
-        os.makedirs(directory_name)
-        print(f"Directory '{directory_name} was created.")
-    else:
-        print(f"Directory '{directory_name} already exists.")
-
-    for _, row in courses_df.iterrows():
-        department = row["cname"]
-        code = row["ccode"]
-        description = row["description"].replace(" ", "-").replace("/", "-")
-        syllabus_url = row["syllabus"]
-
-        file_name = f"{department}-{code}-{description}.pdf"
-        file_path = os.path.join(directory_name, file_name)
-
-        # Skip if the syllabus URL is missing or not available
-        if pd.isna(syllabus_url) or syllabus_url.lower() == "none":
-            print(f"Skipping {file_name}: No syllabus URL available.")
-            continue
-
-        try:
-            # Download the syllabus PDF
-            print(f"Downloading {file_name}...")
-            response = requests.get(syllabus_url)
-            response.raise_for_status()  # Check if request was successful
-
-            # Save the PDF to the specified path
-            with open(file_path, "wb") as f:
-                f.write(response.content)
-
-            print(f"Saved: {file_path}")
-        except requests.exceptions.RequestException as e:
-            print(f"Failed to download {file_name}: {e}")
-
-
-if __name__ == "__main__":
-    courses = get_courses("Data")
-    get_syllabus(courses)
