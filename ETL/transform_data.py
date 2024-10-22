@@ -7,7 +7,7 @@ def drop_id(data):
     data.dropna()
     #remove classes that have an id less than 2
     for x in data.index:
-        if int(data.loc[x, 'code']) < 2:
+        if int(data.loc[x, 'classid']) < 2:
             if data.loc[x, 'name'] == "Authorization from the Director of the Department":
                 continue
             else:
