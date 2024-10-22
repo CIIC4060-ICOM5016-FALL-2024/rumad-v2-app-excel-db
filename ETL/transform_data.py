@@ -2,18 +2,26 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 
-def drop_id(data):
+def drop_id(courses_df):
+    """
+    The classes data starts with id 2.
+
+    :param sections_df: dataframe of the courses
+    :return: a new dataframe where there is no class_id less than 2  
+    """
+
     #remove empty cells
-    data.dropna()
+    courses_df.dropna()
     #remove classes that have an id less than 2
-    for x in data.index:
-        if int(data.loc[x, 'classid']) < 2:
-            if data.loc[x, 'name'] == "Authorization from the Director of the Department":
+    for x in courses_df.index:
+        if int(courses_df.loc[x, 'classid']) < 2:
+            if courses_df.loc[x, 'name'] == "Authorization from the Director of the Department":
                 continue
             else:
-                data.drop(x,inplace=True)
+                courses_df.drop(x,inplace=True)
 
-    return data
+    return courses_df
+
 
 def remove_conflicting_classrooms(sections_df):
     """
@@ -24,7 +32,7 @@ def remove_conflicting_classrooms(sections_df):
     :return: a new dataframe where a section does not have conflicting classrooms in the
     same academic term (Fall, Spring, V1, V2)
     """
-    # Anthony codes here
+
     sections_df = sections_df.sort_values(by=['sid'])
     classrooms_checker = []
 
@@ -45,9 +53,11 @@ def remove_conflicting_sections(sections_df):
     A class cannot have the same section, they must be taught at different hours.
     In case of conflicting hours, the sections with the biggest sid will be removed from
     the set.
+
     :param sections_df: dataframe of the sections
     :return: a new dataframe with no section conflict per class
     """
+
     sections_df = sections_df.sort_values(by=['sid'])
 
     class_meeting_ids = {}
@@ -70,13 +80,15 @@ def remove_conflicting_sections(sections_df):
 
 def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
-    Meetings ‘MJ’ are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m. Any section in between
+    Meetings 'MJ' are from 7:30 a.m.-10:15 a.m. and 12:30 p.m.-7:45 p.m. Any section in between
     shall be removed. Any section after the hour must be removed. If any section overlaps, you will
     add the necessary time to not overlap.
+
     :param sections_df: dataframe of the sections
     :param meetings_df: dataframe of the meetings
     :return: two new dataframes where sections and meetings respect the universal time
     """
+
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
     day_start = datetime.strptime("7:30:00", "%H:%M:%S")
@@ -129,14 +141,15 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
     return sections_df, meetings_df
 
 
-# We can also put this in a test suite
 def correct_lwv(meetings_df):
     """
     Check the correct hours for all LWV sections.
     + If the section starts before 7:30am, the section shall be removed.
     + If section end is after 7:45pm, the section shall be removed.
-    :param meetings_df:
+
+    :param meetings_df: the dataframe of the meetings
     """
+    
     for index, meeting in meetings_df.iterrows():
         day_start = datetime.strptime("07:30:00", "%H:%M:%S")
         day_end = datetime.strptime("19:45:00", "%H:%M:%S")
@@ -147,12 +160,15 @@ def correct_lwv(meetings_df):
             print("Wrong day end:", meeting['end'])
             meetings_df.drop(index, inplace=True)
 
+
 def correct_meeting_duration(meetings_df):
     """
     Check if LWV classes are of 50 minutes, if false remove it from the dataframe.
     Check if MJ classes are of 75 minutes, if false remove it from the dataframe.
+
     :param meetings_df: the dataframe of the meetings
     """
+
     for index, meeting in meetings_df.iterrows():
         time_start = meeting['start']
         time_end = meeting['end']
@@ -166,6 +182,7 @@ def correct_meeting_duration(meetings_df):
 def cap_sections(sections_df, rooms_df):
     """
     Sections cannot be in overcapacity, classrooms have limits.
+
     :param sections_df: dataframe of the sections
     :param rooms_df: dataframe of the rooms
     :return: a new dataframe where the section capacity does not exceed the
@@ -198,7 +215,6 @@ def correct_section_term(sections_df, courses_df):
     :param courses_df: dataframe of the courses
     :return: a new dataframe where the section term is correct, according to course dataframe
     """
-    # Glerys codes here
 
     # Merge tables
     merged_df = pd.merge(sections_df, courses_df, left_on='class_id', right_on='classid')
@@ -265,12 +281,14 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     """
     Sections must be taught in a valid classroom and meeting, and the class must exist. If any of
     these values are missing or invalid, you must delete said record.
+
     :param courses_df: dataframe of the courses
     :param sections_df: dataframe of the sections
     :param meetings_df: dataframe of the meetings
     :param rooms_df: dataframe of the rooms
     :return: a new dataframe where the sections are valid
     """
+
     for index, section in sections_df.iterrows():
         if (section['room_id'] not in rooms_df['id'].values.tolist()
                 or section['class_id'] not in courses_df['classid'].values.tolist()
@@ -279,17 +297,18 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
     return sections_df
 
 
-
 def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
     """
-     Transform all the data to abide by rumad-v2 requirements.
+    Transform all the data to abide by rumad-v2 requirements.
+
     :param sections_df: sections dataframe
     :param meetings_df: meetings dataframe
     :param rooms_df: rooms dataframe
     :param courses_df: courses dataframe
     :return: new sections, meetings, rooms and courses dataframes where the data is transformed to rumad-v2 requirements
     """
+
     # 1. class id starts with id 2
     courses_df = drop_id(courses_df)
 
