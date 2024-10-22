@@ -77,6 +77,7 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
     """
     universal_time_start = datetime.strptime("10:15:00", "%H:%M:%S")
     universal_time_end = datetime.strptime("12:30:00", "%H:%M:%S")
+    day_start = datetime.strptime("7:30:00", "%H:%M:%S")
     day_end = datetime.strptime("19:45:00", "%H:%M:%S")
 
     overlapping = False
@@ -110,6 +111,11 @@ def apply_universal_time(sections_df, meetings_df) -> tuple[pd.DataFrame, pd.Dat
 
         if meeting['start'] > day_end or meeting['end'] > day_end:
             # Can't add time for these sections.
+            sections_df.drop(index, inplace=True)
+            continue
+
+        # to be extra safe, check if a section starts before 7:30AM
+        if meeting['start'] < day_start or meeting['end'] < day_start:
             sections_df.drop(index, inplace=True)
             continue
 
