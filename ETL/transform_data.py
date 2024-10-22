@@ -2,6 +2,17 @@ from datetime import datetime, timedelta
 import pandas as pd
 
 
+def drop_id(data):
+    #remove empty cells
+    data.dropna()
+    #remove classes that have an id less than 2
+    for x in data.index:
+        if int(data.loc[x, 'code']) < 2:
+            if data.loc[x, 'name'] == "Authorization from the Director of the Department":
+                continue
+            else:
+                data.drop(x,inplace=True)
+
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -259,13 +270,6 @@ def delete_invalid_sections(courses_df, sections_df, meetings_df, rooms_df):
             sections_df.drop(index, inplace=True)
     return sections_df
 
-def add_dummy_record(courses_df):
-    """
-    There is a dummy record for the courses that require the department’s director
-    approval { Authorization from the Director of the Department, None, None, None,
-    0, 0000, None}
-    :param courses_df:
-    """
 
 
 def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
