@@ -3,10 +3,9 @@ import pandas as pd
 from ETL.extract_data import get_sections, get_meetings, get_rooms, get_courses, get_requisites
 from ETL.transform_data import transform_data
 
-
 def create_db(engine):
     sql_commands = """
-        CREATE TABLE class (
+        CREATE TABLE IF NOT EXISTS class (
             cid       SERIAL PRIMARY KEY,
             cname     VARCHAR,
             ccode     VARCHAR,
@@ -17,9 +16,7 @@ def create_db(engine):
             csyllabus VARCHAR
         );
 
-        ALTER TABLE class OWNER TO excel;
-
-        CREATE TABLE meeting (
+        CREATE TABLE IF NOT EXISTS meeting (
             mid       SERIAL PRIMARY KEY,
             ccode     VARCHAR,
             starttime TIMESTAMP,
@@ -27,27 +24,21 @@ def create_db(engine):
             cdays     VARCHAR
         );
 
-        ALTER TABLE meeting OWNER TO excel;
-
-        CREATE TABLE requisite (
+        CREATE TABLE IF NOT EXISTS requisite (
             classid INTEGER NOT NULL REFERENCES class(cid),
             reqid   INTEGER NOT NULL REFERENCES class(cid),
             prereq  BOOLEAN,
             PRIMARY KEY (classid, reqid)
         );
 
-        ALTER TABLE requisite OWNER TO excel;
-
-        CREATE TABLE room (
+        CREATE TABLE IF NOT EXISTS room (
             rid         SERIAL PRIMARY KEY,
             building    VARCHAR,
             room_number VARCHAR,
             capacity    INTEGER
         );
 
-        ALTER TABLE room OWNER TO excel;
-
-        CREATE TABLE section (
+        CREATE TABLE IF NOT EXISTS section (
             sid      SERIAL PRIMARY KEY,
             roomid   INTEGER REFERENCES room(rid),
             cid      INTEGER REFERENCES class(cid),
@@ -57,16 +48,12 @@ def create_db(engine):
             capacity INTEGER
         );
 
-        ALTER TABLE section OWNER TO excel;
-
-        CREATE TABLE syllabus (
+        CREATE TABLE IF NOT EXISTS syllabus (
             chunkid        SERIAL PRIMARY KEY,
             courseid       INTEGER REFERENCES class(cid),
             embedding_text INT2VECTOR,
             chunk          VARCHAR
         );
-
-        ALTER TABLE syllabus OWNER TO excel;
     """
 
     # Connect to the database and execute SQL
@@ -76,28 +63,30 @@ def create_db(engine):
                 connection.execute(text(sql_commands))  # Use text() for raw SQL commands
             print("Tables created successfully.")
     except Exception as e:
-        print(f"Error: {e}")  # Print the actual error message
+        print(f"Error creating tables: {e}")  # Print the actual error message
+
 def load_classes(courses, engine):
-    courses['cred'] = pd.to_numeric(courses['cred'], errors='coerce')
-    courses['cred'] = courses['cred'].fillna(0)
+    courses['cred'] = pd.to_numeric(courses['cred'], errors='coerce').fillna(0)
     courses.rename(
         columns={'classid': 'cid', 'name': 'cname', 'code': 'ccode', 'description': 'cdesc', 'syllabus': 'csyllabus'},
         inplace=True)
+
     # Fetch existing cids from the database
     existing_cids = pd.read_sql_query('SELECT cid FROM class', engine)['cid'].tolist()
 
     # Filter out rows from courses that have duplicate cid
     courses_to_insert = courses[~courses['cid'].isin(existing_cids)]
-    courses_to_insert.to_sql('class', engine, if_exists='append', index=False, dtype={
-        'cid': Integer(),
-        'cname': String(),
-        'ccode': String(),
-        'cdesc': String(),
-        'term': String(),
-        'years': String(),
-        'cred': Integer(),
-        'csyllabus': String()
-    })
+    if not courses_to_insert.empty:
+        courses_to_insert.to_sql('class', engine, if_exists='append', index=False, dtype={
+            'cid': Integer(),
+            'cname': String(),
+            'ccode': String(),
+            'cdesc': String(),
+            'term': String(),
+            'years': String(),
+            'cred': Integer(),
+            'csyllabus': String()
+        })
 
 def load_meeting(meetings, engine):
     meetings['start'] = pd.to_datetime(meetings['start'])
@@ -108,15 +97,14 @@ def load_meeting(meetings, engine):
 
     # Filter out rows from courses that have duplicate cid
     meetings_to_insert = meetings[~meetings['mid'].isin(existing_mids)]
-
-    # Define your SQL table structure with 'mid' as an Integer
-    meetings_to_insert.to_sql('meeting', engine, if_exists='append', index=False, dtype={
-        'mid': Integer(),  # Define mid as Integer
-        'ccode': String(),
-        'starttime': DateTime(),
-        'endtime': DateTime(),
-        'cdays': String()
-    }, method='multi')
+    if not meetings_to_insert.empty:
+        meetings_to_insert.to_sql('meeting', engine, if_exists='append', index=False, dtype={
+            'mid': Integer(),
+            'ccode': String(),
+            'starttime': DateTime(),
+            'endtime': DateTime(),
+            'cdays': String()
+        }, method='multi')
 
 def load_requisite(requisites, engine):
     requisites['preReq'] = requisites['preReq'].map({1: True, 0: False})
@@ -129,7 +117,8 @@ def load_requisite(requisites, engine):
     new_requisites = requisites.merge(existing_requisites, on=['classid', 'reqid'], how='left', indicator=True)
     new_requisites = new_requisites[new_requisites['_merge'] == 'left_only'].drop(columns=['_merge'])
 
-    new_requisites.to_sql('requisite', engine, if_exists='append', index=False, dtype={})
+    if not new_requisites.empty:
+        new_requisites.to_sql('requisite', engine, if_exists='append', index=False)
 
 def load_room(rooms, engine):
     rooms.rename(columns={'number': 'room_number', 'id': 'rid'}, inplace=True)
@@ -137,12 +126,12 @@ def load_room(rooms, engine):
 
     # Filter out rows from the DataFrame that have duplicate rid
     new_room = rooms[~rooms['rid'].isin(existing_rids)]
-
-    new_room.to_sql('room', engine, if_exists='append', index=False, dtype={
-        'building': String(),
-        'room_number': String(),
-        'capacity': Integer(),
-    })
+    if not new_room.empty:
+        new_room.to_sql('room', engine, if_exists='append', index=False, dtype={
+            'building': String(),
+            'room_number': String(),
+            'capacity': Integer(),
+        })
 
 def load_section(sections, engine):
     sections.rename(columns={'room_id': 'roomid', 'class_id': 'cid', 'meeting_id': 'mid', 'year': 'years'},
@@ -151,15 +140,15 @@ def load_section(sections, engine):
 
     # Filter out rows from the DataFrame that have duplicate rid
     new_sections = sections[~sections['sid'].isin(existing_sids)]
-
-    new_sections.to_sql('section', engine, if_exists='append', index=False, dtype={
-        'roomid': Integer(),
-        'cid': Integer(),
-        'mid': Integer(),
-        'semester': String(),
-        'years': String(),
-        'capacity': Integer(),
-    })
+    if not new_sections.empty:
+        new_sections.to_sql('section', engine, if_exists='append', index=False, dtype={
+            'roomid': Integer(),
+            'cid': Integer(),
+            'mid': Integer(),
+            'semester': String(),
+            'years': String(),
+            'capacity': Integer(),
+        })
 
 def load_data():
     # Extract data
@@ -173,7 +162,7 @@ def load_data():
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
 
     # Load data
-    engine = create_engine('postgresql+psycopg2://excel:password@localhost:1234/excel_db')
+    engine = create_engine('postgresql+psycopg2://ufm5iffjti843g:p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933@cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/dc79t7ga9hc6ud')
     create_db(engine)
     load_classes(courses, engine)
     load_meeting(meetings, engine)
