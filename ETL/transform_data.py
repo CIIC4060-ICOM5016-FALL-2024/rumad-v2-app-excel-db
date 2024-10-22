@@ -13,6 +13,8 @@ def drop_id(data):
             else:
                 data.drop(x,inplace=True)
 
+    return data
+
 def remove_conflicting_classrooms(sections_df):
     """
     Two sections cannot be taught at the same hour in the same classroom.
@@ -282,6 +284,9 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     :param courses_df: courses dataframe
     :return: new sections, meetings, rooms and courses dataframes where the data is transformed to rumad-v2 requirements
     """
+    # 1. class id starts with id 2
+    courses_df = drop_id(courses_df)
+
     # 2. Two sections cannot be taught at the same hour in the same classroom.
     sections_df = remove_conflicting_classrooms(sections_df)
 
