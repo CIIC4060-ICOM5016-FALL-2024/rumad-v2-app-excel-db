@@ -11,7 +11,7 @@ higher), and you must implement the code in Python. The backend site will provid
 features specified in this document. In addition, your solution will offer a Web-based dashboard and an 
 AI agent using the tool provided in a later phase indicating relevant statistics.  
 
-## **Database credentials:**
+## **Database Credentials:**
 
 #### Host
     cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com
