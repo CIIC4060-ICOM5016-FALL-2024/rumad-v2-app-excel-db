@@ -203,7 +203,7 @@ def load_section(sections, cursor):
 def upload_syllabus(courses):
     """
     Uploads all the course syllabi and store them in the GitHub
-    repository syllabuses 
+    repository syllabuses
     format: {Department-Code-Class-Name.pdf}
 
     :param courses:
@@ -261,7 +261,6 @@ def load_data():
 
     # Transform data
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
-
     # Test Load data
     # engine = psycopg2.connect(
     #     dbname="excel_db",
@@ -272,6 +271,7 @@ def load_data():
     # )
 
     # Heroku Load data
+    # Load data
     engine = psycopg2.connect(
         dbname="dc79t7ga9hc6ud",
         user="ufm5iffjti843g",
