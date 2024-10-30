@@ -13,6 +13,23 @@ class DAO:
         self.connection = psycopg2.connect(url)
 
     # TODO Class CRUD
+    def topLeastClasses(self):
+        cursor = self.connection.cursor()
+        query = "select distinct section.cid,count(*) as section_count, class.cdesc from section inner join class on section.cid = class.cid group by section.cid , class.cdesc order by section_count limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+
+    def totalSections(self):
+        cursor = self.connection.cursor()
+        query = 'select years as year,count(*) as total_sections from section group by years order by total_sections;'
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
 
     # TODO Requisite CRUD
 

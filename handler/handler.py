@@ -1,3 +1,8 @@
+from sqlalchemy import result_tuple
+
+from dao.dao import DAO
+from flask import jsonify
+
 class Handler:
     # Local Statistics ----------------------------------------------+
     def TopRoomCapacity(self):
@@ -26,17 +31,43 @@ class Handler:
         # @Alanis
         return
 
-    def TopPreRequisite(self):
+    def topPreRequisite(self):
         # TODO Top 3 classes that appears the most as prerequisite to other classes.
         # @Anthony
         return
 
-    def TopLeastClasses(self):
+    def topLeastClasses(self):
         # TODO Top 3 classes that were offered the least.
         # @Anthony
-        return
+        dao = DAO()
+        result = []
+        temp = dao.topLeastClasses()
+        if temp:
+            for tuple in temp:
+                tempdict = {}
+                tempdict['cid'] = tuple[0]
+                tempdict['count'] = tuple[1]
+                tempdict['cdesc'] = tuple[2]
+                result.append(tempdict)
+        else:
+            return "Error not executed",404
 
-    def TotalSections(self):
+        return jsonify(result)
+
+    def totalSections(self):
         # TODO Total number of sections per year.
         # @Anthony
-        return
+        dao = DAO()
+        result = []
+        temp = dao.totalSections()
+        if temp:
+            for tuple in temp:
+                tempdict = {}
+                tempdict['year'] = tuple[0]
+                tempdict['total_sections'] = tuple[1]
+                result.append(tempdict)
+
+        else:
+            return "Error not executed",404
+
+        return jsonify(result)
