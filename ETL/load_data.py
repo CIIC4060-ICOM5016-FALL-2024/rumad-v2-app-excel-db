@@ -261,7 +261,16 @@ def load_data():
 
     # Transform data
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
+    # Test Load data
+    # engine = psycopg2.connect(
+    #     dbname="excel_db",
+    #     user="excel",
+    #     password="password",
+    #     host="localhost",
+    #     port="1234"
+    # )
 
+    # Heroku Load data
     # Load data
     engine = psycopg2.connect(
         dbname="dc79t7ga9hc6ud",
