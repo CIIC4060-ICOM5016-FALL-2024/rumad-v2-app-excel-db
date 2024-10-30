@@ -4,13 +4,13 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/excel_db.com")
+@app.route("/excel_db")
 def excel_db():
     return "Welcome to the Excel DB page!"
 
 @app.route("/")
 def home():
-    return redirect("/excel_db.com", code=302)
+    return redirect("/excel_db", code=302)
 
 # Routes --------------------------------------------------------------+
 # TODO POST /<entity>
