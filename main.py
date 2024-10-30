@@ -1,8 +1,16 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
+
+@app.route("/excel_db.com")
+def excel_db():
+    return "Welcome to the Excel DB page!"
+
+@app.route("/")
+def home():
+    return redirect("/excel_db.com", code=302)
 
 # Routes --------------------------------------------------------------+
 # TODO POST /<entity>
