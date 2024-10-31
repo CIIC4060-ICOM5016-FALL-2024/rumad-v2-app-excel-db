@@ -1,9 +1,10 @@
-<h1 align="center">
+<div align="center">
+  <a href="https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db">
+    <img src="logo/excel_db_logo.jpg" width="200">
+  </a>
   <br>
-  <a href="https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db"><img src="logo/excel_db_logo.jpg" width="200"></a>
-  <br>
-  <span style="color: lightgreen;">Excel DB Database Systems Project: RUMAD 2.0</span>
-</h1>
+  <h1>$${\color{lightgreen}\textsf{ Excel DB Database Systems Project: RUMAD 2.0}}$$</h1>
+</div>
 
 <h3 align="center">A new version of rumad.upr.edu by students for students.</h3>
 
