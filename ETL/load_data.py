@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg
 import pandas as pd
 from ETL.extract_data import get_sections, get_meetings, get_rooms, get_courses, get_requisites
 from ETL.transform_data import transform_data
@@ -272,11 +272,11 @@ def load_data():
 
     # Heroku Load data
     # Load data
-    engine = psycopg2.connect(
-        dbname="dc79t7ga9hc6ud",
-        user="ufm5iffjti843g",
-        password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
-        host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
+    engine = psycopg.connect(
+        dbname="excel_db",
+        user="postgres",
+        password="password",
+        host="rpi5.local",
         port="5432"
     )
     cursor = engine.cursor()

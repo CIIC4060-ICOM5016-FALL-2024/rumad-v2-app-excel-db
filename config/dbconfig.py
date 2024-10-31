@@ -1,10 +1,10 @@
 # Docker credentials for testing purposes
 pg_config = {
     "dbname": "excel_db",
-    "user": "excel",
+    "user": "postgres",
     "password": "password",
-    "host": "localhost",
-    "port": "1234",
+    "host": "rpi5.local",
+    "port": "5432",
 }
 
 # Heroku Connection
