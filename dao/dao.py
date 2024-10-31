@@ -21,3 +21,11 @@ class DAO:
     # TODO Meeting CRUD
 
     # TODO Room CRUD
+    def TopRoomCapacity(self):
+        cursor = self.connection.cursor()
+        query = "select rid, building, room_number, capacity from room order by capacity desc limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result

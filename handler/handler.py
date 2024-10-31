@@ -1,9 +1,18 @@
+from dao.dao import DAO
+from flask import jsonify
+
+
 class Handler:
     # Local Statistics ----------------------------------------------+
     def TopRoomCapacity(self):
         # TODO Top 3 rooms with the most capacity.
         # @Glorian
-        return
+        result = []
+        dao = DAO ()
+        temp = dao.TopRoomCapacity()
+        for t in temp:
+            result.append(self.mapToDict(t))
+        return jsonify(result)
 
     def TopSectionStudent(self):
         # TODO Top 3 sections with the most student-to-capacity ratio.
