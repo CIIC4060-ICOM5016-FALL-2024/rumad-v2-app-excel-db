@@ -1,10 +1,9 @@
 from dao import DAO
 
-class Section(DAO):
+class SectionDAO(DAO):
 
     def __init__(self):
         super().__init__()
-        self.connect()
 
     def get_sections(self):
         cursor = self.cursor()

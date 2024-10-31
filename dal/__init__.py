@@ -1,6 +1,5 @@
-import section
+from section_dao import SectionDAO
 
-section = section.Section()
-sections = section.get_sections()
-print(sections)
 
+section_dao = SectionDAO()
+print(section_dao.get_sections())
