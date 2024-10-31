@@ -20,7 +20,7 @@ class DAO:
     # TODO Section CRUD
     def TopSectionStudent(self):
         cursor = self.connection.cursor()
-        query = "SELECT s.sid, s.cid, r.building, r.room_number, s.capacity AS students_enrolled, r.capacity AS room_capacity, CAST(CAST(s.capacity AS decimal) / r.capacity AS decimal(20, 3)) AS student_to_capacity_ratio FROM section s JOIN room r ON s.roomid = r.rid GROUP BY s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity ORDER BY student_to_capacity_ratio DESC LIMIT 3;"
+        query = "select s.sid, s.cid, r.building, r.room_number, s.capacity as students_enrolled, r.capacity as room_capacity, CAST(CAST(s.capacity AS decimal) / r.capacity as decimal(20, 3)) as student_to_capacity_ratio from section s join room r ON s.roomid = r.rid group by s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity order by student_to_capacity_ratio desc limit 3;"
         cursor.execute(query)
         result = []
         for row in cursor:

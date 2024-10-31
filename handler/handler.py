@@ -9,10 +9,20 @@ class Handler:
         # @Glorian
         result = []
         dao = DAO()
-        temp = dao.TopRoomCapacity()
+        temp = dao.TopSectionStudent()
         if temp:
             for tuple in temp:
-            
+                temp_dict = {}
+                temp_dict['sid'] = tuple[0]
+                temp_dict['cid'] = tuple[1]
+                temp_dict['building'] = tuple[2]
+                temp_dict['room_number'] = tuple[3]
+                temp_dict['students_enrolled'] = tuple[4]
+                temp_dict['room_capacity'] = tuple[5]
+                temp_dict['student_to_capacity_ratio'] = tuple[6]
+                result.append(temp_dict)
+        else:
+            return "Error not executed", 404
         return jsonify(result)
 
     def TopSectionStudent(self):
