@@ -1,6 +1,9 @@
 from config.dbconfig import pg_config
 import psycopg
 
+# HEAVY ERROR HANDLING HERE AND HERE ONLY.
+# MOST FAILURES WOULD OCCUR HERE LIKE
+# FAILED CONNECTIONS, BAD QUERIES, TIMEOUTS AND WHATEVER
 
 class DAO:
     connection = None
@@ -39,3 +42,15 @@ class DAO:
 
     def cursor(self):
         return self.connection.cursor()
+
+    def create(self):
+        pass
+
+    def read(self):
+        pass
+
+    def update(self):
+        pass
+
+    def delete(self):
+        pass

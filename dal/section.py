@@ -1,16 +1,14 @@
-import dao
+from dao import DAO
 
-
-class Section:
+class Section(DAO):
 
     def __init__(self):
-        self.dao = dao.DAO()
-        self.dao.connect()
+        super().__init__()
+        self.connect()
 
     def get_sections(self):
-        cursor = self.dao.cursor()
+        cursor = self.cursor()
         query = "SELECT * FROM section"
         cursor.execute(query)
         sections = cursor.fetchall()
         return sections
-
