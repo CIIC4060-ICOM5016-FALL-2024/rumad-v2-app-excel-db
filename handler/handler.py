@@ -10,8 +10,9 @@ class Handler:
         result = []
         dao = DAO()
         temp = dao.TopRoomCapacity()
-        for t in temp:
-            result.append(self.mapToDict(t))
+        if temp:
+            for tuple in temp:
+            
         return jsonify(result)
 
     def TopSectionStudent(self):
@@ -20,8 +21,16 @@ class Handler:
         result = []
         dao = DAO()
         temp = dao.TopSectionStudent()
-        for t in temp:
-            result.append(self.mapToDict(t))
+        if temp:
+            for tuple in temp:
+                temp_dict = {}
+                temp_dict['rid'] = tuple[0]
+                temp_dict['building'] = tuple [1]
+                temp_dict['room_number'] = tuple[2]
+                temp_dict['capacity'] = tuple [3]
+                result.append(temp_dict)
+        else:
+            return "Error not executed", 404
         return jsonify(result)
 
     def TopClassesSemester(self):
