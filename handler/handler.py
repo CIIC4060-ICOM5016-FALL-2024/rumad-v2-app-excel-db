@@ -8,7 +8,7 @@ class Handler:
         # TODO Top 3 rooms with the most capacity.
         # @Glorian
         result = []
-        dao = DAO ()
+        dao = DAO()
         temp = dao.TopRoomCapacity()
         for t in temp:
             result.append(self.mapToDict(t))
@@ -17,7 +17,12 @@ class Handler:
     def TopSectionStudent(self):
         # TODO Top 3 sections with the most student-to-capacity ratio.
         # @Glorian
-        return
+        result = []
+        dao = DAO()
+        temp = dao.TopSectionStudent()
+        for t in temp:
+            result.append(self.mapToDict(t))
+        return jsonify(result)
 
     def TopClassesSemester(self):
         # TODO Top 3 most taught classes per semester.
