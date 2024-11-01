@@ -11,7 +11,7 @@ class SectionDAO(DAO):
     # POST
     def post_section(self, sid: int, roomid: int, cid: int, mid: int, semester: str, years: int, capacity: int):
         """
-        Creates a tuple on the section relation
+        Creates a tuple in the section relation
         :param sid: section id
         :param roomid: room id
         :param cid: course id
@@ -38,7 +38,7 @@ class SectionDAO(DAO):
 
     def get_section_by_sid(self, sid: int):
         """
-        Gets a row from the section relation specified by sid.
+        Gets a row from the section relation, specified by sid.
         :param sid: section id
         :return: a list with a single tuple, or None if failed.
         """
