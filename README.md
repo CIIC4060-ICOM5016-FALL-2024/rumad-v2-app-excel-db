@@ -1,21 +1,19 @@
-<h1 align="center">
+<div align="center">
+  <a href="https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db">
+    <img src="logo/excel_db_logo.jpg" width="200">
+  </a>
   <br>
-  <a href="https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db"><img src="logo/excel_db_logo.jpg" alt="Markdownify" width="200"></a>
-  <br>
-  <span style="color: lightgreen; font-size: 30px; font-weight: bold;">Excel DB Database Systems Project: RUMAD 2.0</span>
-  <br>
-</h1>
+  <h1>$${\color{lightgreen}\textsf{ Excel DB Database Systems Project: RUMAD 2.0}}$$</h1>
+</div>
 
 <h3 align="center">A new version of rumad.upr.edu by students for students.</h3>
 
-
 ## Table of Contents
 - [Objectives](#objectives)
-- [Project Overview](#Project-Overview)
-- [Production Database Credentials](#production-Database-credentials)
+- [Project Overview](#project-overview)
+- [Production Database Credentials](#production-database-credentials)
 - [Getting Started](#getting-started)
   - [Local setup](#local-setup)
-- [How to use](#How-to-use)
 - [Contributors](#contributors)
 
 # Objectives
