@@ -1,6 +1,7 @@
 from dao import DAO
 from psycopg import sql
 
+
 class RequisiteDAO(DAO):
     relation = 'requisite'
 
@@ -88,9 +89,3 @@ class RequisiteDAO(DAO):
         query = (sql.SQL("DELETE FROM {} WHERE {} = {}")
                  .format(sql.Identifier(self.relation), sql.Identifier('reqid'), reqid))
         return self.delete(query)
-
-
-
-
-        
-

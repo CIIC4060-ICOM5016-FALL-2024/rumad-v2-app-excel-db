@@ -43,6 +43,20 @@ class RoomDAO(DAO):
                          sql.Identifier('rid'), rid))
         return self.read(query)
 
+    def get_top_rooms(self):
+        # TODO Top 3 rooms with the most capacity
+        # @Glorian
+        return
+
+    def get_top_rooms_in_building(self, building: str):
+        # TODO Top 3 rooms with the most capacity in a building
+        # @Glorian
+        return
+
+    def get_top_efficient_rooms(self):
+        # TODO Top 3 rooms with the most student-to-capacity ratio
+        return
+
     # PUT
     def put_room_rid(self, rid: int, rid_new: int):
         """

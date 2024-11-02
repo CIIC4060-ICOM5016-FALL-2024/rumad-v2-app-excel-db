@@ -44,6 +44,12 @@ class MeetingDAO(DAO):
                          sql.Identifier('mid'), mid))
         return self.read(query)
 
+    def get_top_meetings(self):
+        # TODO Top 5 meetings with the most sections.
+        # @Alanis
+        return
+
+
     # PUT
     def put_meeting_mid(self, mid: int, mid_new: int):
         """

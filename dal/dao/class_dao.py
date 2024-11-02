@@ -48,6 +48,24 @@ class ClassDAO(DAO):
                  .format(sql.Identifier(self.relation), sql.Identifier('cid'), cid))
         return self.read(query)
 
+    def get_top_classes(self, year: int, semester: str):
+        # TODO Top 3 most taught classes per semester, per year.
+        # @Alanis
+        return
+
+    def get_top_prerequisites(self):
+        # TODO Top 3 classes that appears the most as prerequisite to other classes.
+        # @Anthony
+        return
+
+    def get_least_classes(self):
+        # TODO Top 3 classes that were offered the least
+        return
+
+    def get_top_classes_in_room(self, rid: int):
+        # TODO Top 3 classes given in a certain room
+        return
+
     # PUT
     def put_class_cid(self, cid: int, cid_new: int):
         """
@@ -144,6 +162,7 @@ class ClassDAO(DAO):
                  .format(sql.Identifier(self.relation), sql.Identifier('csyllabus'), csyllabus,
                          sql.Identifier('cid'), cid))
         return self.update(query)
+
 
     # DELETE
     def delete_class(self, cid: int):

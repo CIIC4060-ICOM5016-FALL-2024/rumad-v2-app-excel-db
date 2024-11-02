@@ -46,6 +46,14 @@ class SectionDAO(DAO):
                  (sql.Identifier(self.relation), sql.Identifier('sid'), sid))
         return self.read(query)
 
+    def get_top_3_section(self):
+        # TODO Top 3 sections with the most student-to-capacity ratio.
+        # @Glorian
+        return
+
+    def get_sections_per_year(self, year: int):
+        # TODO Total number of sections per year
+        return
     # PUT
     def put_section_sid(self, sid: int, sid_new: int):
         """
