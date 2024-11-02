@@ -26,7 +26,7 @@ class MeetingDAO(DAO):
     # GET
     def get_all_meetings(self):
         """
-        Gets all rows from the meeting relation
+        Gets all tuples from the meeting relation
         :return: a list of tuples, or None if failed
         """
         query = ((sql.SQL("SELECT * FROM {}"))
@@ -35,7 +35,7 @@ class MeetingDAO(DAO):
 
     def get_meeting_by_mid(self, mid: int):
         """
-        Gets a row from the meeting relation, specified by mid
+        Gets a tuple from the meeting relation
         :param mid: meeting id
         :return: a list with a single tuple, or None if failed
         """
@@ -47,7 +47,7 @@ class MeetingDAO(DAO):
     # PUT
     def put_meeting_mid(self, mid: int, mid_new: int):
         """
-        Updates the mid of the meeting relation specified by mid
+        Updates the mid of a tuple in the meeting relation
         :param mid: meeting id
         :param mid_new: new meeting id
         :return: True if success, False otherwise
@@ -59,7 +59,7 @@ class MeetingDAO(DAO):
 
     def put_meeting_ccode(self, mid: int, ccode: int):
         """
-        Updates the ccode of the meeting relation specified by mid
+        Updates the ccode of a tuple in the meeting relation
         :param mid: meeting id
         :param ccode: course code
         :return: True if success, False otherwise
@@ -71,7 +71,7 @@ class MeetingDAO(DAO):
 
     def put_meeting_start_time(self, mid: int, start_time: datetime):
         """
-        Updates the start time of the meeting relation specified by mid
+        Updates the start_time of a tuple in the meeting relation
         :param mid: meeting id
         :param start_time: start of the meeting
         :return: True if success, False otherwise
@@ -83,7 +83,7 @@ class MeetingDAO(DAO):
 
     def put_meeting_end_time(self, mid: int, end_time: datetime):
         """
-        Updates the end time of the meeting relation specified by mid
+        Updates the end_time of a tuple in the meeting relation
         :param mid: meeting id
         :param end_time: end of the meeting
         :return: True if success, False otherwise
@@ -95,7 +95,7 @@ class MeetingDAO(DAO):
 
     def put_meeting_cdays(self, mid: int, cdays: str):
         """
-        Updates the cdays of the meeting relation specified by mid
+        Updates the cdays of a tuple in the meeting relation
         :param mid: meeting id
         :param cdays: course days
         :return: True if success, False otherwise
@@ -108,7 +108,7 @@ class MeetingDAO(DAO):
     # DELETE
     def delete_meeting(self, mid: int):
         """
-        Deletes the meeting relation specified by mid
+        Deletes a tuple in meeting relation
         :param mid: meeting id
         :return: True if success, False otherwise
         """

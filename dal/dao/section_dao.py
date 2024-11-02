@@ -29,7 +29,7 @@ class SectionDAO(DAO):
     # GET
     def get_all_sections(self):
         """
-        Gets all rows from the section relation
+        Gets all tuples from the section relation
         :return: a list of tuples, or None if failed.
         """
         query = (sql.SQL("SELECT * FROM {}").
@@ -38,7 +38,7 @@ class SectionDAO(DAO):
 
     def get_section_by_sid(self, sid: int):
         """
-        Gets a row from the section relation, specified by sid.
+        Gets a tuple from the section relation
         :param sid: section id
         :return: a list with a single tuple, or None if failed.
         """
@@ -49,7 +49,7 @@ class SectionDAO(DAO):
     # PUT
     def put_section_sid(self, sid: int, sid_new: int):
         """
-        Updates the sid of a tuple in the section relation specified by sid.
+        Updates the sid of a tuple in the section relation
         :param sid: section id
         :param sid_new: new section id
         :return: True if success, false otherwise.
@@ -61,7 +61,7 @@ class SectionDAO(DAO):
 
     def put_section_roomdid(self, sid: int, roomid: int):
         """
-        Updates the roomid of a tuple in the section relation specified by sid.
+        Updates the roomid of a tuple in the section relation
         :param sid: section id
         :param roomid: room id
         :return: True if success, false otherwise.
@@ -73,7 +73,7 @@ class SectionDAO(DAO):
 
     def put_section_cid(self, sid: int, cid: int):
         """
-        Updates the cid of a tuple in the section relation specified by sid.
+        Updates the cid of a tuple in the section relation
         :param sid: section id
         :param cid: course id
         :return: True if success, false otherwise.
@@ -85,7 +85,7 @@ class SectionDAO(DAO):
 
     def put_section_mid(self, sid: int, mid: int):
         """
-        Updates the mid of a tuple in the section relation specified by sid.
+        Updates the mid of a tuple in the section relation
         :param sid: section id
         :param mid: meeting id
         :return: True if success, false otherwise.
@@ -97,7 +97,7 @@ class SectionDAO(DAO):
 
     def put_section_semester(self, sid: int, semester: str):
         """
-        Updates the semester of a tuple in the section relation specified by sid.
+        Updates the semester of a tuple in the section relation
         :param sid: section id
         :param semester: Fall, Spring, V1 or V2
         :return: True if success, false otherwise.
@@ -109,7 +109,7 @@ class SectionDAO(DAO):
 
     def put_section_years(self, sid: int, years: int):
         """
-        Updates the years of a tuple in the section relation specified by sid.
+        Updates the years of a tuple in the section relation
         :param sid: section id
         :param years: academic year
         :return: True if success, false otherwise.
@@ -121,7 +121,7 @@ class SectionDAO(DAO):
 
     def put_section_capacity(self, sid: int, capacity: int):
         """
-        Updates the capacity of a tuple in the section relation specified by sid.
+        Updates the capacity of a tuple in the section relation
         :param sid: section id
         :param capacity: number of students enrolled
         :return: True if success, false otherwise.
@@ -134,7 +134,7 @@ class SectionDAO(DAO):
     # DELETE
     def delete_section(self, sid: int):
         """
-        Deletes a tuple in the section relation specified by sid.
+        Deletes a tuple in the section relation
         :param sid: section id
         :return: True if success, false otherwise.
         """

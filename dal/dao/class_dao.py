@@ -31,7 +31,7 @@ class ClassDAO(DAO):
     # GET
     def get_all_classes(self):
         """
-        Gets all rows from the class relation
+        Gets all tuples from the class relation
         :return: a list of tuples, or None if failed
         """
         query = (sql.SQL("SELECT * FROM {}")
@@ -40,7 +40,7 @@ class ClassDAO(DAO):
 
     def get_class_by_cid(self, cid: int):
         """
-        Gets a row from the class relation, specified by cid
+        Gets a tuple from the class relation
         :param cid: class id
         :return: a list with a single tuple, or None if failed
         """
@@ -51,7 +51,7 @@ class ClassDAO(DAO):
     # PUT
     def put_class_cid(self, cid: int, cid_new: int):
         """
-        Updates the cid of a tuple in the class relation specified by cid
+        Updates the cid of a tuple in the class relation
         :param cid: class id
         :param cid_new: new class id
         :return: True if success, False otherwise
@@ -63,7 +63,7 @@ class ClassDAO(DAO):
 
     def put_class_cname(self, cid: int, cname: str):
         """
-        Updates the cname of a tuple in the class relation specified by cid
+        Updates the cname of a tuple in the class relation
         :param cid: class id
         :param cname: new class name
         :return: True if success, False otherwise
@@ -75,7 +75,7 @@ class ClassDAO(DAO):
 
     def put_class_ccode(self, cid: int, ccode: int):
         """
-        Updates the ccode of a tuple in the class relation specified by cid
+        Updates the ccode of a tuple in the class relation
         :param cid: class id
         :param ccode: new class code
         :return: True if success, False otherwise
@@ -87,7 +87,7 @@ class ClassDAO(DAO):
 
     def put_class_cdesc(self, cid: int, cdesc: str):
         """
-        Updates the cdesc of a tuple in the class relation specified by cid
+        Updates the cdesc of a tuple in the class relation
         :param cid: class id
         :param cdesc: new class description
         :return: True if success, False otherwise
@@ -99,7 +99,7 @@ class ClassDAO(DAO):
 
     def put_class_term(self, cid: int, term: str):
         """
-        Updates the term of a tuple in the class relation specified by cid
+        Updates the term of a tuple in the class relation
         :param cid: class id
         :param term: new academic term
         :return: True if success, False otherwise
@@ -111,7 +111,7 @@ class ClassDAO(DAO):
 
     def put_class_years(self, cid: int, years: str):
         """
-        Updates the years of a tuple in the class relation specified by cid
+        Updates the years of a tuple in the class relation
         :param cid: class id
         :param years: new academic years
         :return: True if success, False otherwise
@@ -123,7 +123,7 @@ class ClassDAO(DAO):
 
     def put_class_cred(self, cid: int, cred: int):
         """
-        Updates the creds of a tuple in the class relation specified by cid
+        Updates the creds of a tuple in the class relation
         :param cid: class id
         :param cred: new credits
         :return: True if success, False otherwise
@@ -135,7 +135,7 @@ class ClassDAO(DAO):
 
     def put_class_csyllabus(self, cid: int, csyllabus: str):
         """
-        Updates the csyllabus of a tuple in the class relation specified by cid
+        Updates the csyllabus of a tuple in the class relation
         :param cid: class id
         :param csyllabus: new syllabus
         :return: True if success, False otherwise
@@ -148,7 +148,7 @@ class ClassDAO(DAO):
     # DELETE
     def delete_class(self, cid: int):
         """
-        Deletes a tuple in the class relation specified by cid
+        Deletes a tuple in the class relation
         :param cid: class id
         :return: True if success, False otherwise
         """
