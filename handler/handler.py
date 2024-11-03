@@ -1,5 +1,3 @@
-from sqlalchemy import result_tuple
-
 from dao.dao import DAO
 from flask import jsonify
 
