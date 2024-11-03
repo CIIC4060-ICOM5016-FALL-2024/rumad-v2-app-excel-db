@@ -1,4 +1,9 @@
+from dao.dao import DAO
+
 class Handler:
+    def __init__(self):
+        self.dao = DAO()
+
     # Local Statistics ----------------------------------------------+
     def TopRoomCapacity(self):
         # TODO Top 3 rooms with the most capacity.
@@ -15,10 +20,10 @@ class Handler:
         # @Alanis
         return
 
-    def TopClassesRoom(self):
-        # TODO Top 3 classes that were taught the most per room.
+    def topClassesRoom(self):
+        # Top 3 classes that were taught the most per room.
         # @Alanis
-        return
+        return self.dao.topClassesRoom()
 
     # Global Statistics ---------------------------------------------+
     def TopMeetingsSemester(self):
