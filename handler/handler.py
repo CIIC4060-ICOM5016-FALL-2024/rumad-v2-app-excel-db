@@ -26,10 +26,10 @@ class Handler:
         return self.dao.topClassesRoom()
 
     # Global Statistics ---------------------------------------------+
-    def TopMeetingsSemester(self):
-        # TODO Top 5 meetings with the most sections.
+    def topMeetingsSemester(self):
+        # Top 5 meetings with the most sections.
         # @Alanis
-        return
+        return self.dao.topMeetingsSemester()
 
     def TopPreRequisite(self):
         # TODO Top 3 classes that appears the most as prerequisite to other classes.

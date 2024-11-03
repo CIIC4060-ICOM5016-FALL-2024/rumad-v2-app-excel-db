@@ -55,10 +55,24 @@ class DAO:
         return result
 
     # Global Statistics ---------------------------------------------+
-    def TopMeetingsSemesterDAO(self):
-        # TODO Top 5 meetings with the most sections.
+    def topMeetingsSemester(self):
+        # Top 5 meetings with the most sections.
         # @Alanis
-        return
+        cur = self.connection.cursor()
+        query = """
+                SELECT meeting.mid, meeting.starttime, meeting.endtime, meeting.cdays, section_amount
+                FROM (SELECT mid, COUNT(*) AS section_amount
+                      FROM section
+                      group by mid
+                      ORDER BY section_amount DESC, mid
+                      LIMIT 5) as section
+                JOIN meeting ON section.mid = meeting.mid
+        """
+        cur.execute(query)
+        result = []
+        for row in cur.fetchall():
+            result.append(row)
+        return result
 
     # TODO Class CRUD
 
