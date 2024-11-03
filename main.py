@@ -8,8 +8,7 @@ CORS(app)
 
 @app.route("/excel_db")
 def excel_db():
-    handler = Handler()
-    return handler.topClassesRoom()
+    return "Welcome to excel_db"
 
 @app.route("/")
 def home():
