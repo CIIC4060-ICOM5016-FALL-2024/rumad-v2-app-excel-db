@@ -135,9 +135,9 @@ def load_requisite(requisites, cursor):
     """
 
     insert_query = """
-                INSERT INTO requisite (classid, requid, prereq) 
+                INSERT INTO requisite (classid, reqid, prereq) 
                 VALUES (%s, %s, %s)
-                ON CONFLICT (classid, requid) DO UPDATE SET prereq = EXCLUDED.prereq
+                ON CONFLICT (classid, reqid) DO UPDATE SET prereq = EXCLUDED.prereq
             """
     requisites['preReq'] = requisites['preReq'].map({1: True, 0: False})
     for index, row in requisites.iterrows():
@@ -292,4 +292,3 @@ def load_data():
         cursor.close()
     if engine:
         engine.close()
-

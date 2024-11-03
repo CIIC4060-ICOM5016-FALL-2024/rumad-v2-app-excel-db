@@ -1,6 +1,5 @@
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
-from handler.handler import Handler
 
 app = Flask(__name__)
 CORS(app)
@@ -38,23 +37,9 @@ def home():
 
 # TODO /most/prerequisite
 
-@app.route("/least/classes", methods=["GET"])
-def least():
-    handler = Handler()
-    return handler.topLeastClasses()
-
 # TODO /least/classes
 
 # TODO /section/year
-@app.route("/section/year", methods=["GET"])
-def section():
-    handler = Handler()
-    return handler.totalSections()
-
-@app.route("/most/prerequisites", methods=["GET"])
-def most():
-    handler = Handler()
-    return handler.topPreRequisite()
 
 if __name__ == '__main__':
     app.run(debug=True)
