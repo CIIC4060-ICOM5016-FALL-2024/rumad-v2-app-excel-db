@@ -51,5 +51,10 @@ def section():
     handler = Handler()
     return handler.totalSections()
 
+@app.route("/most/prerequisites", methods=["GET"])
+def most():
+    handler = Handler()
+    return handler.topPreRequisite()
+
 if __name__ == '__main__':
     app.run(debug=True)

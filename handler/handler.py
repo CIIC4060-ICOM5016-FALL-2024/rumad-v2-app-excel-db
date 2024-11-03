@@ -34,7 +34,20 @@ class Handler:
     def topPreRequisite(self):
         # TODO Top 3 classes that appears the most as prerequisite to other classes.
         # @Anthony
-        return
+        dao = DAO()
+        result = []
+        temp = dao.topPreRequisite()
+        if temp:
+            for tuple in temp:
+                tempdict = {}
+                tempdict['count'] = tuple[0]
+                tempdict['requid'] = tuple[1]
+                tempdict['cdesc'] = tuple[2]
+                result.append(tempdict)
+        else:
+            return "Error not executed",404
+
+        return jsonify(result)
 
     def topLeastClasses(self):
         # TODO Top 3 classes that were offered the least.

@@ -24,7 +24,16 @@ class DAO:
 
     def totalSections(self):
         cursor = self.connection.cursor()
-        query = 'select years as year,count(*) as total_sections from section group by years order by total_sections;'
+        query = "select years as year,count(*) as total_sections from section group by years order by total_sections;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
+
+    def topPreRequisite(self):
+        cursor = self.connection.cursor()
+        query = "select count(*), requisite.requid, class.cdesc from requisite inner join class on requisite.requid = class.cid where prereq = 'true' and requid != 37 group by requisite.requid, class.cdesc order by count(*) desc limit 3;"
         cursor.execute(query)
         result = []
         for row in cursor:
