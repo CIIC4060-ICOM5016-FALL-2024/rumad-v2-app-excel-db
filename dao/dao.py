@@ -20,6 +20,7 @@ class DAO:
         result = []
         for row in cursor:
             result.append(row)
+        cursor.close()
         return result
 
     def totalSections(self):
@@ -29,6 +30,7 @@ class DAO:
         result = []
         for row in cursor:
             result.append(row)
+        cursor.close()
         return result
 
     def topPreRequisite(self):
@@ -38,6 +40,7 @@ class DAO:
         result = []
         for row in cursor:
             result.append(row)
+        cursor.close()
         return result
 
     # TODO Requisite CRUD
