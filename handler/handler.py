@@ -15,10 +15,10 @@ class Handler:
         # @Glorian
         return
 
-    def TopClassesSemester(self):
-        # TODO Top 3 most taught classes per semester.
+    def topClassesSemester(self):
+        # Top 3 most taught classes per semester
         # @Alanis
-        return
+        return self.dao.topClassesSemester()
 
     def topClassesRoom(self):
         # Top 3 classes that were taught the most per room.

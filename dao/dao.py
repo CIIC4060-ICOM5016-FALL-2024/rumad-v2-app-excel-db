@@ -12,14 +12,34 @@ class DAO:
                )
         self.connection = psycopg2.connect(url)
 
-    def TopClassesSemesterDAO(self):
-        # TODO Top 3 most taught classes per semester.
+    def topClassesSemester(self):
+        # Top 3 most taught classes per semester.
         # @Alanis
         cur = self.connection.cursor()
         query = """
-                
+                SELECT class.cid, cname, ccode, cdesc, semester, must_cid_per_semester.section_count
+                FROM (
+                      SELECT sec1.cid, sec1.semester, COUNT(*) AS section_count
+                      FROM section AS sec1
+                      GROUP BY sec1.cid, sec1.semester
+                      HAVING (sec1.cid, sec1.semester) IN (
+                           SELECT sec2.cid, sec2.semester
+                           FROM section as sec2
+                           WHERE sec2.semester = sec1.semester
+                           GROUP BY sec2.cid, sec2.semester
+                           ORDER BY COUNT(*) DESC
+                           LIMIT 3
+                      )
+                      ORDER BY section_count DESC, sec1.semester
+                ) AS must_cid_per_semester
+                JOIN class ON must_cid_per_semester.cid = class.cid
+                ORDER BY section_count DESC
                 """
-        return
+        cur.execute(query)
+        result = []
+        for row in cur.fetchall():
+            result.append(row)
+        return result
 
     def topClassesRoom(self):
         # Top 3 classes that were taught the most per room.
