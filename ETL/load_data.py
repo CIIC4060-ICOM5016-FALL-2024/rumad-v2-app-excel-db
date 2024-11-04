@@ -292,4 +292,3 @@ def load_data():
         cursor.close()
     if engine:
         engine.close()
-
