@@ -46,9 +46,13 @@ class RoomDAO(DAO):
         return self.read(query, values)
 
     def get_top_rooms(self):
-        # TODO Top 3 rooms with the most capacity
-        # @Glorian
-        return
+        cursor = self.connection.cursor()
+        query = "select rid, building, room_number, capacity from room order by capacity desc limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
 
     def get_top_rooms_in_building(self, building: str):
         # TODO Top 3 rooms with the most capacity in a building
@@ -56,8 +60,13 @@ class RoomDAO(DAO):
         return
 
     def get_top_efficient_rooms(self):
-        # TODO Top 3 rooms with the most student-to-capacity ratio
-        return
+        cursor = self.connection.cursor()
+        query = "select s.sid, s.cid, r.building, r.room_number, s.capacity as students_enrolled, r.capacity as room_capacity, CAST(CAST(s.capacity AS decimal) / r.capacity as decimal(20, 3)) as student_to_capacity_ratio from section s join room r ON s.roomid = r.rid group by s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity order by student_to_capacity_ratio desc limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        return result
 
     # PUT
     def put_room_rid(self, rid: int, rid_new: int):
