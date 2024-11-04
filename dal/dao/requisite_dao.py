@@ -1,5 +1,5 @@
 from dao import DAO
-from psycopg import sql
+from psycopg2 import sql
 
 
 class RequisiteDAO(DAO):
@@ -32,60 +32,73 @@ class RequisiteDAO(DAO):
                  .format(sql.Identifier(self.relation)))
         return self.read(query)
 
-    def get_requisite_by_reqid(self, reqid: int):
+    def get_requisite_by_cid_reqid(self, classid: int, reqid: int):
         """
         Gets a tuple from the requisite relation
+        :param classid: class id
         :param reqid: requisite id
         :return: A list with a single tuple, None otherwise
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('reqid'), reqid))
-        return self.read(query)
+        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s AND {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('classid')
+                         , sql.Identifier('reqid')))
+        values = [classid, reqid]
+
+        return self.read(query, values)
 
     # PUT
-    def put_requisite_reqid(self, reqid: int, reqid_new: int):
-        """
-        Updates the reqid of a tuple in the requisite relation
-        :param reqid: requisite id
-        :param reqid_new: new requisite id
-        :return: True if success, False otherwise
-        """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('reqid'), reqid_new,
-                         sql.Identifier('reqid'), reqid))
-        return self.update(query)
-
-    def put_requisite_classid(self, reqid: int, classid: int):
+    def put_requisite_classid(self, classid: int, reqid: int, classid_new: int):
         """
         Updates the classid of a tuple in the requisite relation
         :param reqid: requisite id
         :param classid: class id
+        :param classid_new: new class id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('classid'), classid,
-                         sql.Identifier('reqid'), reqid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('classid'),
+                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        values = [classid_new, classid, reqid]
+        return self.update(query, values)
 
-    def put_requisite_prereq(self, reqid: int, prereq: bool):
+    def put_requisite_reqid(self, classid: int, reqid: int, reqid_new: int):
         """
         Updates the reqid of a tuple in the requisite relation
+        :param classid: class id
+        :param reqid: requisite id
+        :param reqid_new: new requisite id
+        :return: True if success, False otherwise
+        """
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('reqid'),
+                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        values = [reqid_new, classid, reqid]
+        return self.update(query, values)
+
+    def put_requisite_prereq(self, classid: int, reqid: int, prereq: bool):
+        """
+        Updates the reqid of a tuple in the requisite relation
+        :param classid: class id
         :param reqid: requisite id
         :param prereq: True if pre-requisite, False if co-requisite
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('prereq'), prereq,
-                         sql.Identifier('reqid'), reqid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('prereq'),
+                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        value = [prereq, classid, reqid]
+        return self.update(query, value)
 
     # DELETE
-    def delete_requisite(self, reqid: int):
+    def delete_requisite(self, classid: int, reqid: int):
         """
         Deletes a tuple from the requisite relation
+        :param classid: class id
         :param reqid: requisite id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('reqid'), reqid))
-        return self.delete(query)
+        query = (sql.SQL("DELETE FROM {} WHERE {} = %s AND {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('classid'),
+                         sql.Identifier('reqid')))
+        values = [classid, reqid]
+        return self.delete(query, values)

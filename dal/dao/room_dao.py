@@ -1,5 +1,5 @@
 from dao import DAO
-from psycopg import sql
+from psycopg2 import sql
 
 class RoomDAO(DAO):
     relation = 'room'
@@ -38,10 +38,12 @@ class RoomDAO(DAO):
         :param rid: room id
         :return: a list with a single tuple, or None if failed
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = {}")
+        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s")
                  .format(sql.Identifier(self.relation),
-                         sql.Identifier('rid'), rid))
-        return self.read(query)
+                         sql.Identifier('rid')))
+        values = [rid, ]
+
+        return self.read(query, values)
 
     def get_top_rooms(self):
         # TODO Top 3 rooms with the most capacity
@@ -65,10 +67,12 @@ class RoomDAO(DAO):
         :param rid_new: new room id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('rid'), rid_new),
-                 sql.Identifier('rid'), rid)
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('rid'),
+                 sql.Identifier('rid')))
+        values = [rid_new, rid]
+
+        return self.update(query, values)
 
     def put_room_building(self, rid: int, building: str):
         """
@@ -77,10 +81,12 @@ class RoomDAO(DAO):
         :param building: building name
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('building'), building),
-                 sql.Identifier('rid'), rid)
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('building'),
+                        sql.Identifier('rid')))
+        values = [building, rid]
+
+        return self.update(query, values)
 
     def put_room_number(self, rid: int, room_number: int):
         """
@@ -89,9 +95,10 @@ class RoomDAO(DAO):
         :param room_number: room number
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('room_number'), room_number),
-                 sql.Identifier('rid'), rid)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('room_number'),
+                 sql.Identifier('rid')))
+        values = [room_number, rid]
         return self.update(query)
 
     def put_room_capacity(self, rid: int, capacity: int):
@@ -101,10 +108,12 @@ class RoomDAO(DAO):
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('capacity'), capacity),
-                 sql.Identifier('rid'), rid)
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('capacity'),
+                 sql.Identifier('rid')))
+        values = [capacity, rid]
+
+        return self.update(query, values)
 
     # DELETE
     def delete_room(self, rid: int):
@@ -113,8 +122,10 @@ class RoomDAO(DAO):
         :param rid: room id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('rid'), rid))
-        return self.delete(query)
+        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('rid')))
+        values = [rid, ]
+
+        return self.delete(query, values)
 
 

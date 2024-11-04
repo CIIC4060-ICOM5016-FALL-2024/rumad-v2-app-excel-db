@@ -1,5 +1,5 @@
 from dao import DAO
-from psycopg import sql
+from psycopg2 import sql
 
 
 class ClassDAO(DAO):
@@ -36,6 +36,7 @@ class ClassDAO(DAO):
         """
         query = (sql.SQL("SELECT * FROM {}")
                  .format(sql.Identifier(self.relation)))
+
         return self.read(query)
 
     def get_class_by_cid(self, cid: int):
@@ -44,9 +45,12 @@ class ClassDAO(DAO):
         :param cid: class id
         :return: a list with a single tuple, or None if failed
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cid'), cid))
-        return self.read(query)
+        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('cid')))
+
+        values = [cid, ]
+
+        return self.read(query, values)
 
     def get_top_classes(self, year: int, semester: str):
         # TODO Top 3 most taught classes per semester, per year.
@@ -74,10 +78,13 @@ class ClassDAO(DAO):
         :param cid_new: new class id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cid'), cid_new,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('cid'),
+                         sql.Identifier('cid')))
+
+        values = [cid_new, cid]
+
+        return self.update(query, values)
 
     def put_class_cname(self, cid: int, cname: str):
         """
@@ -86,10 +93,13 @@ class ClassDAO(DAO):
         :param cname: new class name
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cname'), cname,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('cname'),
+                         sql.Identifier('cid')))
+
+        values = [cname, cid]
+
+        return self.update(query, values)
 
     def put_class_ccode(self, cid: int, ccode: int):
         """
@@ -98,10 +108,11 @@ class ClassDAO(DAO):
         :param ccode: new class code
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('ccode'), ccode,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('ccode'),
+                         sql.Identifier('cid')))
+        values = [ccode, cid]
+        return self.update(query, values)
 
     def put_class_cdesc(self, cid: int, cdesc: str):
         """
@@ -110,9 +121,12 @@ class ClassDAO(DAO):
         :param cdesc: new class description
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cdesc'), cdesc,
-                         sql.Identifier('cid'), cid))
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('cdesc'),
+                         sql.Identifier('cid')))
+
+        values = [cdesc, cid]
+
         return self.update(query)
 
     def put_class_term(self, cid: int, term: str):
@@ -122,10 +136,12 @@ class ClassDAO(DAO):
         :param term: new academic term
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('term'), term,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('term'),
+                         sql.Identifier('cid')))
+        values = [term, cid]
+
+        return self.update(query, values)
 
     def put_class_years(self, cid: int, years: str):
         """
@@ -134,10 +150,13 @@ class ClassDAO(DAO):
         :param years: new academic years
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('years'), years,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('years'),
+                         sql.Identifier('cid')))
+
+        value = [years, cid]
+
+        return self.update(query, value)
 
     def put_class_cred(self, cid: int, cred: int):
         """
@@ -146,10 +165,13 @@ class ClassDAO(DAO):
         :param cred: new credits
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cred'), cred,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('cred'),
+                         sql.Identifier('cid')))
+
+        value = [cred, cid]
+
+        return self.update(query, value)
 
     def put_class_csyllabus(self, cid: int, csyllabus: str):
         """
@@ -158,11 +180,12 @@ class ClassDAO(DAO):
         :param csyllabus: new syllabus
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = {} WHERE {} = {}")
-                 .format(sql.Identifier(self.relation), sql.Identifier('csyllabus'), csyllabus,
-                         sql.Identifier('cid'), cid))
-        return self.update(query)
+        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
+                 .format(sql.Identifier(self.relation), sql.Identifier('csyllabus'),
+                         sql.Identifier('cid')))
+        value = [csyllabus, cid]
 
+        return self.update(query, value)
 
     # DELETE
     def delete_class(self, cid: int):
@@ -171,6 +194,7 @@ class ClassDAO(DAO):
         :param cid: class id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = {}").
-                 format(sql.Identifier(self.relation), sql.Identifier('cid'), cid))
-        return self.delete(query)
+        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
+                 format(sql.Identifier(self.relation), sql.Identifier('cid')))
+        value = [cid, ]
+        return self.delete(query, value)

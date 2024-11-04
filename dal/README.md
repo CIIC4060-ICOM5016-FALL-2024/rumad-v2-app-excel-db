@@ -16,9 +16,6 @@ When a transaction needs a connection, the pool lends an
 open connection for the DAO to use.
 When the DAO is finished, the
 connection automatically returns to the pool.
-
-See psycopg pools for more info: https://www.psycopg.org/psycopg3/docs/advanced/pool.html
-
 ## Handlers
 The handlers are what connect the Data Access Layer with the
 Business Layer (Model).
