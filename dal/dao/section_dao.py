@@ -55,8 +55,14 @@ class SectionDAO(DAO):
         return
 
     def get_sections_per_year(self, year: int):
-        # TODO Total number of sections per year
-        return
+        cursor = self.connection.cursor()
+        query = "select years as year,count(*) as total_sections from section group by years order by total_sections;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
 
     # PUT
     def put_section_sid(self, sid: int, sid_new: int):

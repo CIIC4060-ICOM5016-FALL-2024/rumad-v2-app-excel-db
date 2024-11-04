@@ -58,13 +58,24 @@ class ClassDAO(DAO):
         return
 
     def get_top_prerequisites(self):
-        # TODO Top 3 classes that appears the most as prerequisite to other classes.
-        # @Anthony
-        return
+        cursor = self.connection.cursor()
+        query = "select count(*), requisite.requid, class.cdesc from requisite inner join class on requisite.requid = class.cid where prereq = 'true' and requid != 37 group by requisite.requid, class.cdesc order by count(*) desc limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
 
     def get_least_classes(self):
-        # TODO Top 3 classes that were offered the least
-        return
+        cursor = self.connection.cursor()
+        query = "select distinct section.cid,count(*) as section_count, class.cdesc from section inner join class on section.cid = class.cid group by section.cid , class.cdesc order by section_count limit 3;"
+        cursor.execute(query)
+        result = []
+        for row in cursor:
+            result.append(row)
+        cursor.close()
+        return result
 
     def get_top_classes_in_room(self, rid: int):
         # TODO Top 3 classes given in a certain room
