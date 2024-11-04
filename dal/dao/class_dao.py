@@ -1,11 +1,10 @@
 from dao import DAO
 from psycopg2 import sql
 
-
 class ClassDAO(DAO):
-    relation = 'class'
 
     def __init__(self):
+        self.relation = 'class'
         super().__init__()
 
     # POST
@@ -36,7 +35,6 @@ class ClassDAO(DAO):
         """
         query = (sql.SQL("SELECT * FROM {}")
                  .format(sql.Identifier(self.relation)))
-
         return self.read(query)
 
     def get_class_by_cid(self, cid: int):
@@ -53,7 +51,12 @@ class ClassDAO(DAO):
         return self.read(query, values)
 
     def get_top_classes(self, year: int, semester: str):
-        cur = self.pool.getconn().cursor()
+        """
+        Gets top 3 classes per semester
+        :param year: academic year
+        :param semester: academic semester
+        :return: a list of tuples, or None if failed
+        """
         query = """
                 SELECT class.cid, cname, ccode, cdesc, semester, must_cid_per_semester.section_count
                 FROM (
@@ -71,36 +74,43 @@ class ClassDAO(DAO):
                       ORDER BY section_count DESC, sec1.semester
                 ) AS must_cid_per_semester
                 JOIN class ON must_cid_per_semester.cid = class.cid
-                ORDER BY section_count DESC
-                """
-        cur.execute(query)
-        result = []
-        for row in cur.fetchall():
-            result.append(row)
-        return result
+                ORDER BY section_count DESC;
+        """
+        return self.read(query)
 
     def get_top_prerequisites(self):
-        cursor = self.pool.getconn().cursor()
-        query = "select count(*), requisite.requid, class.cdesc from requisite inner join class on requisite.requid = class.cid where prereq = 'true' and requid != 37 group by requisite.requid, class.cdesc order by count(*) desc limit 3;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        cursor.close()
-        return result
+        """
+        Gets all tuples from the class relation
+        :return: a list of tuples, or None if failed
+        """
+        query = """
+                SELECT COUNT(*), requisite.reqid, class.cdesc 
+                FROM requisite INNER JOIN class ON requisite.reqid = class.cid 
+                WHERE prereq = 'true' AND reqid != 37 
+                GROUP BY requisite.reqid, class.cdesc 
+                ORDER BY COUNT(*) DESC limit 3;
+        """
+        return self.read(query)
 
     def get_least_classes(self):
-        cursor = self.pool.getconn().cursor()
-        query = "select distinct section.cid,count(*) as section_count, class.cdesc from section inner join class on section.cid = class.cid group by section.cid , class.cdesc order by section_count limit 3;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        cursor.close()
-        return result
+        """
+        Gets all tuples from the class relation
+        :return: a list of tuples, or None if failed
+        """
+        query = """
+                SELECT DISTINCT section.cid,count(*) AS section_count, class.cdesc 
+                FROM section INNER JOIN class ON section.cid = class.cid 
+                GROUP BY section.cid , class.cdesc 
+                ORDER BY section_count limit 3;
+        """
+        return self.read(query)
 
     def get_top_classes_in_room(self, rid: int):
-        cur = self.pool.getconn().cursor()
+        """
+        Gets all tuples from the class relation
+        :param rid: academic room id
+        :return: a list of tuples, or None if failed
+        """
         query = """
                 SELECT cname, ccode, cdesc, building, room_number,cid_per_room.amount
                 FROM (
@@ -123,12 +133,8 @@ class ClassDAO(DAO):
                 JOIN class ON cid_per_room.cid = class.cid
                 JOIN room ON cid_per_room.roomid = room.rid
                 ORDER BY amount DESC
-                """
-        cur.execute(query)
-        result = []
-        for row in cur.fetchall():
-            result.append(row)
-        return result
+        """
+        return self.read(query)
 
     # PUT
     def put_class_cid(self, cid: int, cid_new: int):

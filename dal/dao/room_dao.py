@@ -2,9 +2,9 @@ from dao import DAO
 from psycopg2 import sql
 
 class RoomDAO(DAO):
-    relation = 'room'
 
     def __init__(self):
+        self.relation = 'room'
         super().__init__()
 
     # POST
@@ -46,27 +46,40 @@ class RoomDAO(DAO):
         return self.read(query, values)
 
     def get_top_rooms(self):
-        cursor = self.connection.cursor()
-        query = "select rid, building, room_number, capacity from room order by capacity desc limit 3;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        return result
+        """
+        Gets all rows from the rooms relation
+        :return: a list of tuples, or None if failed
+        """
+        query = """
+                SELECT rid, building, room_number, capacity 
+                FROM room 
+                ORDER BY capacity DESC limit 3;
+        """
+        return self.read(query)
 
     def get_top_rooms_in_building(self, building: str):
+        """
+        Gets all rows from the rooms relation, specified by building
+        :param building: building name
+        :return: a list of tuples, or None if failed
+        """
         # TODO Top 3 rooms with the most capacity in a building
         # @Glorian
         return
 
     def get_top_efficient_rooms(self):
-        cursor = self.connection.cursor()
-        query = "select s.sid, s.cid, r.building, r.room_number, s.capacity as students_enrolled, r.capacity as room_capacity, CAST(CAST(s.capacity AS decimal) / r.capacity as decimal(20, 3)) as student_to_capacity_ratio from section s join room r ON s.roomid = r.rid group by s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity order by student_to_capacity_ratio desc limit 3;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        return result
+        """
+        Gets all rows from the rooms relation
+        :return: a list of tuples, or None if failed
+        """
+        query = """
+                SELECT s.sid, s.cid, r.building, r.room_number, s.capacity AS students_enrolled, r.capacity AS room_capacity, 
+                       CAST(CAST(s.capacity AS DECIMAL) / r.capacity AS DECIMAL(20, 3)) AS student_to_capacity_ratio 
+                       FROM section s JOIN room r ON s.roomid = r.rid 
+                       GROUP BY s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity 
+                       ORDER BY student_to_capacity_ratio DESC limit 3;
+        """
+        return self.read(query)
 
     # PUT
     def put_room_rid(self, rid: int, rid_new: int):

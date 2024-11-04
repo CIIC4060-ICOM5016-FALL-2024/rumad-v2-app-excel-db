@@ -3,9 +3,9 @@ from psycopg2 import sql
 from datetime import datetime
 
 class MeetingDAO(DAO):
-    relation = 'meeting'
 
     def __init__(self):
+        self.relation = 'meeting'
         super().__init__()
 
     # POST
@@ -46,7 +46,10 @@ class MeetingDAO(DAO):
         return self.read(query, value)
 
     def get_top_meetings(self):
-        cur = self.connection.cursor()
+        """
+        Gets all tuples from the meeting relation
+        :return: a list of tuples, or None if failed
+        """
         query = """
                 SELECT meeting.mid, meeting.starttime, meeting.endtime, meeting.cdays, section_amount
                 FROM (SELECT mid, COUNT(*) AS section_amount
@@ -55,12 +58,8 @@ class MeetingDAO(DAO):
                       ORDER BY section_amount DESC, mid
                       LIMIT 5) as section
                 JOIN meeting ON section.mid = meeting.mid
-                """
-        cur.execute(query)
-        result = []
-        for row in cur.fetchall():
-            result.append(row)
-        return result
+        """
+        return self.read(query)
 
     # PUT
     def put_meeting_mid(self, mid: int, mid_new: int):

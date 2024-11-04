@@ -50,19 +50,27 @@ class SectionDAO(DAO):
         return self.read(query, [sid, ])
 
     def get_top_3_section(self):
+        """
+        Gets all tuples from the section relation
+        :return: a list of tuples, or None if failed.
+        """
         # TODO Top 3 sections with the most student-to-capacity ratio.
         # @Glorian
         return
 
     def get_sections_per_year(self, year: int):
-        cursor = self.connection.cursor()
-        query = "select years as year,count(*) as total_sections from section group by years order by total_sections;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        cursor.close()
-        return result
+        """
+        Gets all tuples from the section relation
+        :param year: year
+        :return: a list of tuples, or None if failed.
+        """
+        query = """
+                SELECT years AS year, COUNT(*) AS total_sections 
+                FROM section 
+                GROUP BY years 
+                ORDER BY total_sections;
+        """
+        return self.read(query)
 
     # PUT
     def put_section_sid(self, sid: int, sid_new: int):

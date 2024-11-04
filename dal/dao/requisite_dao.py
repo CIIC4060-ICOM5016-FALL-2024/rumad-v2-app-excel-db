@@ -3,9 +3,9 @@ from psycopg2 import sql
 
 
 class RequisiteDAO(DAO):
-    relation = 'requisite'
 
     def __init__(self):
+        self.relation = 'requisite'
         super().__init__()
 
     # POST

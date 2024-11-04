@@ -2,21 +2,18 @@ import psycopg2
 from psycopg2 import pool
 from config.dbconfig import pg_config
 
-
-connection_pool = psycopg2.pool.SimpleConnectionPool(
-    minconn = 1, # minimum number of connections in the pool
-    maxconn = 5,  # maximum connections
-    user = pg_config['user'],
-    password = pg_config['password'],
-    host = pg_config['host'],
-    database = pg_config['dbname'],
-    port = pg_config['port'],
-)
-
 class DAO:
 
     def __init__(self):
-        self.pool = connection_pool
+        self.pool = psycopg2.pool.SimpleConnectionPool(
+            minconn=1,  # minimum number of connections in the pool
+            maxconn=5,  # maximum connections
+            user=pg_config['user'],
+            password=pg_config['password'],
+            host=pg_config['host'],
+            database=pg_config['dbname'],
+            port=pg_config['port'],
+        )
 
     def create(self, query, values):
         """
