@@ -53,12 +53,34 @@ class ClassDAO(DAO):
         return self.read(query, values)
 
     def get_top_classes(self, year: int, semester: str):
-        # TODO Top 3 most taught classes per semester, per year.
-        # @Alanis
-        return
+        cur = self.pool.getconn().cursor()
+        query = """
+                SELECT class.cid, cname, ccode, cdesc, semester, must_cid_per_semester.section_count
+                FROM (
+                      SELECT sec1.cid, sec1.semester, COUNT(*) AS section_count
+                      FROM section AS sec1
+                      GROUP BY sec1.cid, sec1.semester
+                      HAVING (sec1.cid, sec1.semester) IN (
+                           SELECT sec2.cid, sec2.semester
+                           FROM section as sec2
+                           WHERE sec2.semester = sec1.semester
+                           GROUP BY sec2.cid, sec2.semester
+                           ORDER BY COUNT(*) DESC
+                           LIMIT 3
+                      )
+                      ORDER BY section_count DESC, sec1.semester
+                ) AS must_cid_per_semester
+                JOIN class ON must_cid_per_semester.cid = class.cid
+                ORDER BY section_count DESC
+                """
+        cur.execute(query)
+        result = []
+        for row in cur.fetchall():
+            result.append(row)
+        return result
 
     def get_top_prerequisites(self):
-        cursor = self.connection.cursor()
+        cursor = self.pool.getconn().cursor()
         query = "select count(*), requisite.requid, class.cdesc from requisite inner join class on requisite.requid = class.cid where prereq = 'true' and requid != 37 group by requisite.requid, class.cdesc order by count(*) desc limit 3;"
         cursor.execute(query)
         result = []
@@ -68,7 +90,7 @@ class ClassDAO(DAO):
         return result
 
     def get_least_classes(self):
-        cursor = self.connection.cursor()
+        cursor = self.pool.getconn().cursor()
         query = "select distinct section.cid,count(*) as section_count, class.cdesc from section inner join class on section.cid = class.cid group by section.cid , class.cdesc order by section_count limit 3;"
         cursor.execute(query)
         result = []
@@ -78,8 +100,35 @@ class ClassDAO(DAO):
         return result
 
     def get_top_classes_in_room(self, rid: int):
-        # TODO Top 3 classes given in a certain room
-        return
+        cur = self.pool.getconn().cursor()
+        query = """
+                SELECT cname, ccode, cdesc, building, room_number,cid_per_room.amount
+                FROM (
+                    SELECT DISTINCT sec2.cid, sec2.roomid, sec1.amount
+                    FROM (
+                        SELECT roomid, COUNT(*) AS amount
+                        FROM section
+                        GROUP BY roomid
+                    ) AS sec1
+                    JOIN section AS sec2 ON sec1.roomid = sec2.roomid
+                    WHERE sec2.cid IN (
+                        SELECT sec3.cid
+                        FROM section as sec3
+                        WHERE sec3.roomid = sec2.roomid
+                        ORDER BY sec3.cid
+                        LIMIT 3
+                    )
+                    ORDER BY sec1.amount DESC, sec2.roomid, sec2.cid
+                ) AS cid_per_room
+                JOIN class ON cid_per_room.cid = class.cid
+                JOIN room ON cid_per_room.roomid = room.rid
+                ORDER BY amount DESC
+                """
+        cur.execute(query)
+        result = []
+        for row in cur.fetchall():
+            result.append(row)
+        return result
 
     # PUT
     def put_class_cid(self, cid: int, cid_new: int):

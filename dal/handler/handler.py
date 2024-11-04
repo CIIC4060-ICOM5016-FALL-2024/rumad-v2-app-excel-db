@@ -1,6 +1,8 @@
 from dal.dao.class_dao import ClassDAO
+from dal.dao.meeting_dao import MeetingDAO
 from dal.dao.room_dao import RoomDAO
 from dal.dao.section_dao import SectionDAO
+
 from flask import jsonify
 
 class Handler:
@@ -41,6 +43,22 @@ class Handler:
         else:
             return "Error not executed", 404
         return jsonify(result)
+
+    def topClassesSemester(self):
+        # TODO Top 3 most taught classes per semester
+        # @Alanis
+        return ClassDAO().get_top_classes()
+
+    def topClassesRoom(self):
+        # TODO Top 3 classes that were taught the most per room.
+        # @Alanis
+        return ClassDAO().get_top_classes_in_room()
+
+    # Global Statistics ---------------------------------------------+
+    def topMeetingsSemester(self):
+        # TODO Top 5 meetings with the most sections.
+        # @Alanis
+        return MeetingDAO().get_top_meetings()
 
     def top_pre_requisite(self):
         dao = ClassDAO()
