@@ -1,5 +1,5 @@
-from dao import DAO
 from psycopg2 import sql
+from dal.dao.dao import DAO
 
 class ClassDAO(DAO):
 

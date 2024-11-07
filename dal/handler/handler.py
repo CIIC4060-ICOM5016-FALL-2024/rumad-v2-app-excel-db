@@ -7,7 +7,7 @@ from flask import jsonify
 
 class Handler:
     def __init__(self):
-        print("I handle errors and jsonfy results")
+        pass
 
     def top_room_capacity(self):
         result = []
@@ -25,7 +25,7 @@ class Handler:
                 temp_dict['student_to_capacity_ratio'] = tuple[6]
                 result.append(temp_dict)
         else:
-            return "Error not executed", 404
+            return jsonify("Error not executed"), 404
         return jsonify(result)
 
     def top_section_student(self):
@@ -41,24 +41,27 @@ class Handler:
                 temp_dict['capacity'] = tuple [3]
                 result.append(temp_dict)
         else:
-            return "Error not executed", 404
+            return jsonify("Error not executed"), 404
         return jsonify(result)
 
     def topClassesSemester(self):
         # TODO Top 3 most taught classes per semester
         # @Alanis
-        return ClassDAO().get_top_classes()
+        # return ClassDAO().get_top_classes()
+        pass
 
     def topClassesRoom(self):
         # TODO Top 3 classes that were taught the most per room.
         # @Alanis
-        return ClassDAO().get_top_classes_in_room()
+        # return ClassDAO().get_top_classes_in_room()
+        pass
 
     # Global Statistics ---------------------------------------------+
     def topMeetingsSemester(self):
         # TODO Top 5 meetings with the most sections.
         # @Alanis
-        return MeetingDAO().get_top_meetings()
+        # return MeetingDAO().get_top_meetings()
+        pass
 
     def top_pre_requisite(self):
         dao = ClassDAO()
@@ -72,7 +75,7 @@ class Handler:
                 tempdict['cdesc'] = tuple[2]
                 result.append(tempdict)
         else:
-            return "Error not executed",404
+            return jsonify("Error not executed"),404
 
         return jsonify(result)
 
@@ -88,7 +91,7 @@ class Handler:
                 tempdict['cdesc'] = tuple[2]
                 result.append(tempdict)
         else:
-            return "Error not executed",404
+            return jsonify("Error not executed"),404
 
         return jsonify(result)
 
@@ -103,6 +106,6 @@ class Handler:
                 tempdict['total_sections'] = tuple[1]
                 result.append(tempdict)
         else:
-            return "Error not executed",404
+            return jsonify("Error not executed"),404
 
         return jsonify(result)

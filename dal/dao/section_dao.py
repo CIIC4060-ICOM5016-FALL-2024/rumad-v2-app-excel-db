@@ -1,4 +1,4 @@
-from dao import DAO
+from dal.dao.dao import DAO
 from psycopg2 import sql
 
 

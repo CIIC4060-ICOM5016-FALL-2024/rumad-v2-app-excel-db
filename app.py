@@ -1,19 +1,19 @@
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
-from handler.handler import Handler
+from dal.handler.handler import Handler
 
 app = Flask(__name__)
 CORS(app)
 
 handler = Handler()
 
-@app.route("/excel_db")
+@app.route('/excel_db')
 def excel_db():
-    return "Welcome to the Excel DB page!"
+    return jsonify(f"Welcome")
 
-@app.route("/")
+@app.route('/')
 def home():
-    return redirect("/excel_db", code=302)
+    return redirect('/excel_db', code=302)
 
 ###################### CLASS ######################
 
@@ -79,11 +79,10 @@ def handleLocalStatisticsByID(rid, type):
     else:
         return jsonify(f"LocalStatistic: {type} does not exist!"), 404
 
-@app.route('/excel_db/classes/<int:rid>/<varchar:semester>', methods=["POST"])
+@app.route('/excel_db/classes/<int:rid>/<string:semester>', methods=["POST"])
 def handleLocalStatistics(rid, term):
     if not request.is_json:
         return jsonify(f"The request does not contain JSON data"), 400
-
     return
 
 ################ GLOBAL STATISTICS ###############
