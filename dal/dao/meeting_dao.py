@@ -5,7 +5,6 @@ from datetime import datetime
 class MeetingDAO(DAO):
 
     def __init__(self):
-        self.relation = 'meeting'
         super().__init__()
 
     # POST
@@ -18,8 +17,7 @@ class MeetingDAO(DAO):
         :param end_time: end of the meeting
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s, %s)").
-                 format(sql.Identifier(self.relation)))
+        query = "INSERT INTO meeting VALUES (%s, %s, %s, %s, %s)"
         values = [mid, ccode, start_time, end_time]
         return self.create(query, values)
 
@@ -29,8 +27,7 @@ class MeetingDAO(DAO):
         Gets all tuples from the meeting relation
         :return: a list of tuples, or None if failed
         """
-        query = ((sql.SQL("SELECT * FROM {}"))
-                 .format(sql.Identifier(self.relation)))
+        query = "SELECT * FROM meeting"
         return self.read(query)
 
     def get_meeting_by_mid(self, mid: int):
@@ -39,10 +36,8 @@ class MeetingDAO(DAO):
         :param mid: meeting id
         :return: a list with a single tuple, or None if failed
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s")
-                 .format(sql.Identifier(self.relation),
-                         sql.Identifier('mid')))
-        value = [mid, ]
+        query = "SELECT * FROM meeting WHERE mid = %s"
+        value = [mid]
         return self.read(query, value)
 
     def get_top_meetings(self):
@@ -69,12 +64,8 @@ class MeetingDAO(DAO):
         :param mid_new: new meeting id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('mid'),
-                 sql.Identifier('mid')))
-
+        query = "UPDATE meeting SET mid = %s WHERE mid = %s"
         value = [mid_new, mid]
-
         return self.update(query, value)
 
     def put_meeting_ccode(self, mid: int, ccode: int):
@@ -84,9 +75,7 @@ class MeetingDAO(DAO):
         :param ccode: course code
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('ccode'),
-                 sql.Identifier('mid')))
+        query = "UPDATE meeting SET ccode = %s WHERE mid = %s"
         values = [ccode, mid]
         return self.update(query, values)
 
@@ -97,9 +86,7 @@ class MeetingDAO(DAO):
         :param start_time: start of the meeting
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('start_time'),
-                        sql.Identifier('mid')))
+        query = "UPDATE meeting SET starttime = %s WHERE mid = %s"
         values = [start_time, mid]
         return self.update(query, values)
 
@@ -110,12 +97,8 @@ class MeetingDAO(DAO):
         :param end_time: end of the meeting
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('end_time'),
-                        sql.Identifier('mid')))
-
+        query = "UPDATE meeting SET endtime = %s WHERE mid = %s"
         values = [end_time, mid]
-
         return self.update(query, values)
 
     def put_meeting_cdays(self, mid: int, cdays: str):
@@ -125,12 +108,8 @@ class MeetingDAO(DAO):
         :param cdays: course days
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('cdays'),
-                        sql.Identifier('mid')))
-
+        query = "UPDATE meeting SET cdays = %s WHERE mid = %s"
         values = [cdays, mid]
-
         return self.update(query, values)
 
     # DELETE
@@ -140,11 +119,8 @@ class MeetingDAO(DAO):
         :param mid: meeting id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('mid')))
-
+        query = "DELETE FROM meeting WHERE mid = %s"
         values = [mid, ]
-
         return self.delete(query, values)
 
 

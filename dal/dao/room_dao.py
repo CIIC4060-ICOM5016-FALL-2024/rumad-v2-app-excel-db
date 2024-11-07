@@ -4,7 +4,6 @@ from psycopg2 import sql
 class RoomDAO(DAO):
 
     def __init__(self):
-        self.relation = 'room'
         super().__init__()
 
     # POST
@@ -17,8 +16,7 @@ class RoomDAO(DAO):
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s)").
-                 format(sql.Identifier(self.relation)))
+        query = "INSERT INTO room VALUES (%s, %s, %s, %s)"
         values = (rid, building, room_number, capacity)
         return self.create(query, values)
 
@@ -28,8 +26,7 @@ class RoomDAO(DAO):
         Gets all rows from the rooms relation
         :return: a list of tuples, or None if failed
         """
-        query = ((sql.SQL("SELECT * FROM {}"))
-                 .format(sql.Identifier(self.relation)))
+        query = "SELECT * FROM rooms"
         return self.read(query)
 
     def get_room_by_rid(self, rid: int):
@@ -38,11 +35,8 @@ class RoomDAO(DAO):
         :param rid: room id
         :return: a list with a single tuple, or None if failed
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s")
-                 .format(sql.Identifier(self.relation),
-                         sql.Identifier('rid')))
-        values = [rid, ]
-
+        query = "SELECT * FROM room WHERE rid = %s"
+        values = [rid]
         return self.read(query, values)
 
     def get_top_rooms(self):
@@ -89,11 +83,8 @@ class RoomDAO(DAO):
         :param rid_new: new room id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('rid'),
-                 sql.Identifier('rid')))
+        query = "UPDATE room SET rid = %s WHERE rid = %s"
         values = [rid_new, rid]
-
         return self.update(query, values)
 
     def put_room_building(self, rid: int, building: str):
@@ -103,11 +94,8 @@ class RoomDAO(DAO):
         :param building: building name
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('building'),
-                        sql.Identifier('rid')))
+        query = "UPDATE room SET building = %s WHERE rid = %s"
         values = [building, rid]
-
         return self.update(query, values)
 
     def put_room_number(self, rid: int, room_number: int):
@@ -117,11 +105,9 @@ class RoomDAO(DAO):
         :param room_number: room number
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('room_number'),
-                 sql.Identifier('rid')))
+        query = "UPDATE room SET room_number = %s WHERE rid = %s"
         values = [room_number, rid]
-        return self.update(query)
+        return self.update(query, values)
 
     def put_room_capacity(self, rid: int, capacity: int):
         """
@@ -130,11 +116,8 @@ class RoomDAO(DAO):
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('capacity'),
-                 sql.Identifier('rid')))
+        query = "UPDATE room set capacity = %s WHERE rid = %s"
         values = [capacity, rid]
-
         return self.update(query, values)
 
     # DELETE
@@ -144,10 +127,8 @@ class RoomDAO(DAO):
         :param rid: room id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('rid')))
-        values = [rid, ]
-
+        query = "DELETE FROM room WHERE rid = %s"
+        values = [rid]
         return self.delete(query, values)
 
 

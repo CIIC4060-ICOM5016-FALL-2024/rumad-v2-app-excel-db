@@ -5,7 +5,6 @@ from psycopg2 import sql
 class RequisiteDAO(DAO):
 
     def __init__(self):
-        self.relation = 'requisite'
         super().__init__()
 
     # POST
@@ -17,8 +16,7 @@ class RequisiteDAO(DAO):
         :param prereq: True if pre-requisite, False if co-requisite
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s)")
-                 .format(sql.Identifier(self.relation)))
+        query = "INSERT INTO requisite (classid, reqid, prereq) VALUES (%s, %s, %s)"
         values = [classid, reqid, prereq]
         return self.create(query, values)
 
@@ -28,8 +26,7 @@ class RequisiteDAO(DAO):
         Gets all tuples from the requisite relation
         :return: A list of tuples, None otherwise
         """
-        query = (sql.SQL("SELECT * FROM {}")
-                 .format(sql.Identifier(self.relation)))
+        query = "SELECT * FROM requisite"
         return self.read(query)
 
     def get_requisite_by_cid_reqid(self, classid: int, reqid: int):
@@ -39,11 +36,8 @@ class RequisiteDAO(DAO):
         :param reqid: requisite id
         :return: A list with a single tuple, None otherwise
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s AND {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('classid')
-                         , sql.Identifier('reqid')))
+        query = "SELECT * FROM requisite WHERE classid = %s AND reqid = %s"
         values = [classid, reqid]
-
         return self.read(query, values)
 
     # PUT
@@ -55,9 +49,7 @@ class RequisiteDAO(DAO):
         :param classid_new: new class id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('classid'),
-                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        query = "UPDATE requisite SET classid = %s WHERE classid = %s AND reqid = %s"
         values = [classid_new, classid, reqid]
         return self.update(query, values)
 
@@ -69,9 +61,7 @@ class RequisiteDAO(DAO):
         :param reqid_new: new requisite id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('reqid'),
-                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        query = "UPDATE requisite SET reqid = %s WHERE classid = %s and reqid = %s"
         values = [reqid_new, classid, reqid]
         return self.update(query, values)
 
@@ -83,9 +73,7 @@ class RequisiteDAO(DAO):
         :param prereq: True if pre-requisite, False if co-requisite
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s AND {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('prereq'),
-                         sql.Identifier('classid'), sql.Identifier('reqid')))
+        query = "UPDATE requisite SET prereq = %s WHERE classid = %s AND reqid = %s"
         value = [prereq, classid, reqid]
         return self.update(query, value)
 
@@ -97,8 +85,6 @@ class RequisiteDAO(DAO):
         :param reqid: requisite id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s AND {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('classid'),
-                         sql.Identifier('reqid')))
+        query = "DELETE FROM requisite WHERE classid = %s AND reqid = %s"
         values = [classid, reqid]
         return self.delete(query, values)

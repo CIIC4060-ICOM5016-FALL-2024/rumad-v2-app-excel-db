@@ -3,8 +3,6 @@ from psycopg2 import sql
 
 
 class SectionDAO(DAO):
-    relation = 'section'
-
     def __init__(self):
         super().__init__()
 
@@ -21,10 +19,8 @@ class SectionDAO(DAO):
         :param capacity: number of enrolled students
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s, %s, %s, %s)")
-                 .format(sql.Identifier(self.relation)))
+        query = "INSERT INTO section VALUES (%s, %s, %s, %s, %s, %s, %s)"
         values = [sid, roomid, cid, mid, semester, years, capacity]
-
         return self.create(query, values)
 
     # GET
@@ -33,9 +29,7 @@ class SectionDAO(DAO):
         Gets all tuples from the section relation
         :return: a list of tuples, or None if failed.
         """
-        query = (sql.SQL("SELECT * FROM {}").
-                 format(sql.Identifier(self.relation)))
-
+        query = "SELECT * FROM section"
         return self.read(query)
 
     def get_section_by_sid(self, sid: int):
@@ -44,9 +38,7 @@ class SectionDAO(DAO):
         :param sid: section id
         :return: a list with a single tuple, or None if failed.
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s").format
-                 (sql.Identifier(self.relation), sql.Identifier('sid')))
-
+        query = "SELECT * FROM section WHERE sid = %s"
         return self.read(query, [sid, ])
 
     def get_top_3_section(self):
@@ -80,11 +72,8 @@ class SectionDAO(DAO):
         :param sid_new: new section id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('sid'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET sid = %s WHERE sid = %s"
         values = [sid_new, sid]
-
         return self.update(query, values)
 
     def put_section_roomdid(self, sid: int, roomid: int):
@@ -94,11 +83,8 @@ class SectionDAO(DAO):
         :param roomid: room id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('roomid'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET roomid = %s WHERE sid = %s"
         values = [roomid, sid]
-
         return self.update(query, values)
 
     def put_section_cid(self, sid: int, cid: int):
@@ -108,11 +94,8 @@ class SectionDAO(DAO):
         :param cid: course id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = % WHERE {} = %")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cid'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET cid = %s WHERE sid = %s"
         values = [cid, sid]
-
         return self.update(query, values)
 
     def put_section_mid(self, sid: int, mid: int):
@@ -122,12 +105,8 @@ class SectionDAO(DAO):
         :param mid: meeting id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('mid'),
-                         sql.Identifier('sid')))
-
+        query = "UPDATE section SET mid = %s WHERE sid = %s"
         values = [mid, sid]
-
         return self.update(query, values)
 
     def put_section_semester(self, sid: int, semester: str):
@@ -137,11 +116,8 @@ class SectionDAO(DAO):
         :param semester: Fall, Spring, V1 or V2
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('semester'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET semester = %s WHERE sid = %s"
         values = [semester, sid]
-
         return self.update(query, values)
 
     def put_section_years(self, sid: int, years: int):
@@ -151,9 +127,7 @@ class SectionDAO(DAO):
         :param years: academic year
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('years'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET years = %s WHERE sid = %s"
         values = [years, sid]
         return self.update(query, values)
 
@@ -164,11 +138,8 @@ class SectionDAO(DAO):
         :param capacity: number of students enrolled
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('capacity'),
-                         sql.Identifier('sid')))
+        query = "UPDATE section SET capacity = %s WHERE sid = %s"
         values = [capacity, sid]
-
         return self.update(query, values)
 
     # DELETE
@@ -178,7 +149,6 @@ class SectionDAO(DAO):
         :param sid: section id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('sid')))
-        values = [sid, ]
+        query = "DELETE FROM section WHERE sid = %s"
+        values = [sid]
         return self.delete(query, values)
