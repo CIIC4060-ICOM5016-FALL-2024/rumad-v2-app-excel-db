@@ -29,7 +29,7 @@ class RequisiteDAO(DAO):
         query = "SELECT * FROM requisite"
         return self.read(query)
 
-    def get_requisite_by_cid_reqid(self, classid: int, reqid: int):
+    def get_requisite_by_reqid(self, classid: int, reqid: int):
         """
         Gets a tuple from the requisite relation
         :param classid: class id
@@ -41,41 +41,19 @@ class RequisiteDAO(DAO):
         return self.read(query, values)
 
     # PUT
-    def put_requisite_classid(self, classid: int, reqid: int, classid_new: int):
+    def put_requisite_by_classid_reqid(self, classid: int, reqid: int, data):
         """
         Updates the classid of a tuple in the requisite relation
         :param reqid: requisite id
         :param classid: class id
-        :param classid_new: new class id
+        :param data: new data
         :return: True if success, False otherwise
         """
-        query = "UPDATE requisite SET classid = %s WHERE classid = %s AND reqid = %s"
-        values = [classid_new, classid, reqid]
+        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        params = tuple(data.values()) + (classid, reqid, )
+        query = f"UPDATE requisite SET {new} WHERE classid = %s AND reqid = %s"
+        values = [params]
         return self.update(query, values)
-
-    def put_requisite_reqid(self, classid: int, reqid: int, reqid_new: int):
-        """
-        Updates the reqid of a tuple in the requisite relation
-        :param classid: class id
-        :param reqid: requisite id
-        :param reqid_new: new requisite id
-        :return: True if success, False otherwise
-        """
-        query = "UPDATE requisite SET reqid = %s WHERE classid = %s and reqid = %s"
-        values = [reqid_new, classid, reqid]
-        return self.update(query, values)
-
-    def put_requisite_prereq(self, classid: int, reqid: int, prereq: bool):
-        """
-        Updates the reqid of a tuple in the requisite relation
-        :param classid: class id
-        :param reqid: requisite id
-        :param prereq: True if pre-requisite, False if co-requisite
-        :return: True if success, False otherwise
-        """
-        query = "UPDATE requisite SET prereq = %s WHERE classid = %s AND reqid = %s"
-        value = [prereq, classid, reqid]
-        return self.update(query, value)
 
     # DELETE
     def delete_requisite(self, classid: int, reqid: int):
