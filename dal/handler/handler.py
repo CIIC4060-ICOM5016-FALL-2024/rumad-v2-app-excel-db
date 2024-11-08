@@ -235,7 +235,7 @@ class Handler:
 
     def put_room_by_id(self, rid, data):
         dao = RoomDAO()
-        if dao.put_room_rid(int(rid), data):
+        if dao.put_room_by_rid(int(rid), data):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 

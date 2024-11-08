@@ -1,5 +1,4 @@
 from dal.dao.dao import DAO
-from psycopg2 import sql
 
 
 class RequisiteDAO(DAO):
@@ -43,10 +42,10 @@ class RequisiteDAO(DAO):
     # PUT
     def put_requisite_by_classid_reqid(self, classid: int, reqid: int, data):
         """
-        Updates the classid of a tuple in the requisite relation
+        Updates a requisite tuple in the requisite relation
         :param reqid: requisite id
         :param classid: class id
-        :param data: new data
+        :param data: attributes to be updated
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])

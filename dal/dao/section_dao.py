@@ -1,5 +1,4 @@
 from dal.dao.dao import DAO
-from psycopg2 import sql
 
 
 class SectionDAO(DAO):
@@ -44,9 +43,9 @@ class SectionDAO(DAO):
     # PUT
     def put_section_by_sid(self, sid: int, data):
         """
-        Updates the sid of a tuple in the section relation
+        Updates a section tuple in the section relation
         :param sid: section id
-        :param sid_new: new section id
+        :param data: attributes to be updated
         :return: True if success, false otherwise.
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])

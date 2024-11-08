@@ -1,5 +1,4 @@
 from dal.dao.dao import DAO
-from psycopg2 import sql
 from datetime import datetime
 
 class MeetingDAO(DAO):
@@ -43,9 +42,9 @@ class MeetingDAO(DAO):
     # PUT
     def put_meeting_by_mid(self, mid: int, data):
         """
-        Updates the mid of a tuple in the meeting relation
+        Updates a meeting tuple in the meeting relation
         :param mid: meeting id
-        :param data: new data
+        :param data: attributes to be updated
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])

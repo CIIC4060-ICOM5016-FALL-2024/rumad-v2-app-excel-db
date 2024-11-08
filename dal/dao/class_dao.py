@@ -1,4 +1,3 @@
-from psycopg2 import sql
 from dal.dao.dao import DAO
 
 class ClassDAO(DAO):
@@ -47,8 +46,9 @@ class ClassDAO(DAO):
     # PUT ------------------------------------------------------------------------+
     def put_class_by_cid(self, cid: int, data):
         """
-        Updates the cid of a tuple in the class relation
+        Updates a class tuple in the class relation
         :param cid: class id
+        :param data: attributes to be updated
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])

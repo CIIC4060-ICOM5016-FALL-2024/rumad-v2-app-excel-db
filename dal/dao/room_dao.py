@@ -1,5 +1,4 @@
 from dal.dao.dao import DAO
-from psycopg2 import sql
 
 class RoomDAO(DAO):
 
@@ -26,7 +25,7 @@ class RoomDAO(DAO):
         Gets all rows from the rooms relation
         :return: a list of tuples, or None if failed
         """
-        query = "SELECT * FROM rooms"
+        query = "SELECT * FROM room"
         return self.read(query)
 
     def get_room_by_rid(self, rid: int):
@@ -40,11 +39,11 @@ class RoomDAO(DAO):
         return self.read(query, values)
 
     # PUT
-    def put_room_rid(self, rid: int, data):
+    def put_room_by_rid(self, rid: int, data):
         """
-        Updates the rid of a tuple in the room relation specified by rid
+        Updates a room tuple in the room relation
         :param rid: room id
-        :param data: new data
+        :param data: attributes to be updated
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])
