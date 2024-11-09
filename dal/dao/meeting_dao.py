@@ -1,15 +1,13 @@
-from dao import DAO
-from psycopg2 import sql
+from dal.dao.dao import DAO
 from datetime import datetime
 
 class MeetingDAO(DAO):
-    relation = 'meeting'
 
     def __init__(self):
         super().__init__()
 
     # POST
-    def post_meeting(self, mid: int, ccode: int, start_time: datetime, end_time: datetime):
+    def post_meeting(self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays):
         """
         Creates a tuple in the meeting relation
         :param mid: meeting id
@@ -18,9 +16,8 @@ class MeetingDAO(DAO):
         :param end_time: end of the meeting
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s, %s)").
-                 format(sql.Identifier(self.relation)))
-        values = [mid, ccode, start_time, end_time]
+        query = "INSERT INTO meeting VALUES (%s, %s, %s, %s, %s)"
+        values = [mid, ccode, start_time, end_time, cdays]
         return self.create(query, values)
 
     # GET
@@ -29,8 +26,7 @@ class MeetingDAO(DAO):
         Gets all tuples from the meeting relation
         :return: a list of tuples, or None if failed
         """
-        query = ((sql.SQL("SELECT * FROM {}"))
-                 .format(sql.Identifier(self.relation)))
+        query = "SELECT * FROM meeting"
         return self.read(query)
 
     def get_meeting_by_mid(self, mid: int):
@@ -39,99 +35,22 @@ class MeetingDAO(DAO):
         :param mid: meeting id
         :return: a list with a single tuple, or None if failed
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s")
-                 .format(sql.Identifier(self.relation),
-                         sql.Identifier('mid')))
-        value = [mid, ]
+        query = "SELECT * FROM meeting WHERE mid = %s"
+        value = [mid]
         return self.read(query, value)
 
-    def get_top_meetings(self):
-        cur = self.connection.cursor()
-        query = """
-                SELECT meeting.mid, meeting.starttime, meeting.endtime, meeting.cdays, section_amount
-                FROM (SELECT mid, COUNT(*) AS section_amount
-                      FROM section
-                      group by mid
-                      ORDER BY section_amount DESC, mid
-                      LIMIT 5) as section
-                JOIN meeting ON section.mid = meeting.mid
-                """
-        cur.execute(query)
-        result = []
-        for row in cur.fetchall():
-            result.append(row)
-        return result
-
     # PUT
-    def put_meeting_mid(self, mid: int, mid_new: int):
+    def put_meeting_by_mid(self, mid: int, data):
         """
-        Updates the mid of a tuple in the meeting relation
+        Updates a meeting tuple in the meeting relation
         :param mid: meeting id
-        :param mid_new: new meeting id
+        :param data: attributes to be updated
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('mid'),
-                 sql.Identifier('mid')))
-
-        value = [mid_new, mid]
-
-        return self.update(query, value)
-
-    def put_meeting_ccode(self, mid: int, ccode: int):
-        """
-        Updates the ccode of a tuple in the meeting relation
-        :param mid: meeting id
-        :param ccode: course code
-        :return: True if success, False otherwise
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('ccode'),
-                 sql.Identifier('mid')))
-        values = [ccode, mid]
-        return self.update(query, values)
-
-    def put_meeting_start_time(self, mid: int, start_time: datetime):
-        """
-        Updates the start_time of a tuple in the meeting relation
-        :param mid: meeting id
-        :param start_time: start of the meeting
-        :return: True if success, False otherwise
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('start_time'),
-                        sql.Identifier('mid')))
-        values = [start_time, mid]
-        return self.update(query, values)
-
-    def put_meeting_end_time(self, mid: int, end_time: datetime):
-        """
-        Updates the end_time of a tuple in the meeting relation
-        :param mid: meeting id
-        :param end_time: end of the meeting
-        :return: True if success, False otherwise
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('end_time'),
-                        sql.Identifier('mid')))
-
-        values = [end_time, mid]
-
-        return self.update(query, values)
-
-    def put_meeting_cdays(self, mid: int, cdays: str):
-        """
-        Updates the cdays of a tuple in the meeting relation
-        :param mid: meeting id
-        :param cdays: course days
-        :return: True if success, False otherwise
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('cdays'),
-                        sql.Identifier('mid')))
-
-        values = [cdays, mid]
-
+        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        params = tuple(data.values()) + (mid,)
+        query = f"UPDATE meeting SET {new} WHERE mid = %s"
+        values = [params]
         return self.update(query, values)
 
     # DELETE
@@ -141,11 +60,24 @@ class MeetingDAO(DAO):
         :param mid: meeting id
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('mid')))
-
-        values = [mid, ]
-
+        query = "DELETE FROM meeting WHERE mid = %s"
+        values = [mid]
         return self.delete(query, values)
 
+    # STATISTICS
+    def get_top_meetings(self):
+        """
+        Gets all tuples from the meeting relation
+        :return: a list of tuples, or None if failed
+        """
+        query = """
+                SELECT meeting.mid, meeting.starttime, meeting.endtime, meeting.cdays, section_amount
+                FROM (SELECT mid, COUNT(*) AS section_amount
+                      FROM section
+                      group by mid
+                      ORDER BY section_amount DESC, mid
+                      LIMIT 5) as section
+                JOIN meeting ON section.mid = meeting.mid
+        """
+        return self.read(query)
 

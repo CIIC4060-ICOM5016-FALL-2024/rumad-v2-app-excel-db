@@ -1,10 +1,7 @@
-from dao import DAO
-from psycopg2 import sql
+from dal.dao.dao import DAO
 
 
 class SectionDAO(DAO):
-    relation = 'section'
-
     def __init__(self):
         super().__init__()
 
@@ -21,10 +18,8 @@ class SectionDAO(DAO):
         :param capacity: number of enrolled students
         :return: True if success, False otherwise
         """
-        query = (sql.SQL("INSERT INTO {} VALUES (%s, %s, %s, %s, %s, %s, %s)")
-                 .format(sql.Identifier(self.relation)))
+        query = "INSERT INTO section VALUES (%s, %s, %s, %s, %s, %s, %s)"
         values = [sid, roomid, cid, mid, semester, years, capacity]
-
         return self.create(query, values)
 
     # GET
@@ -33,9 +28,7 @@ class SectionDAO(DAO):
         Gets all tuples from the section relation
         :return: a list of tuples, or None if failed.
         """
-        query = (sql.SQL("SELECT * FROM {}").
-                 format(sql.Identifier(self.relation)))
-
+        query = "SELECT * FROM section"
         return self.read(query)
 
     def get_section_by_sid(self, sid: int):
@@ -44,123 +37,21 @@ class SectionDAO(DAO):
         :param sid: section id
         :return: a list with a single tuple, or None if failed.
         """
-        query = (sql.SQL("SELECT * FROM {} WHERE {} = %s").format
-                 (sql.Identifier(self.relation), sql.Identifier('sid')))
-
+        query = "SELECT * FROM section WHERE sid = %s"
         return self.read(query, [sid, ])
 
-    def get_top_3_section(self):
-        # TODO Top 3 sections with the most student-to-capacity ratio.
-        # @Glorian
-        return
-
-    def get_sections_per_year(self, year: int):
-        cursor = self.connection.cursor()
-        query = "select years as year,count(*) as total_sections from section group by years order by total_sections;"
-        cursor.execute(query)
-        result = []
-        for row in cursor:
-            result.append(row)
-        cursor.close()
-        return result
-
     # PUT
-    def put_section_sid(self, sid: int, sid_new: int):
+    def put_section_by_sid(self, sid: int, data):
         """
-        Updates the sid of a tuple in the section relation
+        Updates a section tuple in the section relation
         :param sid: section id
-        :param sid_new: new section id
+        :param data: attributes to be updated
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('sid'),
-                         sql.Identifier('sid')))
-        values = [sid_new, sid]
-
-        return self.update(query, values)
-
-    def put_section_roomdid(self, sid: int, roomid: int):
-        """
-        Updates the roomid of a tuple in the section relation
-        :param sid: section id
-        :param roomid: room id
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('roomid'),
-                         sql.Identifier('sid')))
-        values = [roomid, sid]
-
-        return self.update(query, values)
-
-    def put_section_cid(self, sid: int, cid: int):
-        """
-        Updates the cid of a tuple in the section relation
-        :param sid: section id
-        :param cid: course id
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = % WHERE {} = %")
-                 .format(sql.Identifier(self.relation), sql.Identifier('cid'),
-                         sql.Identifier('sid')))
-        values = [cid, sid]
-
-        return self.update(query, values)
-
-    def put_section_mid(self, sid: int, mid: int):
-        """
-        Updates the mid of a tuple in the section relation
-        :param sid: section id
-        :param mid: meeting id
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('mid'),
-                         sql.Identifier('sid')))
-
-        values = [mid, sid]
-
-        return self.update(query, values)
-
-    def put_section_semester(self, sid: int, semester: str):
-        """
-        Updates the semester of a tuple in the section relation
-        :param sid: section id
-        :param semester: Fall, Spring, V1 or V2
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('semester'),
-                         sql.Identifier('sid')))
-        values = [semester, sid]
-
-        return self.update(query, values)
-
-    def put_section_years(self, sid: int, years: int):
-        """
-        Updates the years of a tuple in the section relation
-        :param sid: section id
-        :param years: academic year
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('years'),
-                         sql.Identifier('sid')))
-        values = [years, sid]
-        return self.update(query, values)
-
-    def put_section_capacity(self, sid: int, capacity: int):
-        """
-        Updates the capacity of a tuple in the section relation
-        :param sid: section id
-        :param capacity: number of students enrolled
-        :return: True if success, false otherwise.
-        """
-        query = (sql.SQL("UPDATE {} SET {} = %s WHERE {} = %s")
-                 .format(sql.Identifier(self.relation), sql.Identifier('capacity'),
-                         sql.Identifier('sid')))
-        values = [capacity, sid]
-
+        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        params = tuple(data.values()) + (sid, )
+        query = f"UPDATE section SET {new} WHERE sid = %s"
+        values = [params]
         return self.update(query, values)
 
     # DELETE
@@ -170,7 +61,21 @@ class SectionDAO(DAO):
         :param sid: section id
         :return: True if success, false otherwise.
         """
-        query = (sql.SQL("DELETE FROM {} WHERE {} = %s").
-                 format(sql.Identifier(self.relation), sql.Identifier('sid')))
-        values = [sid, ]
+        query = "DELETE FROM section WHERE sid = %s"
+        values = [sid]
         return self.delete(query, values)
+
+    # STATISTICS
+    def get_sections_per_year(self):
+        """
+        Gets all tuples from the section relation
+        :return: a list of tuples, or None if failed.
+        """
+        query = """
+                 SELECT years AS year, COUNT(*) AS total_sections 
+                 FROM section 
+                 GROUP BY years 
+                 ORDER BY total_sections;
+         """
+        return self.read(query)
+
