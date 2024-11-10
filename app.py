@@ -128,20 +128,18 @@ def rooms_by_id(rid):
 ################ LOCAL STATISTICS ################
 
 
-@app.route("/excel_db/room/<string:building>/capacity", methods=["POST"])
-def top_rooms_by_capacity(building):
-    return handler.top_room_capacity_by_building(building)
-
-
-@app.route("/excel_db/room/<int:rid>/<string:stat>", methods=["POST"])
-def local_statistics_by_id(rid, stat):
-    if stat == "ratio":
-        return handler.top_ratio_rooms(rid)
-    elif stat == "classes":
-        return handler.top_classes_per_room(rid)
+@app.route("/excel_db/room/<string:building>/<string:stat>", methods=["POST"])
+def top_rooms_by_capacity(building,stat):
+    if stat == 'capacity':
+        return handler.top_room_capacity_by_building(building)
+    elif stat == 'ratio':
+        return handler.top_ratio_rooms(building)
     else:
         return jsonify(f"LocalStatistic: {type} does not exist!"), 404
 
+@app.route("/excel_db/room/<int:rid>/classes", methods=["POST"])
+def local_statistics_by_id(rid):
+        return handler.top_classes_per_room(rid)
 
 @app.route("/excel_db/classes/<string:year>/<string:semester>", methods=["POST"])
 def top_classes_per_semester_year(year, semester):
