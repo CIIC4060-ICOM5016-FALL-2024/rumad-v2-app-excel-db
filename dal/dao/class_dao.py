@@ -6,8 +6,17 @@ class ClassDAO(DAO):
         super().__init__()
 
     # POST ------------------------------------------------------------------------+
-    def post_class(self, cid: int, cname: str, ccode: int,
-                   cdesc: str, term: str, years: str, cred: int, cysllabus: str):
+    def post_class(
+        self,
+        cid: int,
+        cname: str,
+        ccode: int,
+        cdesc: str,
+        term: str,
+        years: str,
+        cred: int,
+        cysllabus: str,
+    ):
         """
         Creates a tuple in the class relation
         :param cid: class id

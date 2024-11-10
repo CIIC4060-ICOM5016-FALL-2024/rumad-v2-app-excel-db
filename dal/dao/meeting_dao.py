@@ -7,7 +7,9 @@ class MeetingDAO(DAO):
         super().__init__()
 
     # POST
-    def post_meeting(self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays):
+    def post_meeting(
+        self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays
+    ):
         """
         Creates a tuple in the meeting relation
         :param mid: meeting id
