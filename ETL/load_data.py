@@ -14,7 +14,7 @@ def create_db(cursor):
     """
     sql_commands = """
         CREATE TABLE IF NOT EXISTS class (
-            cid       SERIAL PRIMARY KEY,
+            cid       SERIAL PRIMARY KEY, CHECK(cid >= 2),
             cname     VARCHAR,
             ccode     VARCHAR,
             cdesc     VARCHAR,
@@ -53,9 +53,83 @@ def create_db(cursor):
             mid      INTEGER REFERENCES meeting(mid),
             semester VARCHAR,
             years    VARCHAR,
-            capacity INTEGER
+            capacity INTEGER,
+            UNIQUE (roomid, mid, semester, years),
+            UNIQUE (cid, mid, semester, years)
         );
-
+        
+        CREATE OR REPLACE FUNCTION check_section_capacity()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            room_capacity INTEGER;
+        BEGIN
+        
+        SELECT capacity INTO room_capacity FROM room WHERE rid = NEW.roomid;
+        
+        IF NEW.capacity > room_capacity THEN
+            RAISE EXCEPTION 'Section capacity (%) exceeds room_capacity (%)', 
+            NEW.capacity, room_capacity;
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        CREATE OR REPLACE FUNCTION check_section_class()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            class_term  VARCHAR;
+            class_year  VARCHAR;
+            section_year INTEGER;
+        BEGIN
+        
+        SELECT term, years INTO class_term, class_year from class where cid = NEW.cid;
+    
+        IF class_term = 'First Semester, Second Semester' 
+        AND (NEW.semester != 'Fall' AND NEW.semester != 'Spring') THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        ELSIF class_term = 'First Semester' AND NEW.semester != 'Fall' THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        ELSIF class_term = 'Second Semester' AND NEW.semester != 'Spring' THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        END IF;
+        
+        section_year := CAST(NEW.years AS INTEGER);
+        
+        IF class_year = 'Even Years' AND (section_year % 2 != 0) THEN
+            RAISE EXCEPTION 'Section was set to year (%) but class is offered on (%)',
+            NEW.years, class_year;
+        END IF;
+        
+        IF class_year = 'Odd Years' AND (section_year % 2 = 0) THEN
+            RAISE EXCEPTION 'Section was set to year (%) but class is offered on (%)',
+            NEW.years, class_year;
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        
+        
+        CREATE TRIGGER section_capacity_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION check_section_capacity();
+        
+        CREATE TRIGGER section_class_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION check_section_class();
+    
+        
         CREATE TABLE IF NOT EXISTS syllabus (
             chunkid        SERIAL PRIMARY KEY,
             courseid       INTEGER REFERENCES class(cid),
@@ -264,10 +338,10 @@ def load_data():
     # Test Load data
     engine = psycopg2.connect(
         dbname="excel_db",
-        user="excel",
+        user="postgres",
         password="password",
-        host="localhost",
-        port="1234"
+        host="rpi5.local",
+        port="5432"
     )
 
     # Heroku Load data
