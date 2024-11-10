@@ -128,22 +128,18 @@ def rooms_by_id(rid):
 ################ LOCAL STATISTICS ################
 
 
-@app.route("/excel_db/room/<string:building>/capacity", methods=["POST"])
-def top_rooms_by_capacity(building):
-    return handler.top_room_capacity_by_building(building)
-
-
-@app.route("/excel_db/room/<int:rid>/<string:stat>", methods=["POST"])
-def local_statistics_by_id(rid, stat):
-    if not request.is_json:
-        return jsonify(f"The request does not contain JSON data"), 400
-    if type == "ratio":
-        return handler.top_ratio_rooms(rid)
-    elif type == "classes":
-        return handler.top_classes_per_room(rid)
+@app.route("/excel_db/room/<string:building>/<string:stat>", methods=["POST"])
+def top_rooms_by_capacity(building,stat):
+    if stat == 'capacity':
+        return handler.top_room_capacity_by_building(building)
+    elif stat == 'ratio':
+        return handler.top_ratio_rooms(building)
     else:
         return jsonify(f"LocalStatistic: {type} does not exist!"), 404
 
+@app.route("/excel_db/room/<int:rid>/classes", methods=["POST"])
+def local_statistics_by_id(rid):
+        return handler.top_classes_per_room(rid)
 
 @app.route("/excel_db/classes/<string:year>/<string:semester>", methods=["POST"])
 def top_classes_per_semester_year(year, semester):
@@ -155,8 +151,6 @@ def top_classes_per_semester_year(year, semester):
 
 @app.route("/excel_db/most/<string:stat>", methods=["POST"])
 def most_global_statistics(stat):
-    if not request.is_json:
-        return jsonify(f"The request does not contain JSON data"), 400
     if stat == "meeting":
         return handler.top_meeting()
     elif stat == "prerequisite":
@@ -165,7 +159,7 @@ def most_global_statistics(stat):
         return jsonify(f"GlobalStatistic: {stat} does not exist!"), 404
 
 
-@app.route("/excel_db/least/classes>", methods=["POST"])
+@app.route("/excel_db/least/classes", methods=["POST"])
 def least_global_statistics():
     return handler.top_least_classes()
 

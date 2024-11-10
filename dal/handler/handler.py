@@ -397,7 +397,7 @@ class Handler:
         requisites = dao.get_top_prerequisites()
         if requisites:
             for item in requisites:
-                result_dict = {"count": item[0], "requid": item[1], "cdesc": item[2]}
+                result_dict = {"count": item[0], "requid": item[1], "cdesc": item[2], "ccode": item[3]}
                 result.append(result_dict)
             return jsonify(result)
         return jsonify("Error not executed"), 404
