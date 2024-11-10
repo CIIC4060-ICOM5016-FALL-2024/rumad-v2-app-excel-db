@@ -144,10 +144,10 @@ class ClassDAO(DAO):
         :return: a list of tuples, or None if failed
         """
         query = """
-                SELECT COUNT(*), requisite.reqid, class.cdesc 
+                SELECT COUNT(*), requisite.reqid, class.cdesc,class.ccode 
                 FROM requisite INNER JOIN class ON requisite.reqid = class.cid 
                 WHERE prereq = 'true' AND reqid != 37 
-                GROUP BY requisite.reqid, class.cdesc 
+                GROUP BY requisite.reqid, class.cdesc,class.ccode
                 ORDER BY COUNT(*) DESC limit 3;
         """
         return self.read(query)
