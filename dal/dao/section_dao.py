@@ -49,9 +49,8 @@ class SectionDAO(DAO):
         :return: True if success, false otherwise.
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (sid, )
+        values = tuple(data.values()) + (sid, )
         query = f"UPDATE section SET {new} WHERE sid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE

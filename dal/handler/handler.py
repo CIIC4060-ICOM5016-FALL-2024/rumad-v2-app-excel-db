@@ -241,7 +241,7 @@ class Handler:
 
     def delete_room_by_id(self, rid):
         dao = RoomDAO()
-        if dao.delete(rid):
+        if dao.delete_room(rid):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 

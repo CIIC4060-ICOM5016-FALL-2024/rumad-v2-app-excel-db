@@ -48,9 +48,8 @@ class MeetingDAO(DAO):
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (mid,)
+        values = tuple(data.values()) + (mid,)
         query = f"UPDATE meeting SET {new} WHERE mid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE
