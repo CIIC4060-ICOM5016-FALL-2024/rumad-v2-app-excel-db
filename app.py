@@ -135,11 +135,9 @@ def top_rooms_by_capacity(building):
 
 @app.route("/excel_db/room/<int:rid>/<string:stat>", methods=["POST"])
 def local_statistics_by_id(rid, stat):
-    if not request.is_json:
-        return jsonify(f"The request does not contain JSON data"), 400
-    if type == "ratio":
+    if stat == "ratio":
         return handler.top_ratio_rooms(rid)
-    elif type == "classes":
+    elif stat == "classes":
         return handler.top_classes_per_room(rid)
     else:
         return jsonify(f"LocalStatistic: {type} does not exist!"), 404
@@ -155,8 +153,6 @@ def top_classes_per_semester_year(year, semester):
 
 @app.route("/excel_db/most/<string:stat>", methods=["POST"])
 def most_global_statistics(stat):
-    if not request.is_json:
-        return jsonify(f"The request does not contain JSON data"), 400
     if stat == "meeting":
         return handler.top_meeting()
     elif stat == "prerequisite":
@@ -165,7 +161,7 @@ def most_global_statistics(stat):
         return jsonify(f"GlobalStatistic: {stat} does not exist!"), 404
 
 
-@app.route("/excel_db/least/classes>", methods=["POST"])
+@app.route("/excel_db/least/classes", methods=["POST"])
 def least_global_statistics():
     return handler.top_least_classes()
 
