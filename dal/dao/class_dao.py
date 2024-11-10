@@ -1,13 +1,23 @@
 from dal.dao.dao import DAO
 
+
 class ClassDAO(DAO):
 
     def __init__(self):
         super().__init__()
 
     # POST ------------------------------------------------------------------------+
-    def post_class(self, cid: int, cname: str, ccode: int,
-                   cdesc: str, term: str, years: str, cred: int, cysllabus: str):
+    def post_class(
+        self,
+        cid: int,
+        cname: str,
+        ccode: int,
+        cdesc: str,
+        term: str,
+        years: str,
+        cred: int,
+        cysllabus: str,
+    ):
         """
         Creates a tuple in the class relation
         :param cid: class id
@@ -51,7 +61,7 @@ class ClassDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, False otherwise
         """
-        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        new = ", ".join([f"{key} = %s" for key in data.keys()])
         params = tuple(data.values()) + (cid,)
         query = f"UPDATE class SET {new} WHERE cid = %s"
         values = [params]

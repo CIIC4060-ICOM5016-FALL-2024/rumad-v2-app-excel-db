@@ -6,7 +6,16 @@ class SectionDAO(DAO):
         super().__init__()
 
     # POST
-    def post_section(self, sid: int, roomid: int, cid: int, mid: int, semester: str, years: int, capacity: int):
+    def post_section(
+        self,
+        sid: int,
+        roomid: int,
+        cid: int,
+        mid: int,
+        semester: str,
+        years: int,
+        capacity: int,
+    ):
         """
         Creates a tuple in the section relation
         :param sid: section id
@@ -38,7 +47,12 @@ class SectionDAO(DAO):
         :return: a list with a single tuple, or None if failed.
         """
         query = "SELECT * FROM section WHERE sid = %s"
-        return self.read(query, [sid, ])
+        return self.read(
+            query,
+            [
+                sid,
+            ],
+        )
 
     # PUT
     def put_section_by_sid(self, sid: int, data):
@@ -48,8 +62,8 @@ class SectionDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, false otherwise.
         """
-        new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (sid, )
+        new = ", ".join([f"{key} = %s" for key in data.keys()])
+        params = tuple(data.values()) + (sid,)
         query = f"UPDATE section SET {new} WHERE sid = %s"
         values = [params]
         return self.update(query, values)
@@ -78,4 +92,3 @@ class SectionDAO(DAO):
                  ORDER BY total_sections;
          """
         return self.read(query)
-

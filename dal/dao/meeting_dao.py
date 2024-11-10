@@ -1,13 +1,16 @@
 from dal.dao.dao import DAO
 from datetime import datetime
 
+
 class MeetingDAO(DAO):
 
     def __init__(self):
         super().__init__()
 
     # POST
-    def post_meeting(self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays):
+    def post_meeting(
+        self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays
+    ):
         """
         Creates a tuple in the meeting relation
         :param mid: meeting id
@@ -47,7 +50,7 @@ class MeetingDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, False otherwise
         """
-        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        new = ", ".join([f"{key} = %s" for key in data.keys()])
         params = tuple(data.values()) + (mid,)
         query = f"UPDATE meeting SET {new} WHERE mid = %s"
         values = [params]
@@ -80,4 +83,3 @@ class MeetingDAO(DAO):
                 JOIN meeting ON section.mid = meeting.mid
         """
         return self.read(query)
-

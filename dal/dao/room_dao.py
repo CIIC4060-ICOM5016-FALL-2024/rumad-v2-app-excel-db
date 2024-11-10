@@ -1,5 +1,6 @@
 from dal.dao.dao import DAO
 
+
 class RoomDAO(DAO):
 
     def __init__(self):
@@ -46,8 +47,8 @@ class RoomDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, False otherwise
         """
-        new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (rid, )
+        new = ", ".join([f"{key} = %s" for key in data.keys()])
+        params = tuple(data.values()) + (rid,)
         query = f"UPDATE room SET {new} WHERE rid = %s"
         values = [params]
         return self.update(query, values)
