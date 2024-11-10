@@ -7,7 +7,9 @@ class MeetingDAO(DAO):
         super().__init__()
 
     # POST
-    def post_meeting(self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays):
+    def post_meeting(
+        self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays
+    ):
         """
         Creates a tuple in the meeting relation
         :param mid: meeting id
@@ -48,9 +50,8 @@ class MeetingDAO(DAO):
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (mid,)
+        values = tuple(data.values()) + (mid,)
         query = f"UPDATE meeting SET {new} WHERE mid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE

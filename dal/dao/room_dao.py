@@ -47,9 +47,8 @@ class RoomDAO(DAO):
         :return: True if success, False otherwise
         """
         new = ', '.join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (rid, )
+        values = tuple(data.values()) + (rid, )
         query = f"UPDATE room SET {new} WHERE rid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE
