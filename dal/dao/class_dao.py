@@ -83,31 +83,21 @@ class ClassDAO(DAO):
         :param rid: academic room id
         :return: a list of tuples, or None if failed
         """
-        # TODO FIX BY ROOM
         query = """
-                 SELECT cname, ccode, cdesc, building, room_number,cid_per_room.amount
-                 FROM (
-                     SELECT DISTINCT sec2.cid, sec2.roomid, sec1.amount
-                     FROM (
-                         SELECT roomid, COUNT(*) AS amount
-                         FROM section
-                         GROUP BY roomid
-                     ) AS sec1
-                     JOIN section AS sec2 ON sec1.roomid = sec2.roomid
-                     WHERE sec2.cid IN (
-                         SELECT sec3.cid
-                         FROM section as sec3
-                         WHERE sec3.roomid = sec2.roomid
-                         ORDER BY sec3.cid
-                         LIMIT 3
-                     )
-                     ORDER BY sec1.amount DESC, sec2.roomid, sec2.cid
-                 ) AS cid_per_room
-                 JOIN class ON cid_per_room.cid = class.cid
-                 JOIN room ON cid_per_room.roomid = room.rid
-                 ORDER BY amount DESC
-         """
-        return self.read(query)
+            SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus
+            FROM (
+                  SELECT cid, count(*) AS amount
+                  FROM section
+                  WHERE roomid = %s
+                  GROUP BY cid
+                  ORDER BY amount DESC
+                  LIMIT 3
+            )
+            AS per_room, class
+            WHERE class.cid = per_room.cid
+            ORDER BY class.cid
+        """
+        return self.read(query, [rid])
 
     def get_top_classes_per_year(self, year: int, semester: str):
         """
@@ -116,27 +106,20 @@ class ClassDAO(DAO):
         :param semester: academic semester
         :return: a list of tuples, or None if failed
         """
-        # TODO FIX BY YEAR SEMESTER
         query = """
-                SELECT class.cid, cname, ccode, cdesc, semester, must_cid_per_semester.section_count
-                FROM (
-                      SELECT sec1.cid, sec1.semester, COUNT(*) AS section_count
-                      FROM section AS sec1
-                      GROUP BY sec1.cid, sec1.semester
-                      HAVING (sec1.cid, sec1.semester) IN (
-                           SELECT sec2.cid, sec2.semester
-                           FROM section as sec2
-                           WHERE sec2.semester = sec1.semester
-                           GROUP BY sec2.cid, sec2.semester
-                           ORDER BY COUNT(*) DESC
-                           LIMIT 3
-                      )
-                      ORDER BY section_count DESC, sec1.semester
-                ) AS must_cid_per_semester
-                JOIN class ON must_cid_per_semester.cid = class.cid
-                ORDER BY section_count DESC;
+                SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus
+                FROM (SELECT cid, count(*) AS amount
+                      FROM section
+                      WHERE semester = %s
+                        AND years = %s
+                      GROUP BY cid
+                      ORDER BY amount DESC
+                      LIMIT 3
+                ) as cid_per_semester, class
+                where class.cid = cid_per_semester.cid
         """
-        return self.read(query)
+        values = [semester, year]
+        return self.read(query, values)
 
     def get_top_prerequisites(self):
         """

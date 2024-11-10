@@ -78,18 +78,22 @@ class RoomDAO(DAO):
         values = [building]
         return self.read(query, values)
 
-    def get_top_ratio_rooms(self, rid):
-        # TODO FIX QUERY BY ID
+    def get_top_ratio_rooms(self, building):
         """
         Gets all rows from the rooms relation
         :return: a list of tuples, or None if failed
         """
         query = """
-                SELECT s.sid, s.cid, r.building, r.room_number, s.capacity AS students_enrolled, r.capacity AS room_capacity, 
-                       CAST(CAST(s.capacity AS DECIMAL) / r.capacity AS DECIMAL(20, 3)) AS student_to_capacity_ratio 
-                       FROM section s JOIN room r ON s.roomid = r.rid 
-                       GROUP BY s.sid, s.cid, r.building, r.room_number, s.capacity, r.capacity 
-                       ORDER BY student_to_capacity_ratio DESC limit 3;
+                SELECT rid, building, room_number, capacity
+                FROM (
+                    SELECT room.rid, room.building, room.room_number, room.capacity,
+                           CAST(CAST(section.capacity AS DECIMAL) / room.capacity AS DECIMAL(20, 3)) AS student_to_capacity_ratio
+                    FROM section
+                    JOIN room ON section.roomid = room.rid
+                    WHERE building = %s
+                ) AS subquery
+                ORDER BY student_to_capacity_ratio DESC
+                LIMIT 3;
         """
-        values = [rid]
+        values = [building]
         return self.read(query, values)
