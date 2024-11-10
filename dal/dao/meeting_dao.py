@@ -1,7 +1,6 @@
 from dal.dao.dao import DAO
 from datetime import datetime
 
-
 class MeetingDAO(DAO):
 
     def __init__(self):
@@ -50,10 +49,9 @@ class MeetingDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, False otherwise
         """
-        new = ", ".join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (mid,)
+        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        values = tuple(data.values()) + (mid,)
         query = f"UPDATE meeting SET {new} WHERE mid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE
@@ -83,3 +81,4 @@ class MeetingDAO(DAO):
                 JOIN meeting ON section.mid = meeting.mid
         """
         return self.read(query)
+

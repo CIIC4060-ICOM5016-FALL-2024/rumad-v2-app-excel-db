@@ -62,10 +62,9 @@ class SectionDAO(DAO):
         :param data: attributes to be updated
         :return: True if success, false otherwise.
         """
-        new = ", ".join([f"{key} = %s" for key in data.keys()])
-        params = tuple(data.values()) + (sid,)
+        new = ', '.join([f"{key} = %s" for key in data.keys()])
+        values = tuple(data.values()) + (sid, )
         query = f"UPDATE section SET {new} WHERE sid = %s"
-        values = [params]
         return self.update(query, values)
 
     # DELETE
@@ -92,3 +91,4 @@ class SectionDAO(DAO):
                  ORDER BY total_sections;
          """
         return self.read(query)
+

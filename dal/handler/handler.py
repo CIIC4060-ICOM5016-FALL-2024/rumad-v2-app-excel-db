@@ -135,7 +135,7 @@ class Handler:
                     "cid": item[2],
                     "mid": item[3],
                     "semester": item[4],
-                    "year": item[5],
+                    "years": item[5],
                     "capacity": item[6],
                 }
                 result.append(result_dict)
@@ -281,6 +281,7 @@ class Handler:
                     "rid": item[0],
                     "building": item[1],
                     "room_number": item[2],
+                    "capacity": item[3]
                 }
                 result.append(result_dict)
             return jsonify(result)
@@ -294,7 +295,7 @@ class Handler:
 
     def delete_room_by_id(self, rid):
         dao = RoomDAO()
-        if dao.delete(rid):
+        if dao.delete_room(rid):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
