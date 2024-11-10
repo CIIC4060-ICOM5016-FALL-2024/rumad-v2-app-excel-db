@@ -105,6 +105,7 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
+    # SECTIONS Handlers -----------------+
     def get_sections(self):
         result = []
         dao = SectionDAO()
@@ -154,6 +155,7 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
+    # MEETINGS Handlers -----------------+
     def get_meetings(self):
         result = []
         dao = MeetingDAO()
@@ -201,6 +203,7 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
+    # ROOM Handlers -----------------+
     def get_rooms(self):
         result = []
         dao = RoomDAO()
@@ -245,6 +248,7 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
+    # LOCAL STATISTICS -----------------+
     def top_room_capacity_by_building(self, building):
         result = []
         dao = RoomDAO()
@@ -293,7 +297,7 @@ class Handler:
             return jsonify(result)
         return jsonify("Error not executed"), 404
 
-    # Global Statistics ---------------------------------------------+
+    # GLOBAL STATISTICS -----------------+
     def top_meeting(self):
         result = []
         dao = MeetingDAO()
