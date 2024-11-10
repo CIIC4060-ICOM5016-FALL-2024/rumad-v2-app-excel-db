@@ -33,8 +33,8 @@ def create_db(cursor):
         );
 
         CREATE TABLE IF NOT EXISTS requisite (
-            classid INTEGER NOT NULL REFERENCES class(cid),
-            reqid   INTEGER NOT NULL REFERENCES class(cid),
+            classid INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
+            reqid   INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
             prereq  BOOLEAN,
             PRIMARY KEY (classid, reqid)
         );
@@ -48,9 +48,9 @@ def create_db(cursor):
 
         CREATE TABLE IF NOT EXISTS section (
             sid      SERIAL PRIMARY KEY,
-            roomid   INTEGER REFERENCES room(rid),
-            cid      INTEGER REFERENCES class(cid),
-            mid      INTEGER REFERENCES meeting(mid),
+            roomid   INTEGER REFERENCES room(rid) ON DELETE CASCADE,
+            cid      INTEGER REFERENCES class(cid) ON DELETE CASCADE,
+            mid      INTEGER REFERENCES meeting(mid) ON DELETE CASCADE,
             semester VARCHAR,
             years    VARCHAR,
             capacity INTEGER,
