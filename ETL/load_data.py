@@ -42,7 +42,7 @@ def create_db(cursor):
         
         IF NEW.cdays = 'MJ' THEN
             IF duration <> INTERVAL '01:15:00' THEN
-                RAISE EXCEPTION 'Invalid duration (%) for a MJ meeting: (50 minutes)',
+                RAISE EXCEPTION 'Invalid duration (%) for a MJ meeting: (75 minutes)',
                 duration;
             END IF;
         ELSIF NEW.cdays = 'LWV' THEN
@@ -61,7 +61,7 @@ def create_db(cursor):
         CREATE TRIGGER check_meeting_time
         BEFORE INSERT OR UPDATE ON meeting
         FOR EACH ROW
-        EXECUTE FUNCTION check_meeting_time();
+        EXECUTE FUNCTION check_meeting_duration();
 
         CREATE TABLE IF NOT EXISTS requisite (
             classid INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
@@ -111,12 +111,12 @@ def create_db(cursor):
         CREATE OR REPLACE FUNCTION check_section_class()
         RETURNS TRIGGER AS $$
         DECLARE
-            class_term  VARCHAR;
-            class_year  VARCHAR;
-            section_year INTEGER;
+            class_term      VARCHAR;
+            class_year      VARCHAR;
+            section_year    INTEGER;
         BEGIN
         
-        SELECT term, years INTO class_term, class_year from class where cid = NEW.cid;
+        SELECT term, years INTO class_term, class_year  FROM class WHERE cid = NEW.cid;
     
         IF class_term = 'First Semester, Second Semester' 
         AND (NEW.semester != 'Fall' AND NEW.semester != 'Spring') THEN
@@ -148,6 +148,31 @@ def create_db(cursor):
         
         $$ LANGUAGE plpgsql;
         
+        CREATE OR REPLACE FUNCTION section_time_check()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            section_start   TIMESTAMP;
+            section_end     TIMESTAMP;
+            section_days    VARCHAR;
+        BEGIN
+        SELECT starttime, endtime, cdays INTO section_start, section_end, section_days FROM meeting WHERE mid = NEW.mid;
+        IF section_days = 'MJ' THEN
+            IF section_start::time < '07:30:00'::time OR section_start::time > '19:45:00'::time THEN
+                RAISE EXCEPTION 'MJ section starts % outside of valid time (7:30AM - 7:45PM)',
+                section_start;
+            ELSIF section_end::time < '07:30:00'::time OR section_end::time > '19:45:00'::time THEN
+                RAISE EXCEPTION 'MJ section ends % outside of valid time (7:30AM - 7:45PM)',
+                section_end;
+            ELSIF section_end::time > '10:15:00'::time AND (section_end::time < '12:30:00'::time
+             OR section_start::time < '12:30:00'::time) THEN 
+                RAISE EXCEPTION 'MJ section (% - %) violates universal hour (10:15AM - 12:30PM)',
+                section_start, section_end;
+            END IF;
+        END IF;
+        RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        
         CREATE TRIGGER section_capacity_check
         BEFORE INSERT OR UPDATE ON section
         FOR EACH ROW
@@ -157,7 +182,11 @@ def create_db(cursor):
         BEFORE INSERT OR UPDATE ON section
         FOR EACH ROW
         EXECUTE FUNCTION check_section_class();
-    
+        
+        CREATE TRIGGER section_time_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION section_time_check();
         
         CREATE TABLE IF NOT EXISTS syllabus (
             chunkid        SERIAL PRIMARY KEY,
