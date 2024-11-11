@@ -394,23 +394,23 @@ def load_data():
     # Transform data
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
     # Test Load data
-    engine = psycopg2.connect(
-        dbname="excel_db",
-        user="excel",
-        password="password",
-        host="localhost",
-        port="1234"
-    )
+    # engine = psycopg2.connect(
+    #     dbname="excel_db",
+    #     user="excel",
+    #     password="password",
+    #     host="localhost",
+    #     port="1234"
+    # )
 
     # Heroku Load data
     # Load data
-    # engine = psycopg2.connect(
-    #     dbname="dc79t7ga9hc6ud",
-    #     user="ufm5iffjti843g",
-    #     password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
-    #     host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
-    #     port="5432"
-    # )
+    engine = psycopg2.connect(
+        dbname="dc79t7ga9hc6ud",
+        user="ufm5iffjti843g",
+        password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
+        host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
+        port="5432"
+    )
     cursor = engine.cursor()
     create_db(cursor)
     load_classes(courses, cursor)
