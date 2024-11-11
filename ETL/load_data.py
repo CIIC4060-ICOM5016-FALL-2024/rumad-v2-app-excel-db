@@ -14,7 +14,7 @@ def create_db(cursor):
     """
     sql_commands = """
         CREATE TABLE IF NOT EXISTS class (
-            cid       SERIAL PRIMARY KEY,
+            cid       SERIAL PRIMARY KEY, CHECK(cid >= 2),
             cname     VARCHAR,
             ccode     VARCHAR,
             cdesc     VARCHAR,
@@ -29,12 +29,43 @@ def create_db(cursor):
             ccode     VARCHAR,
             starttime TIMESTAMP,
             endtime   TIMESTAMP,
-            cdays     VARCHAR
+            cdays     VARCHAR CHECK(cdays IN ('MJ', 'LWV'))
         );
+        
+        CREATE OR REPLACE FUNCTION check_meeting_duration()
+        RETURNS TRIGGER AS $$
+        DECLARE 
+            duration INTERVAL;
+        BEGIN
+        
+        duration := NEW.endtime - NEW.starttime;
+        
+        IF NEW.cdays = 'MJ' THEN
+            IF duration <> INTERVAL '01:15:00' THEN
+                RAISE EXCEPTION 'Invalid duration (%) for a MJ meeting: (75 minutes)',
+                duration;
+            END IF;
+        ELSIF NEW.cdays = 'LWV' THEN
+            IF duration <> INTERVAL '00:50:00' THEN
+                RAISE EXCEPTION 'Invalid duration (%) for a LMV meeting: (50 minutes)',
+                duration;
+            END IF;  
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        CREATE TRIGGER check_meeting_time
+        BEFORE INSERT OR UPDATE ON meeting
+        FOR EACH ROW
+        EXECUTE FUNCTION check_meeting_duration();
 
         CREATE TABLE IF NOT EXISTS requisite (
-            classid INTEGER NOT NULL REFERENCES class(cid),
-            reqid   INTEGER NOT NULL REFERENCES class(cid),
+            classid INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
+            reqid   INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
             prereq  BOOLEAN,
             PRIMARY KEY (classid, reqid)
         );
@@ -48,14 +79,115 @@ def create_db(cursor):
 
         CREATE TABLE IF NOT EXISTS section (
             sid      SERIAL PRIMARY KEY,
-            roomid   INTEGER REFERENCES room(rid),
-            cid      INTEGER REFERENCES class(cid),
-            mid      INTEGER REFERENCES meeting(mid),
+            roomid   INTEGER REFERENCES room(rid) ON DELETE CASCADE,
+            cid      INTEGER REFERENCES class(cid) ON DELETE CASCADE,
+            mid      INTEGER REFERENCES meeting(mid) ON DELETE CASCADE,
             semester VARCHAR,
             years    VARCHAR,
-            capacity INTEGER
+            capacity INTEGER,
+            UNIQUE (roomid, mid, semester, years),
+            UNIQUE (cid, mid, semester, years)
         );
-
+        
+        CREATE OR REPLACE FUNCTION check_section_capacity()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            room_capacity INTEGER;
+        BEGIN
+        
+        SELECT capacity INTO room_capacity FROM room WHERE rid = NEW.roomid;
+        
+        IF NEW.capacity > room_capacity THEN
+            RAISE EXCEPTION 'Section capacity (%) exceeds room_capacity (%)', 
+            NEW.capacity, room_capacity;
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        CREATE OR REPLACE FUNCTION check_section_class()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            class_term      VARCHAR;
+            class_year      VARCHAR;
+            section_year    INTEGER;
+        BEGIN
+        
+        SELECT term, years INTO class_term, class_year  FROM class WHERE cid = NEW.cid;
+    
+        IF class_term = 'First Semester, Second Semester' 
+        AND (NEW.semester != 'Fall' AND NEW.semester != 'Spring') THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        ELSIF class_term = 'First Semester' AND NEW.semester != 'Fall' THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        ELSIF class_term = 'Second Semester' AND NEW.semester != 'Spring' THEN
+            RAISE EXCEPTION 'Section was set to term (%) but class is offered on (%)',
+            NEW.semester, class_term;
+        END IF;
+        
+        section_year := CAST(NEW.years AS INTEGER);
+        
+        IF class_year = 'Even Years' AND (section_year % 2 != 0) THEN
+            RAISE EXCEPTION 'Section was set to year (%) but class is offered on (%)',
+            NEW.years, class_year;
+        END IF;
+        
+        IF class_year = 'Odd Years' AND (section_year % 2 = 0) THEN
+            RAISE EXCEPTION 'Section was set to year (%) but class is offered on (%)',
+            NEW.years, class_year;
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        CREATE OR REPLACE FUNCTION section_time_check()
+        RETURNS TRIGGER AS $$
+        DECLARE
+            section_start   TIMESTAMP;
+            section_end     TIMESTAMP;
+            section_days    VARCHAR;
+        BEGIN
+        SELECT starttime, endtime, cdays INTO section_start, section_end, section_days FROM meeting WHERE mid = NEW.mid;
+        IF section_days = 'MJ' THEN
+            IF section_start::time < '07:30:00'::time OR section_start::time > '19:45:00'::time THEN
+                RAISE EXCEPTION 'MJ section starts % outside of valid time (7:30AM - 7:45PM)',
+                section_start;
+            ELSIF section_end::time < '07:30:00'::time OR section_end::time > '19:45:00'::time THEN
+                RAISE EXCEPTION 'MJ section ends % outside of valid time (7:30AM - 7:45PM)',
+                section_end;
+            ELSIF section_end::time > '10:15:00'::time AND (section_end::time < '12:30:00'::time
+             OR section_start::time < '12:30:00'::time) THEN 
+                RAISE EXCEPTION 'MJ section (% - %) violates universal hour (10:15AM - 12:30PM)',
+                section_start, section_end;
+            END IF;
+        END IF;
+        RETURN NEW;
+        END;
+        $$ LANGUAGE plpgsql;
+        
+        CREATE TRIGGER section_capacity_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION check_section_capacity();
+        
+        CREATE TRIGGER section_class_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION check_section_class();
+        
+        CREATE TRIGGER section_time_check
+        BEFORE INSERT OR UPDATE ON section
+        FOR EACH ROW
+        EXECUTE FUNCTION section_time_check();
+        
         CREATE TABLE IF NOT EXISTS syllabus (
             chunkid        SERIAL PRIMARY KEY,
             courseid       INTEGER REFERENCES class(cid),
@@ -262,23 +394,23 @@ def load_data():
     # Transform data
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
     # Test Load data
-    # engine = psycopg2.connect(
-    #     dbname="excel_db",
-    #     user="excel",
-    #     password="password",
-    #     host="localhost",
-    #     port="1234"
-    # )
+    engine = psycopg2.connect(
+        dbname="excel_db",
+        user="excel",
+        password="password",
+        host="localhost",
+        port="1234"
+    )
 
     # Heroku Load data
     # Load data
-    engine = psycopg2.connect(
-        dbname="dc79t7ga9hc6ud",
-        user="ufm5iffjti843g",
-        password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
-        host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
-        port="5432"
-    )
+    # engine = psycopg2.connect(
+    #     dbname="dc79t7ga9hc6ud",
+    #     user="ufm5iffjti843g",
+    #     password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
+    #     host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
+    #     port="5432"
+    # )
     cursor = engine.cursor()
     create_db(cursor)
     load_classes(courses, cursor)
@@ -292,4 +424,3 @@ def load_data():
         cursor.close()
     if engine:
         engine.close()
-
