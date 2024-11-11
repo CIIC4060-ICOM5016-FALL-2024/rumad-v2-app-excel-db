@@ -8,7 +8,7 @@ class MeetingDAO(DAO):
 
     # POST
     def post_meeting(
-        self, mid: int, ccode: int, start_time: datetime, end_time: datetime, cdays
+        self, ccode: int, start_time: datetime, end_time: datetime, cdays
     ):
         """
         Creates a tuple in the meeting relation
@@ -18,8 +18,8 @@ class MeetingDAO(DAO):
         :param end_time: end of the meeting
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO meeting VALUES (%s, %s, %s, %s, %s)"
-        values = [mid, ccode, start_time, end_time, cdays]
+        query = "INSERT INTO meeting (ccode, starttime, endtime, cdays) VALUES (%s, %s, %s, %s)"
+        values = [ccode, start_time, end_time, cdays]
         return self.create(query, values)
 
     # GET

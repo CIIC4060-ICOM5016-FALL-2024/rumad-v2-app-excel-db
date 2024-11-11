@@ -6,17 +6,16 @@ class RoomDAO(DAO):
         super().__init__()
 
     # POST
-    def post_room(self, rid: int, building: str, room_number: int, capacity: int):
+    def post_room(self, building: str, room_number: int, capacity: int):
         """
         Creates a tuple in the room relation
-        :param rid: room id
         :param building: building name
         :param room_number: room number
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO room VALUES (%s, %s, %s, %s)"
-        values = (rid, building, room_number, capacity)
+        query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s)"
+        values = (building, room_number, capacity)
         return self.create(query, values)
 
     # GET

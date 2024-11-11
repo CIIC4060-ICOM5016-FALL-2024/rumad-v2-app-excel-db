@@ -8,7 +8,6 @@ class SectionDAO(DAO):
     # POST
     def post_section(
         self,
-        sid: int,
         roomid: int,
         cid: int,
         mid: int,
@@ -18,7 +17,6 @@ class SectionDAO(DAO):
     ):
         """
         Creates a tuple in the section relation
-        :param sid: section id
         :param roomid: room id
         :param cid: course id
         :param mid: meeting id
@@ -27,8 +25,8 @@ class SectionDAO(DAO):
         :param capacity: number of enrolled students
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO section VALUES (%s, %s, %s, %s, %s, %s, %s)"
-        values = [sid, roomid, cid, mid, semester, years, capacity]
+        query = "INSERT INTO section (roomid, cid, mid, semester, years, capacity) VALUES (%s, %s, %s, %s, %s, %s)"
+        values = [roomid, cid, mid, semester, years, capacity]
         return self.create(query, values)
 
     # GET
