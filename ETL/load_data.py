@@ -29,8 +29,39 @@ def create_db(cursor):
             ccode     VARCHAR,
             starttime TIMESTAMP,
             endtime   TIMESTAMP,
-            cdays     VARCHAR
+            cdays     VARCHAR CHECK(cdays IN ('MJ', 'LWV'))
         );
+        
+        CREATE OR REPLACE FUNCTION check_meeting_duration()
+        RETURNS TRIGGER AS $$
+        DECLARE 
+            duration INTERVAL;
+        BEGIN
+        
+        duration := NEW.endtime - NEW.starttime;
+        
+        IF NEW.cdays = 'MJ' THEN
+            IF duration <> INTERVAL '01:15:00' THEN
+                RAISE EXCEPTION 'Invalid duration (%) for a MJ meeting: (50 minutes)',
+                duration;
+            END IF;
+        ELSIF NEW.cdays = 'LWV' THEN
+            IF duration <> INTERVAL '00:50:00' THEN
+                RAISE EXCEPTION 'Invalid duration (%) for a LMV meeting: (50 minutes)',
+                duration;
+            END IF;  
+        END IF;
+        
+        RETURN NEW;
+        
+        END;
+        
+        $$ LANGUAGE plpgsql;
+        
+        CREATE TRIGGER check_meeting_time
+        BEFORE INSERT OR UPDATE ON meeting
+        FOR EACH ROW
+        EXECUTE FUNCTION check_meeting_time();
 
         CREATE TABLE IF NOT EXISTS requisite (
             classid INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
@@ -116,8 +147,6 @@ def create_db(cursor):
         END;
         
         $$ LANGUAGE plpgsql;
-        
-        
         
         CREATE TRIGGER section_capacity_check
         BEFORE INSERT OR UPDATE ON section
