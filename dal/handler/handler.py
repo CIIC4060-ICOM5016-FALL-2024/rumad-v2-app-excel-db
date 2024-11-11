@@ -283,7 +283,7 @@ class Handler:
     def top_meeting(self):
         dao = MeetingDAO()
         meetings = dao.get_top_meetings()
-        return result_class(meetings)
+        return result_meeting(meetings)
 
     def top_pre_requisite(self):
         result = []
