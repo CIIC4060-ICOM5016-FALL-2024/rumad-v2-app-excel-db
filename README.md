@@ -1,6 +1,6 @@
 <div align="center">
   <a href="https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db">
-    <img src="logo/excel_db_logo.jpg" width="200">
+    <img src="excel_db_logo.jpg" width="200">
   </a>
   <br>
   <h1>$${\color{lightgreen}\textsf{ Excel DB Database Systems Project: RUMAD 2.0}}$$</h1>
