@@ -6,12 +6,75 @@ from dal.dao.section_dao import SectionDAO
 
 from flask import jsonify
 
+def result_class(classes):
+    result = []
+    if classes:
+        for item in classes:
+            result_dict = {
+                "cid": item[0],
+                "cname": item[1],
+                "ccode": item[2],
+                "cdesc": item[3],
+                "term": item[4],
+                "years": item[5],
+                "cred": item[6],
+                "csyllabus": item[7],
+            }
+            result.append(result_dict)
+        return jsonify(result)
+    return jsonify("Error not executed"), 404
+
+def result_section(sections):
+    result = []
+    if sections:
+        for item in sections:
+            result_dict = {
+                "sid": item[0],
+                "roomid": item[1],
+                "cid": item[2],
+                "mid": item[3],
+                "semester": item[4],
+                "years": item[5],
+                "capacity": item[6],
+            }
+            result.append(result_dict)
+        return jsonify(result)
+    return jsonify("Error not executed"), 404
+
+def result_meeting(meetings):
+    result = []
+    if meetings:
+        for item in meetings:
+            result_dict = {
+                "mid": item[0],
+                "ccode": item[1],
+                "starttime": item[2],
+                "endtime": item[3],
+                "cdays": item[4],
+            }
+            result.append(result_dict)
+        return jsonify(result)
+    return jsonify("Error not executed"), 404
+
+def result_room(rooms):
+    result = []
+    if rooms:
+        for item in rooms:
+            result_dict = {
+                "rid": item[0],
+                "building": item[1],
+                "room_number": item[2],
+                "capacity": item[3],
+            }
+            result.append(result_dict)
+        return jsonify(result)
+    return jsonify("Error not executed"), 404
 
 class Handler:
     def __init__(self):
         pass
 
-    # Class Handlers -----------------+
+    """ CLASS HANDLERS """
     def post_class(self, data):
         dao = ClassDAO()
         cid = data["cid"]
@@ -27,44 +90,14 @@ class Handler:
         return jsonify("Error not executed"), 404
 
     def get_classes(self):
-        result = []
         dao = ClassDAO()
         classes = dao.get_all_classes()
-        if classes:
-            for item in classes:
-                result_dict = {
-                    "cid": item[0],
-                    "cname": item[1],
-                    "ccode": item[2],
-                    "cdesc": item[3],
-                    "term": item[4],
-                    "years": item[5],
-                    "cred": item[6],
-                    "csyllabus": item[7],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_class(classes)
 
     def get_class_by_id(self, cid):
-        result = []
         dao = ClassDAO()
         classes = dao.get_class_by_cid(int(cid))
-        if classes:
-            for item in classes:
-                resultDict = {
-                    "cid": item[0],
-                    "cname": item[1],
-                    "ccode": item[2],
-                    "cdesc": item[3],
-                    "term": item[4],
-                    "years": item[5],
-                    "cred": item[6],
-                    "csyllabus": item[7],
-                }
-                result.append(resultDict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_class(classes)
 
     def put_class_by_id(self, cid, data):
         dao = ClassDAO()
@@ -78,7 +111,7 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
-    # REQUISITE HANDLER ----------------+
+    """ REQUISITE HANDLER """
     def post_requisite(self, data):
         dao = RequisiteDAO()
         classid = data["classid"]
@@ -122,25 +155,11 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
-    # SECTIONS Handlers -----------------+
+    """ SECTIONS HANDLERS """
     def get_sections(self):
-        result = []
         dao = SectionDAO()
         sections = dao.get_all_sections()
-        if sections:
-            for item in sections:
-                result_dict = {
-                    "sid": item[0],
-                    "roomid": item[1],
-                    "cid": item[2],
-                    "mid": item[3],
-                    "semester": item[4],
-                    "years": item[5],
-                    "capacity": item[6],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_section(sections)
 
     def post_section(self, data):
         dao = SectionDAO()
@@ -156,23 +175,9 @@ class Handler:
         return jsonify("Error not executed"), 404
 
     def get_section_by_id(self, sid):
-        result = []
         dao = SectionDAO()
         section = dao.get_section_by_sid(int(sid))
-        if section:
-            for item in section:
-                result_dict = {
-                    "sid": item[0],
-                    "roomid": item[1],
-                    "cid": item[2],
-                    "mid": item[3],
-                    "semester": item[4],
-                    "years": item[5],
-                    "capacity": item[6],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_section(section)
 
     def put_section_by_id(self, sid, data):
         dao = SectionDAO()
@@ -186,23 +191,11 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
-    # MEETINGS Handlers -----------------+
+    """ MEETINGS HANDLERS """
     def get_meetings(self):
-        result = []
         dao = MeetingDAO()
         meetings = dao.get_all_meetings()
-        if meetings:
-            for item in meetings:
-                result_dict = {
-                    "mid": item[0],
-                    "ccode": item[1],
-                    "starttime": item[2],
-                    "endtime": item[3],
-                    "cdays": item[4],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_meeting(meetings)
 
     def post_meeting(self, data):
         dao = MeetingDAO()
@@ -216,21 +209,9 @@ class Handler:
         return jsonify("Error not executed"), 404
 
     def get_meeting_by_id(self, mid):
-        result = []
         dao = MeetingDAO()
         meeting = dao.get_meeting_by_mid(int(mid))
-        if meeting:
-            for item in meeting:
-                result_dict = {
-                    "mid": item[0],
-                    "ccode": item[1],
-                    "starttime": item[2],
-                    "endtime": item[3],
-                    "cdays": item[4],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_meeting(meeting)
 
     def put_meeting_by_id(self, mid, data):
         dao = MeetingDAO()
@@ -244,22 +225,11 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
-    # ROOM Handlers -----------------+
+    """ ROOM HANDLERS """
     def get_rooms(self):
-        result = []
         dao = RoomDAO()
         rooms = dao.get_all_rooms()
-        if rooms:
-            for item in rooms:
-                result_dict = {
-                    "rid": item[0],
-                    "building": item[1],
-                    "room_number": item[2],
-                    "capacity": item[3],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_room(rooms)
 
     def post_rooms(self, data):
         dao = RoomDAO()
@@ -272,20 +242,9 @@ class Handler:
         return jsonify("Error not executed"), 404
 
     def get_room_by_id(self, rid):
-        result = []
         dao = RoomDAO()
         room = dao.get_room_by_rid(rid)
-        if room:
-            for item in room:
-                result_dict = {
-                    "rid": item[0],
-                    "building": item[1],
-                    "room_number": item[2],
-                    "capacity": item[3]
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_room(room)
 
     def put_room_by_id(self, rid, data):
         dao = RoomDAO()
@@ -299,97 +258,32 @@ class Handler:
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
-    # LOCAL STATISTICS -----------------+
+    """ LOCAL STATISTICS """
     def top_room_capacity_by_building(self, building):
-        result = []
         dao = RoomDAO()
         rooms = dao.get_top_rooms_in_building(building)
-        if rooms:
-            for item in rooms:
-                result_dict = {
-                    "rid": item[0],
-                    "building": item[1],
-                    "room_number": item[2],
-                    "capacity": item[3],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_room(rooms)
 
     def top_ratio_rooms(self, id):
-        result = []
         dao = RoomDAO()
         rooms = dao.get_top_ratio_rooms(id)
-        if rooms:
-            for item in rooms:
-                result_dict = {
-                    "rid": item[0],
-                    "building": item[1],
-                    "room_number": item[2],
-                    "capacity": item[3],
-                }
-                result.append(result_dict)
-        else:
-            return jsonify("Error not executed"), 404
-        return jsonify(result)
+        return result_room(rooms)
 
     def top_classes_per_room(self, id):
-        result = []
         dao = ClassDAO()
         classes = dao.get_top_classes_per_room(id)
-        if classes:
-            for item in classes:
-                result_dict = {
-                    "cid": item[0],
-                    "cname": item[1],
-                    "ccode": item[2],
-                    "cdesc": item[3],
-                    "term": item[4],
-                    "years": item[5],
-                    "cred": item[6],
-                    "csyllabus": item[7],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_class(classes)
 
     def top_classes_per_semester(self, year, semester):
-        result = []
         dao = ClassDAO()
         classes = dao.get_top_classes_per_year(year, semester)
-        if classes:
-            for item in classes:
-                result_dict = {
-                    "cid": item[0],
-                    "cname": item[1],
-                    "ccode": item[2],
-                    "cdesc": item[3],
-                    "term": item[4],
-                    "years": item[5],
-                    "cred": item[6],
-                    "csyllabus": item[7],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_class(classes)
 
-    # GLOBAL STATISTICS -----------------+
+    """ GLOBAL STATISTICS """
     def top_meeting(self):
-        result = []
         dao = MeetingDAO()
         meetings = dao.get_top_meetings()
-        if meetings:
-            for item in meetings:
-                result_dict = {
-                    "mid": item[0],
-                    "ccode": item[1],
-                    "starttime": item[2],
-                    "endtime": item[3],
-                    "cdays": item[4],
-                }
-                result.append(result_dict)
-            return jsonify(result)
-        return jsonify("Error not executed"), 404
+        return result_class(meetings)
 
     def top_pre_requisite(self):
         result = []

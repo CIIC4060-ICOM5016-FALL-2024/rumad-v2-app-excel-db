@@ -7,135 +7,127 @@ CORS(app)
 
 handler = Handler()
 
-
 @app.route("/excel_db")
 def excel_db():
     return jsonify(f"Welcome")
-
 
 @app.route("/")
 def home():
     return redirect("/excel_db", code=302)
 
+""" CLASS CRUD ROUTES """
+@app.route("/excel_db/class", methods=["GET"])
+def get_classes():
+    return handler.get_classes()
 
-###################### CLASS ######################
+@app.route("/excel_db/class", methods=["POST"])
+def post_classes():
+    return handler.post_class(request.json)
 
+@app.route("/excel_db/class/<int:cid>", methods=["GET"])
+def get_classes_by_id(cid):
+    return handler.get_class_by_id(cid)
 
-@app.route("/excel_db/class", methods=["GET", "POST"])
-def classes():
-    if request.method == "GET":
-        return handler.get_classes()
-    if request.method == "POST":
-        return handler.post_class(request.json)
+@app.route("/excel_db/class/<int:cid>", methods=["PUT"])
+def put_classes_by_id(cid):
+    return handler.put_class_by_id(cid, request.json)
 
+@app.route("/excel_db/class/<int:cid>", methods=["DELETE"])
+def delete_classes_by_id(cid):
+    return handler.delete_class_by_id(cid)
 
-@app.route("/excel_db/class/<int:cid>", methods=["GET", "PUT", "DELETE"])
-def classes_by_id(cid):
-    if request.method == "GET":
-        return handler.get_class_by_id(cid)
-    if request.method == "PUT":
-        return handler.put_class_by_id(cid, request.json)
-    if request.method == "DELETE":
-        return handler.delete_class_by_id(cid)
+""" REQUISITE CRUD ROUTES """
+@app.route("/excel_db/requisite", methods=["GET"])
+def get_requisites():
+    return handler.get_requisites()
 
+@app.route("/excel_db/requisite", methods=["POST"])
+def post_requisites():
+    return handler.post_requisite(request.json)
 
-#################### REQUISITE ####################
+@app.route("/excel_db/requisite/<int:classid>/<int:reqid>", methods=["GET"])
+def get_requisites_by_id(classid, reqid):
+    return handler.get_requisite_by_id(classid, reqid)
 
+@app.route("/excel_db/requisite/<int:classid>/<int:reqid>", methods=["PUT"])
+def put_requisites_by_id(classid, reqid):
+    return handler.put_requisite_by_classid_reqid(classid, reqid, request.json)
 
-@app.route("/excel_db/requisite", methods=["GET", "POST"])
-def requisites():
-    if request.method == "GET":
-        return handler.get_requisites()
-    if request.method == "POST":
-        return handler.post_requisite(request.json)
+@app.route("/excel_db/requisite/<int:classid>/<int:reqid>", methods=["DELETE"])
+def delete_requisites_by_id(classid, reqid):
+    return handler.delete_requisite(classid, reqid)
 
+""" SECTION CRUD ROUTES """
+@app.route("/excel_db/section", methods=["GET"])
+def get_sections():
+    return handler.get_sections()
 
-@app.route(
-    "/excel_db/requisite/<int:classid>/<int:reqid>", methods=["GET", "PUT", "DELETE"]
-)
-def requisites_by_id(classid, reqid):
-    if request.method == "GET":
-        return handler.get_requisite_by_id(classid, reqid)
-    if request.method == "PUT":
-        return handler.put_requisite_by_classid_reqid(classid, reqid, request.json)
-    if request.method == "DELETE":
-        return handler.delete_requisite(classid, reqid)
+@app.route("/excel_db/section", methods=["POST"])
+def post_sections():
+    return handler.post_section(request.json)
 
+@app.route("/excel_db/section/<int:sid>", methods=["GET"])
+def get_sections_by_id(sid):
+    return handler.get_section_by_id(sid)
 
-##################### SECTION #####################
+@app.route("/excel_db/section/<int:sid>", methods=["PUT"])
+def put_sections_by_id(sid):
+    return handler.put_section_by_id(sid, request.json)
 
+@app.route("/excel_db/section/<int:sid>", methods=["DELETE"])
+def delete_sections_by_id(sid):
+    return handler.delete_section(sid)
 
-@app.route("/excel_db/section", methods=["GET", "POST"])
-def sections():
-    if request.method == "GET":
-        return handler.get_sections()
-    if request.method == "POST":
-        return handler.post_section(request.json)
+""" MEETINGS CRUD ROUTES """
+@app.route("/excel_db/meeting", methods=["GET"])
+def get_meetings():
+    return handler.get_meetings()
 
+@app.route("/excel_db/meeting", methods=["POST"])
+def post_meetings():
+    return handler.post_meeting(request.json)
 
-@app.route("/excel_db/section/<int:sid>", methods=["GET", "PUT", "DELETE"])
-def sections_by_id(sid):
-    if request.method == "GET":
-        return handler.get_section_by_id(sid)
-    if request.method == "PUT":
-        return handler.put_section_by_id(sid, request.json)
-    if request.method == "DELETE":
-        return handler.delete_section(sid)
+@app.route("/excel_db/meeting/<int:mid>", methods=["GET"])
+def get_meetings_by_id(mid):
+    return handler.get_meeting_by_id(mid)
 
+@app.route("/excel_db/meeting/<int:mid>", methods=["PUT"])
+def put_meetings_by_id(mid):
+    return handler.put_meeting_by_id(mid, request.json)
 
-##################### MEETING #####################
+@app.route("/excel_db/meeting/<int:mid>", methods=["DELETE"])
+def delete_meetings_by_id(mid):
+    return handler.delete_meeting(mid)
 
+""" ROOM CRUD ROUTES """
+@app.route("/excel_db/room", methods=["GET"])
+def get_rooms():
+    return handler.get_rooms()
 
-@app.route("/excel_db/meeting", methods=["GET", "POST"])
-def meetings():
-    if request.method == "GET":
-        return handler.get_meetings()
-    if request.method == "POST":
-        return handler.post_meeting(request.json)
+@app.route("/excel_db/room", methods=["POST"])
+def post_rooms():
+    return handler.post_rooms(request.json)
 
+@app.route("/excel_db/room/<int:rid>", methods=["GET"])
+def get_rooms_by_id(rid):
+    return handler.get_room_by_id(rid)
 
-@app.route("/excel_db/meeting/<int:mid>", methods=["GET", "PUT", "DELETE"])
-def meetings_by_id(mid):
-    if request.method == "GET":
-        return handler.get_meeting_by_id(mid)
-    if request.method == "PUT":
-        return handler.put_meeting_by_id(mid, request.json)
-    if request.method == "DELETE":
-        return handler.delete_meeting(mid)
+@app.route("/excel_db/room/<int:rid>", methods=["PUT"])
+def put_rooms_by_id(rid):
+    return handler.put_room_by_id(rid, request.json)
 
+@app.route("/excel_db/room/<int:rid>", methods=["DELETE"])
+def delete_rooms_by_id(rid):
+    return handler.delete_room_by_id(rid)
 
-###################### ROOM ######################
+""" LOCAL STATISTICS ROUTES """
+@app.route("/excel_db/room/<string:building>/capacity", methods=["POST"])
+def top_rooms_by_capacity(building):
+    return handler.top_room_capacity_by_building(building)
 
-
-@app.route("/excel_db/room", methods=["GET", "POST"])
-def rooms():
-    if request.method == "GET":
-        return handler.get_rooms()
-    if request.method == "POST":
-        return handler.post_rooms(request.json)
-
-
-@app.route("/excel_db/room/<int:rid>", methods=["GET", "PUT", "DELETE"])
-def rooms_by_id(rid):
-    if request.method == "GET":
-        return handler.get_room_by_id(rid)
-    if request.method == "PUT":
-        return handler.put_room_by_id(rid, request.json)
-    if request.method == "DELETE":
-        return handler.delete_room_by_id(rid)
-
-
-################ LOCAL STATISTICS ################
-
-
-@app.route("/excel_db/room/<string:building>/<string:stat>", methods=["POST"])
-def top_rooms_by_capacity(building,stat):
-    if stat == 'capacity':
-        return handler.top_room_capacity_by_building(building)
-    elif stat == 'ratio':
-        return handler.top_ratio_rooms(building)
-    else:
-        return jsonify(f"LocalStatistic: {type} does not exist!"), 404
+@app.route("/excel_db/room/<string:building>/ratio", methods=["POST"])
+def top_rooms_by_ratio(building):
+    return handler.top_ratio_rooms(building)
 
 @app.route("/excel_db/room/<int:rid>/classes", methods=["POST"])
 def local_statistics_by_id(rid):
@@ -145,29 +137,22 @@ def local_statistics_by_id(rid):
 def top_classes_per_semester_year(year, semester):
     return handler.top_classes_per_semester(year, semester)
 
+""" GLOBAL STATISTICS ROUTES """
+@app.route("/excel_db/most/meeting", methods=["POST"])
+def most_meeting_global_statistics():
+    return handler.top_meeting()
 
-################ GLOBAL STATISTICS ###############
-
-
-@app.route("/excel_db/most/<string:stat>", methods=["POST"])
-def most_global_statistics(stat):
-    if stat == "meeting":
-        return handler.top_meeting()
-    elif stat == "prerequisite":
-        return handler.top_pre_requisite()
-    else:
-        return jsonify(f"GlobalStatistic: {stat} does not exist!"), 404
-
+@app.route("/excel_db/most/prerequisite", methods=["POST"])
+def most_prerequisite_global_statistics():
+    return handler.top_pre_requisite()
 
 @app.route("/excel_db/least/classes", methods=["POST"])
 def least_global_statistics():
     return handler.top_least_classes()
 
-
 @app.route("/excel_db/section/year", methods=["POST"])
 def total_sections_per_year():
     return handler.total_sections()
-
 
 if __name__ == "__main__":
     app.run(debug=True)
