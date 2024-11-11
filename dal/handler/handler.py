@@ -47,10 +47,10 @@ def result_meeting(meetings):
         for item in meetings:
             result_dict = {
                 "mid": item[0],
-                "ccode": item[1],
-                "starttime": item[2],
-                "endtime": item[3],
-                "cdays": item[4],
+                "starttime": item[1],
+                "endtime": item[2],
+                "cdays": item[3],
+                "section_amount": item[4],
             }
             result.append(result_dict)
         return jsonify(result)
