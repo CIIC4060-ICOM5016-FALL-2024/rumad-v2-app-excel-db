@@ -77,7 +77,6 @@ class Handler:
     """ CLASS HANDLERS """
     def post_class(self, data):
         dao = ClassDAO()
-        cid = data["cid"]
         cname = data["cname"]
         ccode = data["ccode"]
         cdesc = data["cdesc"]
@@ -85,7 +84,7 @@ class Handler:
         years = data["years"]
         cred = data["cred"]
         csyllabus = data["csyllabus"]
-        if dao.post_class(cid, cname, ccode, cdesc, term, years, cred, csyllabus):
+        if dao.post_class(cname, ccode, cdesc, term, years, cred, csyllabus):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
@@ -163,14 +162,13 @@ class Handler:
 
     def post_section(self, data):
         dao = SectionDAO()
-        sid = data["sid"]
         roomid = data["roomid"]
         cid = data["cid"]
         mid = data["mid"]
         semester = data["semester"]
         years = data["years"]
         capacity = data["capacity"]
-        if dao.post_section(sid, roomid, cid, mid, semester, years, capacity):
+        if dao.post_section(roomid, cid, mid, semester, years, capacity):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
@@ -199,12 +197,11 @@ class Handler:
 
     def post_meeting(self, data):
         dao = MeetingDAO()
-        mid = data["mid"]
         ccode = data["ccode"]
         starttime = data["starttime"]
         endtime = data["endtime"]
         cdays = data["cdays"]
-        if dao.post_meeting(mid, ccode, starttime, endtime, cdays):
+        if dao.post_meeting(ccode, starttime, endtime, cdays):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 
@@ -233,11 +230,10 @@ class Handler:
 
     def post_rooms(self, data):
         dao = RoomDAO()
-        rid = data["rid"]
         building = data["building"]
         room_number = data["room_number"]
         capacity = data["capacity"]
-        if dao.post_room(rid, building, room_number, capacity):
+        if dao.post_room(building, room_number, capacity):
             return jsonify("Success"), 201
         return jsonify("Error not executed"), 404
 

@@ -8,29 +8,27 @@ class ClassDAO(DAO):
     # POST ------------------------------------------------------------------------+
     def post_class(
         self,
-        cid: int,
         cname: str,
         ccode: int,
         cdesc: str,
         term: str,
         years: str,
         cred: int,
-        cysllabus: str,
+        csyllabus: str,
     ):
         """
         Creates a tuple in the class relation
-        :param cid: class id
         :param cname: class name
         :param ccode: class code
         :param cdesc: class description
         :param term: academic term
         :param years: academic years
         :param cred: credit
-        :param cysllabus: class syllabus
+        :param csyllabus: class syllabus
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO class VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-        values = [cid, cname, ccode, cdesc, term, years, cred, cysllabus]
+        query = "INSERT INTO class (cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        values = [cname, ccode, cdesc, term, years, cred, csyllabus]
         return self.create(query, values)
 
     # GET ------------------------------------------------------------------------+
