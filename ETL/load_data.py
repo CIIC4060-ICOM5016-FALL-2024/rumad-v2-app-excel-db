@@ -5,6 +5,9 @@ from ETL.transform_data import transform_data
 import os
 import requests
 
+from config.dbconfig import pg_config
+
+
 def create_db(cursor):
     """
     Creates tables for classes, meetings, requisites, rooms, sections, and syllabi,
@@ -58,10 +61,10 @@ def create_db(cursor):
         
         $$ LANGUAGE plpgsql;
         
-        CREATE TRIGGER check_meeting_time
-        BEFORE INSERT OR UPDATE ON meeting
-        FOR EACH ROW
-        EXECUTE FUNCTION check_meeting_duration();
+        --CREATE TRIGGER check_meeting_time
+        --BEFORE INSERT OR UPDATE ON meeting
+        --FOR EACH ROW
+        --EXECUTE FUNCTION check_meeting_duration();
 
         CREATE TABLE IF NOT EXISTS requisite (
             classid INTEGER NOT NULL REFERENCES class(cid) ON DELETE CASCADE,
@@ -191,7 +194,7 @@ def create_db(cursor):
         CREATE TABLE IF NOT EXISTS syllabus (
             chunkid        SERIAL PRIMARY KEY,
             courseid       INTEGER REFERENCES class(cid),
-            embedding_text INT2VECTOR,
+            embedding_text vector,
             chunk          VARCHAR
         );
     """
@@ -332,6 +335,16 @@ def load_section(sections, cursor):
             row['capacity'],
         ))
 
+def fix_serial(sections, cursor):
+    query = """
+            SELECT setval('public.room_rid_seq', (SELECT MAX(rid) FROM room));
+            SELECT setval('public.meeting_mid_seq', (SELECT MAX(mid) FROM meeting));
+            SELECT setval('public.class_cid_seq', (SELECT MAX(cid) FROM class));
+            SELECT setval('public.section_sid_seq', (SELECT MAX(sid) FROM section));
+    """
+
+    cursor.execute(query)
+
 def upload_syllabus(courses):
     """
     Uploads all the course syllabi and store them in the GitHub
@@ -394,23 +407,23 @@ def load_data():
     # Transform data
     sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
     # Test Load data
-    # engine = psycopg2.connect(
-    #     dbname="excel_db",
-    #     user="excel",
-    #     password="password",
-    #     host="localhost",
-    #     port="1234"
-    # )
+    engine = psycopg2.connect(
+        user = pg_config["user"],
+        password = pg_config["password"],
+        host = pg_config["host"],
+        database = pg_config["dbname"],
+        port = pg_config["port"]
+    )
 
     # Heroku Load data
     # Load data
-    engine = psycopg2.connect(
-        dbname="dc79t7ga9hc6ud",
-        user="ufm5iffjti843g",
-        password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
-        host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
-        port="5432"
-    )
+    # engine = psycopg2.connect(
+    #     dbname="dc79t7ga9hc6ud",
+    #     user="ufm5iffjti843g",
+    #     password="p714ce504f5566ea5085651f4627a98521b24b94298c88546efee8a7e038ad933",
+    #     host="cbdhrtd93854d5.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com",
+    #     port="5432"
+    # )
     cursor = engine.cursor()
     create_db(cursor)
     load_classes(courses, cursor)
@@ -419,8 +432,12 @@ def load_data():
     load_room(rooms, cursor)
     load_section(sections, cursor)
 
+    fix_serial(sections, cursor)
+
     engine.commit()
     if cursor:
         cursor.close()
     if engine:
         engine.close()
+
+load_data()

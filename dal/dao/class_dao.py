@@ -50,6 +50,11 @@ class ClassDAO(DAO):
         values = [cid]
         return self.read(query, values)
 
+    def get_class_cid_by_name(self, cname, ccode):
+        query = "SELECT * FROM class WHERE cname = %s AND ccode = %s"
+        values = [cname, ccode]
+        return self.read(query, values)
+
     # PUT ------------------------------------------------------------------------+
     def put_class_by_cid(self, cid: int, data):
         """
