@@ -1,5 +1,4 @@
 import json
-import re
 from os import listdir
 from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
@@ -14,7 +13,7 @@ model = SentenceTransformer("all-MiniLM-L6-v2")
 syllabuses = listdir('../../syllabuses')
 
 classDAO = ClassDAO()
-syllabusdao = SyllabusDAO()
+syllabusDAO = SyllabusDAO()
 dao = DAO()
 dao.delete("TRUNCATE TABLE syllabus RESTART IDENTITY;")
 
@@ -43,10 +42,9 @@ for syllabus in syllabuses:
         token_split_text += token_splitter.split_text(chunk)
 
     # Insert syllabus to table
-
     for chunk in token_split_text:
         embedding = model.encode(chunk)
         # insert chunk in to table
-        syllabusdao.post_syllabus(id, json.dumps(embedding.tolist()), chunk)
+        syllabusDAO.post_syllabus(id, json.dumps(embedding.tolist()), chunk)
 
     print(f"Done file: {name}")
