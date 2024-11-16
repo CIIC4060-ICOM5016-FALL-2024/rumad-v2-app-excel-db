@@ -1,3 +1,5 @@
+from wsgiref.util import request_uri
+
 from dal.dao.dao import DAO
 
 
@@ -24,6 +26,17 @@ class SyllabusDAO(DAO):
                 chunk_id,
             ],
         )
+
+    def get_from_embedding(self, emb):
+        query = ("SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk "
+                 "FROM syllabus ORDER BY distance DESC LIMIT 30")
+        with self.pool.getconn() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(query, [emb])
+                result = []
+                for row in cursor:
+                    result.append(row)
+                return result
 
     # PUT
     def put_syllabus_by_chunkid(self, chunkid: int, data):
