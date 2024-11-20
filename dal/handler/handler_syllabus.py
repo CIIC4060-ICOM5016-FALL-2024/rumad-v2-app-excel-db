@@ -1,17 +1,15 @@
-import json
 import os
 import re
 from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
-from sentence_transformers import SentenceTransformer
-
+from langchain_ollama import OllamaEmbeddings
 from dal.dao.class_dao import ClassDAO
 from dal.dao.dao import DAO
 from dal.dao.syllabus_dao import SyllabusDAO
 
 class HandlerSyllabus:
     def __init__(self):
-        self.model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.model = "nomic-embed-text"
         self.class_dao = ClassDAO()
         self.syllabus_dao = SyllabusDAO()
         self.dao = DAO()
@@ -47,7 +45,7 @@ class HandlerSyllabus:
     def process_file(self, filepath):
         """Process a single syllabus file and store it in the database."""
         try:
-            course_info = os.path.basename(filepath).split('-')
+            course_info = (os.path.basename(filepath)[:-4] + " ").split('-')
             cname, ccode = course_info[0], course_info[1]
             class_id = self.class_dao.get_class_cid_by_name(cname, ccode)[0][0]
 
@@ -57,15 +55,24 @@ class HandlerSyllabus:
             processed_data = self.preprocess_syllabus(syllabus_text)
             combined_text = "\n\n".join(processed_data.values())
 
-            splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=0)
-            split_text = splitter.split_text(combined_text)
+            splitter = RecursiveCharacterTextSplitter(
+                chunk_size=800,
+                chunk_overlap=80,
+                length_function=len,
+                is_separator_regex=False,
+            )
+            if len(combined_text) > 0:
+                split_text = splitter.split_text(combined_text)
+            else:
+                split_text = splitter.split_text("\n\n".join(syllabus_text))
 
             token_splitter = SentenceTransformersTokenTextSplitter(chunk_overlap=0, tokens_per_chunk=256)
             token_split_text = [chunk for text in split_text for chunk in token_splitter.split_text(text)]
-
+            embedding = OllamaEmbeddings(model=self.model)
             for chunk in token_split_text:
-                embedding = self.model.encode(chunk)
-                self.syllabus_dao.post_syllabus(class_id, json.dumps(embedding.tolist()), chunk)
+                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]) + chunk
+                emb = embedding.embed_query(chunk)
+                self.syllabus_dao.post_syllabus(class_id, str(emb), chunk)
 
             print(f"Processed and stored: {filepath}")
         except Exception as e:
@@ -77,7 +84,3 @@ class HandlerSyllabus:
         for syllabus in os.listdir("../../syllabuses"):
             filepath = os.path.join("../../syllabuses", syllabus)
             self.process_file(filepath)
-
-
-test = HandlerSyllabus()
-test.load_syllabuses()
