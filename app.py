@@ -152,7 +152,7 @@ def handle_room_statistics(building, statistic):
     elif statistic == 'ratio':
         return handler.top_ratio_rooms(building)
     else:
-        return jsonify(f"Statistic '{statistic}' not found for building '{building}'"), 404
+        return jsonify(f"Local statistic '{statistic}' not found for building '{building}'"), 404
 
 @app.route('/excel_db/room/<int:rid>/classes', methods=['POST'])
 def local_statistics_by_id(rid):
@@ -163,7 +163,7 @@ def local_statistics_by_id(rid):
     try:
         return handler.top_classes_per_room(rid)
     except Exception as e:
-        return jsonify(f"An error occurred while fetching statistics for room ID '{rid}': {str(e)}"), 500
+        return jsonify(f"An error occurred while fetching local statistics for room ID '{rid}': {str(e)}"), 500
 
 @app.route('/excel_db/classes/<string:year>/<string:semester>', methods=['POST'])
 def top_classes_per_semester_year(year, semester):
@@ -174,7 +174,7 @@ def top_classes_per_semester_year(year, semester):
     try:
         return handler.top_classes_per_semester(year, semester)
     except Exception as e:
-        return jsonify(f"An error occurred while fetching statistics for year '{year}' and semester '{semester}': {str(e)}"), 500
+        return jsonify(f"An error occurred while fetching local statistics for year '{year}' and semester '{semester}': {str(e)}"), 500
 
 """ GLOBAL STATISTICS ROUTES """
 
@@ -200,7 +200,7 @@ def least_global_statistics():
     try:
         return handler.top_least_classes()
     except Exception as e:
-        return jsonify(f"An error occurred while fetching the least classes statistics: {str(e)}"), 500
+        return jsonify(f"Global Statistics: An error occurred while fetching the least classes, {str(e)}"), 500
 
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
@@ -211,7 +211,7 @@ def total_sections_per_year():
     try:
         return handler.total_sections()
     except Exception as e:
-        return jsonify(f"An error occurred while fetching the total sections per year: {str(e)}"), 500
+        return jsonify(f"Global Statistics: An error occurred while fetching the total sections per year, {str(e)}"), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
