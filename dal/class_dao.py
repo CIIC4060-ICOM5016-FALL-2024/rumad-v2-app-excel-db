@@ -80,12 +80,12 @@ class ClassDAO(DAO):
     # STATISTICS
     def get_top_classes_per_room(self, rid: int):
         """
-        Gets all tuples from the class relation
-        :param rid: academic room id
-        :return: a list of tuples, or None if failed
+        Gets the top 3 most given classes in a room
+        :param rid: the room id
+        :return: a list of tuples, or a False inside a tuple if failed.
         """
         query = """
-            SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus,amount
+            SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus, amount
             FROM (
                   SELECT cid, count(*) AS amount
                   FROM section
@@ -96,13 +96,13 @@ class ClassDAO(DAO):
             )
             AS per_room, class
             WHERE class.cid = per_room.cid
-            ORDER BY class.cid
+            ORDER BY amount DESC
         """
         return self.read(query, [rid])
 
     def get_top_classes_per_year(self, year: int, semester: str):
         """
-        Gets top 3 classes per semester
+        Gets top 3 classes per semester and year
         :param year: academic year
         :param semester: academic semester
         :return: a list of tuples, or None if failed
@@ -124,26 +124,35 @@ class ClassDAO(DAO):
 
     def get_top_prerequisites(self):
         """
-        Gets all tuples from the class relation
-        :return: a list of tuples, or None if failed
+        Gets top 3 classes that appears the most as prerequisite to other classes.
+        :return: a list of tuples, or a tuple with False if failed
         """
         query = """
-                SELECT COUNT(*), class.cname,requisite.reqid, class.cdesc,class.ccode 
-                FROM requisite INNER JOIN class ON requisite.reqid = class.cid 
-                WHERE prereq = 'true' GROUP BY requisite.reqid, class.cdesc,class.ccode,class.cname
-                ORDER BY COUNT(*) DESC limit 3;
+        SELECT cid, cname, ccode, cdesc, term, years, cred, csyllabus, frequency
+        FROM(SELECT reqid, count(reqid) AS frequency
+            FROM requisite WHERE prereq = true
+            GROUP BY reqid
+            ORDER BY frequency DESC
+            LIMIT 3)
+        AS prereq, class WHERE reqid = cid
+        ORDER BY frequency DESC;
         """
         return self.read(query)
 
     def get_least_classes(self):
         """
-        Gets all tuples from the class relation
-        :return: a list of tuples, or None if failed
+        Gets the top 3 least given classes.
+        :return: a list of tuples, or a tuple with False if failed
         """
         query = """
-                SELECT DISTINCT section.cid,count(*) AS section_count, class.cdesc 
-                FROM section INNER JOIN class ON section.cid = class.cid 
-                GROUP BY section.cid , class.cdesc 
-                ORDER BY section_count limit 3;
+        SELECT cid, cname, ccode, cdesc, term, years, cred, csyllabus, frequency
+        FROM
+            (SELECT cid, count(cid) AS frequency
+            FROM class JOIN section USING (cid)
+            GROUP BY cid
+            ORDER BY cid) AS least 
+            NATURAL JOIN class
+        ORDER BY frequency
+        LIMIT 3;
         """
         return self.read(query)

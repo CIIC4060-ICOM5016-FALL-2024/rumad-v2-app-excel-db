@@ -323,9 +323,6 @@ def transform_data(sections_df, meetings_df, rooms_df, courses_df) -> tuple[
     #     be removed. If any section overlaps, you will add the necessary time to not overlap.
     sections_df, meetings_df = apply_universal_time(sections_df, meetings_df)
 
-    # 5. All 'LMV' sections have the correct hours.
-    correct_lwv(meetings_df)
-
     # 6. 'LMV' meetings have a duration of 50 minutes; ‘MJ’ meetings have a duration of 75 minutes.
     correct_meeting_duration(meetings_df)
 

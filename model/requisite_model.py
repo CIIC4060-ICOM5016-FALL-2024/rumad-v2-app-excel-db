@@ -17,7 +17,7 @@ class RequisiteModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f'{response[1]}: {response[2]}'), 404 # nothing found
 
         result = []
 
@@ -54,7 +54,7 @@ class RequisiteModel:
         response = dao.post_requisite(classid, reqid, prereq)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Requisite ({classid},{reqid}) created successfully'), 201
 
@@ -91,7 +91,7 @@ class RequisiteModel:
         response = dao.put_requisite_by_classid_reqid(classid, reqid, data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Requisite ({classid},{reqid}) updated successfully'), 200
 
@@ -107,6 +107,6 @@ class RequisiteModel:
         response = dao.delete_requisite(int(classid), int(reqid))
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Requisite ({classid},{reqid}) deleted successfully'), 200

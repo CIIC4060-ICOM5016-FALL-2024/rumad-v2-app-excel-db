@@ -18,7 +18,7 @@ class RoomModel:
         """
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
 
         result = []
 
@@ -66,7 +66,7 @@ class RoomModel:
         response = dao.post_room(building, room_number, capacity)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Room {room_number} in {building} has been created with rid {response[1]}.'), 201
 
@@ -92,7 +92,7 @@ class RoomModel:
         response = dao.put_room_by_rid(rid, data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Room {rid} has been updated.'), 200
 
     @staticmethod
@@ -106,5 +106,5 @@ class RoomModel:
         response = dao.delete_room(rid)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Room {rid} has been deleted.'), 200

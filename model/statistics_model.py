@@ -44,9 +44,12 @@ class StatisticsModel:
         """
         dao = RoomDAO()
         response = dao.get_top_ratio_rooms(building)
-        result = []
+
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
+
+        result = []
+
         for item in response:
             result_dict = {
                 "rid": item[0],
@@ -123,17 +126,20 @@ class StatisticsModel:
         """
         dao = MeetingDAO()
         response = dao.get_top_meetings()
-        result = []
+
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
+
+        result = []
 
         for item in response:
             result_dict = {
                 "mid" : item[0],
-                "starttime" : item[1],
-                "endtime" : item[2],
-                "cdays" : item[3],
-                "meeting_amount" : item[4]
+                "ccode": item[1],
+                "starttime" : item[2],
+                "endtime" : item[3],
+                "cdays" : item[4],
+                "frequency" : item[5]
             }
             result.append(result_dict)
         return jsonify(result), 200
@@ -145,13 +151,19 @@ class StatisticsModel:
         @return: JSON and HTTP response code
         """
         dao = ClassDAO()
+
         response = dao.get_top_prerequisites()
-        result = []
+
+
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
 
+        result = []
+
         for item in response:
-            result_dict = {"count" : item[0], "cname": item[1], "requid": item[2], "cdesc": item[3], "ccode": item[4]}
+            result_dict = {"cid" : item[0], "cname": item[1], "ccode": item[2], "cdesc": item[3],
+                           "term": item[4], "years": item[5], "cred": item[6], "csyllabus": item[7],
+                           "frequency": item[8]}
             result.append(result_dict)
         return jsonify(result), 200
 
@@ -164,11 +176,16 @@ class StatisticsModel:
         """
         dao = ClassDAO()
         response = dao.get_least_classes()
-        result = []
+
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
+
+        result = []
+
         for item in response:
-            result_dict = {"cid": item[0], "count": item[1], "cdesc": item[2]}
+            result_dict = {"cid": item[0], "cname": item[1], "ccode": item[2], "cdesc": item[3],
+                           "term": item[4], "years": item[5], "cred": item[6], "csyllabus": item[7],
+                           "frequency": item[8]}
             result.append(result_dict)
         return jsonify(result), 200
 

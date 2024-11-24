@@ -16,7 +16,7 @@ class SectionModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f'{response[1]}: {response[2]}'), 404  # Not found
 
         result = []
         for section in response:
@@ -68,7 +68,7 @@ class SectionModel:
         response = dao.post_section(roomid, cid, mid, semester, years, capacity)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Section (sid: {response[1]}) successfully created'), 201
 
     def get_section_by_id(self, sid):
@@ -93,7 +93,7 @@ class SectionModel:
         response = dao.put_section_by_sid(int(sid), data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Section with sid {sid} successfully updated'), 200
 
     @staticmethod
@@ -107,5 +107,5 @@ class SectionModel:
         response = dao.delete_section(int(sid))
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Section with sid {sid} deleted: {response[1]}'), 200

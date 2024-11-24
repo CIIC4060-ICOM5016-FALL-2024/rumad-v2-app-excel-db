@@ -16,7 +16,7 @@ class MeetingModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
 
         result = []
         for meet in response:
@@ -62,7 +62,7 @@ class MeetingModel:
         response = dao.post_meeting(ccode, starttime, endtime, cdays)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Meeting has been created with mid: {response[1]}'), 201
 
@@ -87,7 +87,7 @@ class MeetingModel:
         dao = MeetingDAO()
         response = dao.put_meeting_by_mid(int(mid), data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Meeting {mid} has been updated'), 200
 
     @staticmethod
@@ -100,5 +100,5 @@ class MeetingModel:
         dao = MeetingDAO()
         response = dao.delete_meeting(int(mid))
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Meeting {mid} has been deleted'), 200
