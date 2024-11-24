@@ -30,11 +30,11 @@ class DAO:
             with conn.cursor() as cursor:
                 try:
                     cursor.execute(query, values)
+                    tuple_id = cursor.fetchone()[0]
                     conn.commit()
-                    return True
+                    return True, tuple_id
                 except psycopg2.Error as e:
-                    print(f"CREATE has failed: {e}")
-                    return False
+                    return False, e.pgcode, e.pgerror
                 finally:
                     self.pool.putconn(conn)  # return connection to pool
 
@@ -44,16 +44,19 @@ class DAO:
         handles SELECT queries.
         :param query: query to be executed
         :param values: values to be formatted in
-        :return: a list with a single tuple, many tuples, or None
+        :return: a list with a single tuple, many tuples, or None.
+        False otherwise with error message
         """
         with self.pool.getconn() as conn:
             with conn.cursor() as cursor:
                 try:
                     cursor.execute(query, values)
-                    return cursor.fetchall()
+                    response = cursor.fetchall()
+                    if not response:
+                        return False, -1, "The request returned no response"
+                    return response
                 except psycopg2.Error as e:
-                    print(f"READ has failed: {e}")
-                    return None
+                    return False, e.pgcode,  e.pgerror
                 finally:
                     self.pool.putconn(conn)
 
@@ -63,17 +66,20 @@ class DAO:
         handles UPDATE queries.
         :param query: query to be executed
         :param values: values to be formatted in
-        :return: True if success, False otherwise
+        :return: True if success, False otherwise with error message
         """
         with self.pool.getconn() as conn:
             with conn.cursor() as cursor:
                 try:
                     cursor.execute(query, values)
+
+                    if cursor.rowcount == 0:
+                        return False, -1, "Nothing to update"
+
                     conn.commit()
-                    return True
+                    return True, cursor.statusmessage
                 except psycopg2.Error as e:
-                    print(f"UPDATE has failed: {e}")
-                    return False
+                    return False, e.pgcode, e.pgerror
                 finally:
                     self.pool.putconn(conn)
 
@@ -89,10 +95,14 @@ class DAO:
             with conn.cursor() as cursor:
                 try:
                     cursor.execute(query, values)
+
+                    if cursor.rowcount == 0:
+                        return False, -1, "Nothing to delete"
+
                     conn.commit()
-                    return True
+                    return True, cursor.statusmessage
+
                 except psycopg2.Error as e:
-                    print(f"DELETE has failed: {e}")
-                    return False
+                    return False, e.pgcode, e.pgerror
                 finally:
                     self.pool.putconn(conn)

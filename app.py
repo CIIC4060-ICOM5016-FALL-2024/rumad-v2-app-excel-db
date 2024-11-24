@@ -1,12 +1,12 @@
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
 
-from controller.class_controller        import Class_Controller
-from controller.meeting_controller      import Meeting_Controller
-from controller.requisite_controller    import Requisite_Controller
-from controller.room_controller         import Room_Controller
-from controller.section_controller      import Section_Controller
-from controller.statistics_controller   import Statistics_Controller
+from model.class_model import ClassModel
+from model.requisite_model import RequisiteModel
+from model.section_model import SectionModel
+from model.meeting_model import MeetingModel
+from model.room_model import RoomModel
+from model.statistics_model import StatisticsModel
 
 app = Flask(__name__)
 CORS(app)
@@ -23,9 +23,9 @@ def home():
 
 @app.route('/excel_db/class', methods=['GET', 'POST'])
 def handle_classes():
-    handler = Class_Controller()
+    handler = ClassModel()
     if request.method == 'GET':
-        return handler.get_classes()
+        return handler.get_all_classes()
     elif request.method == 'POST':
         return handler.post_class(request.json)
     else:
@@ -33,7 +33,7 @@ def handle_classes():
 
 @app.route('/excel_db/class/<int:cid>', methods=['GET', 'PUT', 'DELETE'])
 def handle_classes_by_id(cid):
-    handler = Class_Controller()
+    handler = ClassModel()
     if request.method == 'GET':
         return handler.get_class_by_id(cid)
     elif request.method == 'PUT':
@@ -47,9 +47,9 @@ def handle_classes_by_id(cid):
 
 @app.route('/excel_db/requisite', methods=['GET', 'POST'])
 def handle_requisites():
-    handler = Requisite_Controller()
+    handler = RequisiteModel()
     if request.method == 'GET':
-        return handler.get_requisites()
+        return handler.get_all_requisites()
     elif request.method == 'POST':
         return handler.post_requisite(request.json)
     else:
@@ -57,7 +57,7 @@ def handle_requisites():
 
 @app.route('/excel_db/requisite/<int:classid>/<int:reqid>', methods=['GET', 'PUT', 'DELETE'])
 def handle_requisites_by_id(classid, reqid):
-    handler = Requisite_Controller()
+    handler = RequisiteModel()
     if request.method == 'GET':
         return handler.get_requisite_by_id(classid, reqid)
     elif request.method == 'PUT':
@@ -71,9 +71,9 @@ def handle_requisites_by_id(classid, reqid):
 
 @app.route('/excel_db/section', methods=['GET', 'POST'])
 def handle_sections():
-    handler = Section_Controller()
+    handler = SectionModel()
     if request.method == 'GET':
-        return handler.get_sections()
+        return handler.get_all_sections()
     elif request.method == 'POST':
         return handler.post_section(request.json)
     else:
@@ -81,7 +81,7 @@ def handle_sections():
 
 @app.route('/excel_db/section/<int:sid>', methods=['GET', 'PUT', 'DELETE'])
 def handle_sections_by_id(sid):
-    handler = Section_Controller()
+    handler = SectionModel()
     if request.method == 'GET':
         return handler.get_section_by_id(sid)
     elif request.method == 'PUT':
@@ -95,9 +95,9 @@ def handle_sections_by_id(sid):
 
 @app.route('/excel_db/meeting', methods=['GET', 'POST'])
 def handle_meetings():
-    handler = Meeting_Controller()
+    handler = MeetingModel()
     if request.method == 'GET':
-        return handler.get_meetings()
+        return handler.get_all_meetings()
     elif request.method == 'POST':
         return handler.post_meeting(request.json)
     else:
@@ -105,7 +105,7 @@ def handle_meetings():
 
 @app.route('/excel_db/meeting/<int:mid>', methods=['GET', 'PUT', 'DELETE'])
 def handle_meetings_by_id(mid):
-    handler = Meeting_Controller()
+    handler = MeetingModel()
     if request.method == 'GET':
         return handler.get_meeting_by_id(mid)
     elif request.method == 'PUT':
@@ -119,9 +119,9 @@ def handle_meetings_by_id(mid):
 
 @app.route('/excel_db/room', methods=['GET', 'POST'])
 def handle_rooms():
-    handler = Room_Controller()
+    handler = RoomModel()
     if request.method == 'GET':
-        return handler.get_rooms()
+        return handler.get_all_rooms()
     elif request.method == 'POST':
         return handler.post_rooms(request.json)
     else:
@@ -129,7 +129,7 @@ def handle_rooms():
 
 @app.route('/excel_db/room/<int:rid>', methods=['GET', 'PUT', 'DELETE'])
 def handle_rooms_by_id(rid):
-    handler = Room_Controller()
+    handler = RoomModel()
     if request.method == 'GET':
         return handler.get_room_by_id(rid)
     elif request.method == 'PUT':
@@ -143,7 +143,7 @@ def handle_rooms_by_id(rid):
 
 @app.route('/excel_db/room/<string:building>/<string:statistic>', methods=['POST'])
 def handle_room_statistics(building, statistic):
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
     
@@ -156,7 +156,7 @@ def handle_room_statistics(building, statistic):
 
 @app.route('/excel_db/room/<int:rid>/classes', methods=['POST'])
 def local_statistics_by_id(rid):
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
 
@@ -167,7 +167,7 @@ def local_statistics_by_id(rid):
 
 @app.route('/excel_db/classes/<string:year>/<string:semester>', methods=['POST'])
 def top_classes_per_semester_year(year, semester):
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
 
@@ -180,7 +180,7 @@ def top_classes_per_semester_year(year, semester):
 
 @app.route('/excel_db/most/<string:statistic>', methods=['POST'])
 def handle_global_statistics(statistic):
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
 
@@ -193,7 +193,7 @@ def handle_global_statistics(statistic):
 
 @app.route('/excel_db/least/classes', methods=['POST'])
 def least_global_statistics():
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
 
@@ -204,7 +204,7 @@ def least_global_statistics():
 
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
-    handler = Statistics_Controller()
+    handler = StatisticsModel()
     if not request.is_json:
         return jsonify("The request does not contain JSON data"), 400
 
