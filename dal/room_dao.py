@@ -73,7 +73,7 @@ class RoomDAO(DAO):
         query = """
                 SELECT rid, building, room_number, capacity 
                 FROM room 
-                WHERE building = %s
+                WHERE building ILIKE %s
                 ORDER BY capacity DESC limit 3;
                 """
         values = [building]
@@ -85,16 +85,15 @@ class RoomDAO(DAO):
         :return: a list of tuples, or None if failed
         """
         query = """
-                SELECT rid, building, room_number, capacity
+        SELECT rid, building, room_number, capacity,student_to_capacity_ratio
                 FROM (
                     SELECT room.rid, room.building, room.room_number, room.capacity,
-                           CAST(CAST(section.capacity AS DECIMAL) / room.capacity AS DECIMAL(20, 3)) AS student_to_capacity_ratio
+                ROUND(( 100 * CAST(CAST(section.capacity AS DECIMAL) / room.capacity AS DECIMAL(20, 3))),2) || '%%' AS student_to_capacity_ratio
                     FROM section
                     JOIN room ON section.roomid = room.rid
-                    WHERE building = %s
+                    WHERE building ILIKE %s
                 ) AS subquery
-                ORDER BY student_to_capacity_ratio DESC
-                LIMIT 3;
+                ORDER BY student_to_capacity_ratio DESC LIMIT 3;
         """
         values = [building]
         return self.read(query, values)

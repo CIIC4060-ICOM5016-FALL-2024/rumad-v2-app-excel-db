@@ -1,3 +1,4 @@
+
 from dal.section_dao import SectionDAO
 from dal.class_dao import ClassDAO
 from dal.meeting_dao import MeetingDAO
@@ -21,11 +22,18 @@ class StatisticsModel:
         """
         dao = RoomDAO()
         response = dao.get_top_rooms_in_building(building)
-
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
-
-        return jsonify(response), 200
+        for item in response:
+            result_dict = {
+                "rid": item[0],
+                "building": item[1],
+                "room_number": item[2],
+                "capacity": item[3]
+            }
+            result.append(result_dict)
+        return jsonify(result), 200
 
     @staticmethod
     def top_ratio_rooms(building):
@@ -36,9 +44,19 @@ class StatisticsModel:
         """
         dao = RoomDAO()
         response = dao.get_top_ratio_rooms(building)
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+        for item in response:
+            result_dict = {
+                "rid": item[0],
+                "building": item[1],
+                "room_number": item[2],
+                "capacity": item[3],
+                "ratio": item[4]
+            }
+            result.append(result_dict)
+        return jsonify(result), 200
 
 
     @staticmethod
@@ -50,9 +68,23 @@ class StatisticsModel:
         """
         dao = ClassDAO()
         response = dao.get_top_classes_per_room(rid)
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+        for item in response:
+            result_dict = {
+                "cid" : item[0],
+                "cname" : item[1],
+                "ccode" : item[2],
+                "cdesc" : item[3],
+                "term" : item[4],
+                "years" : item[5],
+                "cred" : item[6],
+                "csyllabus" : item[7],
+                "amount" : item[8]
+            }
+            result.append(result_dict)
+        return jsonify(result), 200
 
     @staticmethod
     def top_classes_per_semester(year, semester):
@@ -64,9 +96,23 @@ class StatisticsModel:
         """
         dao = ClassDAO()
         response = dao.get_top_classes_per_year(year, semester)
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+        for item in response:
+            result_dict = {
+                "cid" : item[0],
+                "cname" : item[1],
+                "ccode" : item[2],
+                "cdesc" : item[3],
+                "term" : item[4],
+                "years" : item[5],
+                "cred" : item[6],
+                "csyllabus": item[7],
+                "section_amount" : item[8],
+            }
+            result.append(result_dict)
+        return jsonify(result), 200
 
     """ GLOBAL STATISTICS """
     @staticmethod
@@ -77,10 +123,20 @@ class StatisticsModel:
         """
         dao = MeetingDAO()
         response = dao.get_top_meetings()
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
 
+        for item in response:
+            result_dict = {
+                "mid" : item[0],
+                "starttime" : item[1],
+                "endtime" : item[2],
+                "cdays" : item[3],
+                "meeting_amount" : item[4]
+            }
+            result.append(result_dict)
+        return jsonify(result), 200
 
     @staticmethod
     def top_pre_requisite():
@@ -90,9 +146,14 @@ class StatisticsModel:
         """
         dao = ClassDAO()
         response = dao.get_top_prerequisites()
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+
+        for item in response:
+            result_dict = {"count" : item[0], "cname": item[1], "requid": item[2], "cdesc": item[3], "ccode": item[4]}
+            result.append(result_dict)
+        return jsonify(result), 200
 
 
     @staticmethod
@@ -103,9 +164,13 @@ class StatisticsModel:
         """
         dao = ClassDAO()
         response = dao.get_least_classes()
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+        for item in response:
+            result_dict = {"cid": item[0], "count": item[1], "cdesc": item[2]}
+            result.append(result_dict)
+        return jsonify(result), 200
 
     @staticmethod
     def total_sections():
@@ -115,8 +180,14 @@ class StatisticsModel:
         """
         dao = SectionDAO()
         response = dao.get_sections_per_year()
+        result = []
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(response), 200
+
+        for item in response:
+            result_dict = { "year" : item[0], "total_sections" : item[1] }
+            result.append(result_dict)
+
+        return jsonify(result), 200
 
 

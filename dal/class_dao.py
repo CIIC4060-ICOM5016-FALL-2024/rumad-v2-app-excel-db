@@ -85,7 +85,7 @@ class ClassDAO(DAO):
         :return: a list of tuples, or None if failed
         """
         query = """
-            SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus
+            SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus,amount
             FROM (
                   SELECT cid, count(*) AS amount
                   FROM section
@@ -108,16 +108,16 @@ class ClassDAO(DAO):
         :return: a list of tuples, or None if failed
         """
         query = """
-                SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus
-                FROM (SELECT cid, count(*) AS amount
+                SELECT class.cid, cname, ccode, cdesc, term, years, cred, csyllabus,section_amount
+                FROM (SELECT cid, count(*) AS section_amount
                       FROM section
-                      WHERE semester = %s
+                      WHERE semester ILIKE %s
                         AND years = %s
                       GROUP BY cid
-                      ORDER BY amount DESC
+                      ORDER BY section_amount DESC
                       LIMIT 3
                 ) as cid_per_semester, class
-                where class.cid = cid_per_semester.cid
+                where class.cid = cid_per_semester.cid order by section_amount desc;
         """
         values = [semester, year]
         return self.read(query, values)
@@ -128,10 +128,9 @@ class ClassDAO(DAO):
         :return: a list of tuples, or None if failed
         """
         query = """
-                SELECT COUNT(*), requisite.reqid, class.cdesc,class.ccode 
+                SELECT COUNT(*), class.cname,requisite.reqid, class.cdesc,class.ccode 
                 FROM requisite INNER JOIN class ON requisite.reqid = class.cid 
-                WHERE prereq = 'true' AND reqid != 37 
-                GROUP BY requisite.reqid, class.cdesc,class.ccode
+                WHERE prereq = 'true' GROUP BY requisite.reqid, class.cdesc,class.ccode,class.cname
                 ORDER BY COUNT(*) DESC limit 3;
         """
         return self.read(query)

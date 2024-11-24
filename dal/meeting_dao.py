@@ -77,9 +77,10 @@ class MeetingDAO(DAO):
                 FROM (SELECT mid, COUNT(*) AS section_amount
                       FROM section
                       group by mid
-                      ORDER BY section_amount DESC, mid
+                      ORDER BY section_amount DESC
                       LIMIT 5) as section
                 JOIN meeting ON section.mid = meeting.mid
+                ORDER BY section_amount DESC;
         """
         return self.read(query)
 

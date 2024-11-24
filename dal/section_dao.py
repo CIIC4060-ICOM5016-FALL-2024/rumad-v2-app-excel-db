@@ -83,7 +83,7 @@ class SectionDAO(DAO):
                  SELECT years AS year, COUNT(*) AS total_sections 
                  FROM section 
                  GROUP BY years 
-                 ORDER BY total_sections;
+                 ORDER BY years DESC;
          """
         return self.read(query)
 
