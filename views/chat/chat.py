@@ -1,6 +1,9 @@
-from dal.dao.syllabus_dao import SyllabusDAO
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
+import requests
+
+from dal.syllabus_dao import SyllabusDAO
+
 
 class SyllabusChatBot:
     def __init__(self, model_name="mistral"):
@@ -11,8 +14,17 @@ class SyllabusChatBot:
 
     def get_context(self, question_embedding):
         """Retrieve relevant context from the database based on the embedding."""
-        syllabuses = self.syllabus_dao.get_from_embedding(str(question_embedding))
-        return "\n".join(syllabus[3] for syllabus in syllabuses)
+        try:
+            response = requests.get(f"http://127.0.0.1:5000/excel_db/syllable/{str(question_embedding)}")
+            response.raise_for_status()
+            syllabuses = response.json()
+            return "\n".join(syllabus['chunk'] for syllabus in syllabuses)
+        except requests.RequestException as e:
+            print(f"An error occurred: {e}")
+            return ""
+        except (KeyError, IndexError, TypeError) as e:
+            print(f"An error occurred while processing the response: {e}")
+            return ""
 
     def generate_answer(self, question, context):
         """Generate an answer based on the question, context, and conversation history."""
