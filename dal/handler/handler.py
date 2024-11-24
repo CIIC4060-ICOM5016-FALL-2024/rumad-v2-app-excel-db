@@ -6,6 +6,9 @@ from dal.dao.section_dao import SectionDAO
 
 from flask import jsonify
 
+from dal.dao.user_dao import UserDAO
+
+
 def result_class(classes):
     result = []
     if classes:
@@ -73,6 +76,77 @@ def result_room(rooms):
 class Handler:
     def __init__(self):
         pass
+
+    """ USER HANDLERS """
+    def post_user(self, data):
+        dao = UserDAO()
+        username = data["username"]
+        email = data["email"]
+        password = data["password"]
+        if dao.post_user(username, email, password):
+            return jsonify("Success"), 201
+        return jsonify("Error not executed"), 404
+
+    def get_users(self):
+        dao = UserDAO()
+        users = dao.get_all_users()
+        result = []
+        if users:
+            for item in users:
+                result_dict = {
+                    "uid": item[0],
+                    "username": item[1],
+                    "email": item[2],
+                    "password": item[3]
+                }
+                result.append(result_dict)
+            return jsonify(result)
+        return jsonify("Error not executed"), 404
+
+    def get_user_by_id(self, uid):
+        dao = UserDAO()
+        user = dao.get_user_by_uid(int(uid))
+        result = []
+        if user:
+            for item in user:
+                result_dict = {
+                    "uid": item[0],
+                    "username": item[1],
+                    "email": item[2],
+                    "password": item[3]
+                }
+                result.append(result_dict)
+            return jsonify(result)
+        return jsonify("Error not executed"), 404
+
+    def get_user_by_name(self, username):
+        dao = UserDAO()
+        user = dao.get_user_by_name(username)
+        result = []
+        if user:
+            for item in user:
+                result_dict = {
+                    "uid": item[0],
+                    "username": item[1],
+                    "email": item[2],
+                    "password": item[3]
+                }
+                result.append(result_dict)
+            return jsonify(result)
+        return jsonify("Error not executed"), 404
+
+    def put_user_by_id(self, uid, data):
+        dao = UserDAO()
+        if dao.put_user_by_uid(int(uid), data):
+            return jsonify("Success"), 201
+        return jsonify("Error not executed"), 404
+
+    def delete_user_by_id(self, uid):
+        dao = UserDAO()
+        if dao.delete_user(int(uid)):
+            return jsonify("Success"), 201
+        return jsonify("Error not executed"), 404
+
 
     """ CLASS HANDLERS """
     def post_class(self, data):

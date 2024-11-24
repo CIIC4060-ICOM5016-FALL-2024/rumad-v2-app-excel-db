@@ -15,6 +15,31 @@ def excel_db():
 def home():
     return redirect("/excel_db", code=302)
 
+""" USER CRUD ROUTES """
+@app.route("/excel_db/user", methods=["GET"])
+def get_user():
+    return handler.get_users()
+
+@app.route("/excel_db/user", methods=["POST"])
+def post_user():
+    return handler.post_user(request.json)
+
+@app.route("/excel_db/user/<int:uid>", methods=["GET"])
+def get_user_by_id(uid):
+    return handler.get_user_by_id(uid)
+
+@app.route("/excel_db/user/<string:username>", methods=["GET"])
+def get_user_by_username(username):
+    return handler.get_user_by_name(username)
+
+@app.route("/excel_db/user/<int:uid>", methods=["PUT"])
+def put_user_by_id(uid):
+    return handler.put_user_by_id(uid, request.json)
+
+@app.route("/excel_db/user/<int:uid>", methods=["DELETE"])
+def delete_user_by_id(uid):
+    return handler.delete_user_by_id(uid)
+
 """ CLASS CRUD ROUTES """
 @app.route("/excel_db/class", methods=["GET"])
 def get_classes():
