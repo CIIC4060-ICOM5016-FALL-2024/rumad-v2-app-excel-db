@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 
 
 class SectionDAO(DAO):
@@ -25,7 +25,9 @@ class SectionDAO(DAO):
         :param capacity: number of enrolled students
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO section (roomid, cid, mid, semester, years, capacity) VALUES (%s, %s, %s, %s, %s, %s)"
+        query = """INSERT INTO section (roomid, cid, mid, semester, years, capacity) 
+        VALUES (%s, %s, %s, %s, %s, %s) RETURNING sid;
+        """
         values = [roomid, cid, mid, semester, years, capacity]
         return self.create(query, values)
 
@@ -45,12 +47,7 @@ class SectionDAO(DAO):
         :return: a list with a single tuple, or None if failed.
         """
         query = "SELECT * FROM section WHERE sid = %s"
-        return self.read(
-            query,
-            [
-                sid,
-            ],
-        )
+        return self.read(query,[sid,])
 
     # PUT
     def put_section_by_sid(self, sid: int, data):

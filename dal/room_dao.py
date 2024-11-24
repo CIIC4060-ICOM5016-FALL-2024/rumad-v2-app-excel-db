@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 
 class RoomDAO(DAO):
 
@@ -14,7 +14,9 @@ class RoomDAO(DAO):
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s)"
+        query = """INSERT INTO room (building, room_number, capacity)
+        VALUES (%s, %s, %s) RETURNING rid
+        """
         values = (building, room_number, capacity)
         return self.create(query, values)
 

@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 
 class ClassDAO(DAO):
 
@@ -27,7 +27,10 @@ class ClassDAO(DAO):
         :param csyllabus: class syllabus
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO class (cname, ccode, cdesc, term, years, cred, csyllabus) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+        query = """
+        INSERT INTO class (cname, ccode, cdesc, term, years, cred, csyllabus) 
+        VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING cid;
+        """
         values = [cname, ccode, cdesc, term, years, cred, csyllabus]
         return self.create(query, values)
 

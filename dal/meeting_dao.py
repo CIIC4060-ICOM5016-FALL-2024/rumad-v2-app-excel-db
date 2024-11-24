@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 from datetime import datetime
 
 class MeetingDAO(DAO):
@@ -18,7 +18,8 @@ class MeetingDAO(DAO):
         :param end_time: end of the meeting
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO meeting (ccode, starttime, endtime, cdays) VALUES (%s, %s, %s, %s)"
+        query = """INSERT INTO meeting (ccode, starttime, endtime, cdays)
+         VALUES (%s, %s, %s, %s) RETURNING mid"""
         values = [ccode, start_time, end_time, cdays]
         return self.create(query, values)
 

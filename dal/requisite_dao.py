@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 
 
 class RequisiteDAO(DAO):
@@ -15,7 +15,10 @@ class RequisiteDAO(DAO):
         :param prereq: True if pre-requisite, False if co-requisite
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO requisite (classid, reqid, prereq) VALUES (%s, %s, %s)"
+        query = """
+        INSERT INTO requisite (classid, reqid, prereq) VALUES (%s, %s, %s)
+        RETURNING classid, reqid
+        """
         values = [classid, reqid, prereq]
         return self.create(query, values)
 
