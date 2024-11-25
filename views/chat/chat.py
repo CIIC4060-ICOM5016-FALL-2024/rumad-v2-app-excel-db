@@ -2,14 +2,10 @@ from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 import requests
 
-from dal.syllabus_dao import SyllabusDAO
-
-
 class SyllabusChatBot:
     def __init__(self, model_name="mistral"):
         self.model_emb = "nomic-embed-text"
         self.model = OllamaLLM(model=model_name)
-        self.syllabus_dao = SyllabusDAO()
         self.history = []
 
     def get_context(self, question_embedding):
