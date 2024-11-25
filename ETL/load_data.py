@@ -377,6 +377,21 @@ def upload_syllabus(courses):
         except requests.exceptions.RequestException as e:
             print(f"Failed to download {file_name}: {e}")
 
+def reset_sequences(cursor):
+    """
+    Resets serial sequences for all tables to align with the current maximum values.
+    :param cursor: Database cursor
+    """
+    sequence_reset_queries = [
+        "SELECT setval(pg_get_serial_sequence('class', 'cid'), COALESCE(MAX(cid), 1)) FROM class;",
+        "SELECT setval(pg_get_serial_sequence('meeting', 'mid'), COALESCE(MAX(mid), 1)) FROM meeting;",
+        "SELECT setval(pg_get_serial_sequence('room', 'rid'), COALESCE(MAX(rid), 1)) FROM room;",
+        "SELECT setval(pg_get_serial_sequence('section', 'sid'), COALESCE(MAX(sid), 1)) FROM section;",
+        "SELECT setval(pg_get_serial_sequence('syllabus', 'chunkid'), COALESCE(MAX(chunkid), 1)) FROM syllabus;"
+    ]
+    for query in sequence_reset_queries:
+        cursor.execute(query)
+
 
 def load_data():
     """
@@ -418,6 +433,7 @@ def load_data():
     load_requisite(requisites, cursor)
     load_room(rooms, cursor)
     load_section(sections, cursor)
+    reset_sequences(cursor)
 
     engine.commit()
     if cursor:
