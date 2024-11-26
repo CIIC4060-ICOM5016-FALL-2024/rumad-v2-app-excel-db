@@ -335,16 +335,6 @@ def load_section(sections, cursor):
             row['capacity'],
         ))
 
-def fix_serial(sections, cursor):
-    query = """
-            SELECT setval('public.room_rid_seq', (SELECT MAX(rid) FROM room));
-            SELECT setval('public.meeting_mid_seq', (SELECT MAX(mid) FROM meeting));
-            SELECT setval('public.class_cid_seq', (SELECT MAX(cid) FROM class));
-            SELECT setval('public.section_sid_seq', (SELECT MAX(sid) FROM section));
-    """
-
-    cursor.execute(query)
-
 def upload_syllabus(courses):
     """
     Uploads all the course syllabi and store them in the GitHub
@@ -447,8 +437,6 @@ def load_data():
     load_room(rooms, cursor)
     load_section(sections, cursor)
     reset_sequences(cursor)
-
-    fix_serial(sections, cursor)
 
     engine.commit()
     if cursor:
