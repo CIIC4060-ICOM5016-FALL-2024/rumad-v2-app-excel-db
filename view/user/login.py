@@ -17,7 +17,7 @@ class Login:
             if login_button:
                 # Send login request to the backend
                 data = {"username": username, "password": password}
-                response = requests.post("http://127.0.0.1:5000/excel_db/user/login", json=data)
+                response = requests.post("https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/login", json=data)
 
                 if response.status_code == 200:
                     user_data = response.json()

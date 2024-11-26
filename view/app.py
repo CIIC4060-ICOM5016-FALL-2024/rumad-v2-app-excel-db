@@ -5,6 +5,9 @@ from streamlit_cookies_manager import EncryptedCookieManager
 from user.login import Login
 from user.profile import Profile
 
+#st.set_page_config(page_title="Excel", page_icon="🤖", layout="centered", initial_sidebar_state="auto")
+st.title("RUMAD V2")
+
 def main():
     cookies = EncryptedCookieManager(password="admin")
     while not cookies.ready():
@@ -25,5 +28,4 @@ def main():
 
 
 if __name__ == "__main__":
-    st.set_page_config(page_title="Excel", page_icon="🤖", layout="centered", initial_sidebar_state="auto")
     main()
