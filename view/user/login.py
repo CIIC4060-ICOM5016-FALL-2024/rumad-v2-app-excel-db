@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from streamlit_option_menu import option_menu
 import requests
@@ -50,6 +51,8 @@ class Login:
                     response = requests.post("https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user", json=data)
 
                     if response.status_code == 201:
+                        st.balloons()
+                        time.sleep(1.5)  # Pause for 1.5 seconds
                         st.session_state["LOGGED_IN"] = True
                         st.session_state["USERNAME"] = username
                         self.cookies["LOGGED_IN"] = "True"

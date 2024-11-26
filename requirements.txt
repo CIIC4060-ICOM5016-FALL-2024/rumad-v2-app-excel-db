@@ -50,7 +50,6 @@ pandas==2.2.3
 pillow==11.0.0
 propcache==0.2.0
 protobuf==5.28.3
-psycopg2==2.9.10
 psycopg2-binary==2.9.10
 pyarrow==18.1.0
 pycparser==2.22
