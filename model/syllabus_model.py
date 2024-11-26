@@ -5,7 +5,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTran
 from langchain_ollama import OllamaEmbeddings
 from flask import jsonify
 
-
 from dal.class_dao import ClassDAO
 from dal.dao import DAO
 from dal.syllabus_dao import SyllabusDAO
@@ -154,14 +153,14 @@ class SyllabusModel:
         response = self.syllabus_dao.get_syllabus_by_chunk_id(int(chunk_id))
         return self.jsonify_response(response)
 
-    def get_syllabus_by_embedding(self, embedding):
+    def get_syllabus_by_embedding(self, data):
         """
         Get all tuples from the syllabus relation by similarity of the embedding
-        @param embedding: query embedding
+        @param data: data
         @return: JSON and HTTP response code
         """
+        embedding = data.get("embedding")
         response = self.syllabus_dao.get_from_embedding(embedding)
-        print(response)
         return self.jsonify_response(response)
 
     def put_syllabus_by_id(self, chunk_id, data):

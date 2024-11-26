@@ -1,3 +1,5 @@
+import json
+
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 import requests
@@ -11,7 +13,15 @@ class SyllabusChatBot:
     def get_context(self, question_embedding):
         """Retrieve relevant context from the database based on the embedding."""
         try:
-            response = requests.get(f"http://127.0.0.1:5000/excel_db/syllable/{str(question_embedding)}")
+            headers = {"Content-Type": "application/json"}
+            body = {
+                "embedding": str(question_embedding)
+            }
+            response = requests.post(
+                f"https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/embedding",
+                data=json.dumps(body),
+                headers=headers
+            )
             response.raise_for_status()
             syllabuses = response.json()
             return "\n".join(syllabus['chunk'] for syllabus in syllabuses)
