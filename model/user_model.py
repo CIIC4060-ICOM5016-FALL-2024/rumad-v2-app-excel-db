@@ -1,12 +1,12 @@
 from dal.user_dao import UserDAO
 from flask import jsonify
 
-attributes = ["uid", "username", "email", "password"]
+attributes = ["username", "email", "password"]
+
 
 class UserModel:
-
-    def __init__(self):
-        self.dao = UserDAO()
+    def __int__(self):
+        pass
 
     @staticmethod
     def jsonify_response(response):
@@ -16,7 +16,7 @@ class UserModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
+            return jsonify(f'{response[1]}: {response[2]}'), 404  # not found
 
         result = []
         for user in response:
@@ -24,81 +24,144 @@ class UserModel:
                 "uid": user[0],
                 "username": user[1],
                 "email": user[2],
-                "password": user[3],
+                "password": user[3]
             }
             result.append(result_dict)
+        return jsonify(result), 200
 
-        return jsonify(result)
-
-    def get_all_users(self):
+    @staticmethod
+    def post_user(data):
         """
-        Get all users from the user relation database.
+        Creates a new user tuple in the user relation database.
+        @param data: list with user attributes to be added
         @return: JSON and HTTP response code
         """
-        response = self.dao.get_all_users()
-        return self.jsonify_response(response)
-
-    def get_user_by_name(self, username):
-        """
-        Get a user by its username from the user relation database.
-        @param username: User's username
-        @return: JSON and HTTP response code
-        """
-        response = self.dao.get_user_by_name(username)
-        return self.jsonify_response(response)
-
-    def post_user(self, data):
-        """
-        Create a new user tuple in the user relation database.
-        @param data: a list with user attributes to be added
-        @return: JSON and HTTP response code
-        """
-        # Check that all attributes are present
         try:
-            users_attributes = {key: data[key] for key in attributes}
-        except KeyError as e:  # bad request
+            user_attributes = {key: data[key] for key in attributes}
+        except KeyError as e:  #bad request
             missing_attribute = e.args[0]
             return jsonify(f'Missing required attribute: {missing_attribute}'), 400
 
-        username = users_attributes["starttime"]
-        email = users_attributes["endtime"]
-        password = users_attributes["cdays"]
+        dao = UserDAO()
 
-        response = self.dao.post_user(username, email, password)
+        username = user_attributes["username"]
+        email = user_attributes["email"]
+        password = user_attributes["password"]
+
+        response = dao.post_user(username, email, password)
 
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 400
 
-        return jsonify(f'User has been created with mid: {response[1]}'), 201
+        return jsonify(f'User (uid: {response[1]}) successfully created'), 201
 
-    def get_user_by_id(self, uid):
+    def get_user_by_id(self, uid: int):
         """
-        Get a user by id from the user relation database.
+        Retrieves a user by uid.
         @param uid: user id
         @return: JSON and HTTP response code
         """
-        response = self.dao.get_user_by_uid(int(uid))
+        dao = UserDAO()
+        response = dao.get_user_by_id(uid)
         return self.jsonify_response(response)
 
-    def put_user_by_id(self, uid, data):
+    def get_user_by_username(self, username: str):
         """
-        Update a user by id from the user relation database.
+        Retrieves a user by username.
+        @param username: username
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.get_user_by_username(username)
+        return self.jsonify_response(response)
+
+    def get_user_by_email(self, email: str):
+        """
+        Retrieves a user by email.
+        @param email: user email
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.get_user_by_email(email)
+        return self.jsonify_response(response)
+
+    @staticmethod
+    def put_user_by_id(uid: int, data: dict):
+        """
+        Updates a user by uid.
         @param uid: user id
         @param data: attributes to be updated
         @return: JSON and HTTP response code
         """
-        response = self.dao.put_user_by_uid(int(uid), data)
+        dao = UserDAO()
+        response = dao.put_user_by_id(uid, data)
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User {uid} has been updated'), 200
+        return jsonify(f'User with uid {uid} successfully updated'), 200
 
-    def delete_user(self, uid):
+    @staticmethod
+    def put_user_by_username(username: str, data: dict):
         """
-        Delete a user from the user relation database.
+        Updates a user by username.
+        @param username: username
+        @param data: attributes to be updated
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.put_user_by_username(username, data)
+        if False in response:
+            return jsonify(f'{response[1]}: {response[2]}'), 400
+        return jsonify(f'User with username ({username}) successfully updated'), 200
+
+    @staticmethod
+    def put_user_by_email(email: str, data: dict):
+        """
+        Updates a user by email.
+        @param email: user email
+        @param data: attributes to be updated
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.put_user_by_email(email, data)
+        if False in response:
+            return jsonify(f'{response[1]}: {response[2]}'), 400
+        return jsonify(f'Section with email ({email}) successfully updated'), 200
+
+    @staticmethod
+    def delete_user_by_id(uid: int):
+        """
+        Deletes a user by uid.
         @param uid: user id
         @return: JSON and HTTP response code
         """
-        response = self.dao.delete(int(uid))
+        dao = UserDAO()
+        response = dao.delete_user_by_id(uid)
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User {uid} has been deleted'), 200
+        return jsonify(f'User with uid {uid} successfully deleted'), 200
+
+    @staticmethod
+    def delete_user_by_username(username: str):
+        """
+        Deletes a user by username.
+        @param username: username
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.delete_user_by_username(username)
+        if False in response:
+            return jsonify(f'{response[1]}: {response[2]}'), 400
+        return jsonify(f'User with username ({username}) successfully deleted'), 200
+
+    @staticmethod
+    def delete_user_by_email(email: str):
+        """
+        Deletes a user by email.
+        @param email: user email
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.delete_user_by_email(email)
+        if False in response:
+            return jsonify(f'{response[1]}: {response[2]}'), 400
+        return jsonify(f'User with email ({email}) successfully deleted'), 200
