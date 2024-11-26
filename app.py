@@ -176,9 +176,6 @@ def handle_syllables_by_embedding(embedding):
 @app.route('/excel_db/room/<string:building>/<string:statistic>', methods=['POST'])
 def handle_room_statistics(building, statistic):
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
-    
     if statistic == 'capacity':
         return handler.top_room_capacity_by_building(building)
     elif statistic == 'ratio':
@@ -189,8 +186,6 @@ def handle_room_statistics(building, statistic):
 @app.route('/excel_db/room/<int:rid>/classes', methods=['POST'])
 def local_statistics_by_id(rid):
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
 
     try:
         return handler.top_classes_per_room(rid)
@@ -200,9 +195,6 @@ def local_statistics_by_id(rid):
 @app.route('/excel_db/classes/<string:year>/<string:semester>', methods=['POST'])
 def top_classes_per_semester_year(year, semester):
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
-
     try:
         return handler.top_classes_per_semester(year, semester)
     except Exception as e:
@@ -213,9 +205,6 @@ def top_classes_per_semester_year(year, semester):
 @app.route('/excel_db/most/<string:statistic>', methods=['POST'])
 def handle_global_statistics(statistic):
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
-
     if statistic == 'meeting':
         return handler.top_meeting()
     elif statistic == 'prerequisite':
@@ -226,9 +215,6 @@ def handle_global_statistics(statistic):
 @app.route('/excel_db/least/classes', methods=['POST'])
 def least_global_statistics():
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
-
     try:
         return handler.top_least_classes()
     except Exception as e:
@@ -237,9 +223,6 @@ def least_global_statistics():
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
     handler = StatisticsModel()
-    if not request.is_json:
-        return jsonify("The request does not contain JSON data"), 400
-
     try:
         return handler.total_sections()
     except Exception as e:

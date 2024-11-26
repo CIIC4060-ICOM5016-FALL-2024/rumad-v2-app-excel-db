@@ -69,17 +69,16 @@ class MeetingDAO(DAO):
     # STATISTICS
     def get_top_meetings(self):
         """
-        Gets all tuples from the meeting relation
-        :return: a list of tuples, or None if failed
+
         """
         query = """
-                SELECT meeting.mid, meeting.starttime, meeting.endtime, meeting.cdays, section_amount
-                FROM (SELECT mid, COUNT(*) AS section_amount
-                      FROM section
-                      group by mid
-                      ORDER BY section_amount DESC, mid
-                      LIMIT 5) as section
-                JOIN meeting ON section.mid = meeting.mid
-        """
+        SELECT *
+        FROM
+            (SELECT mid, ccode, starttime, endtime, cdays, count(mid) AS frequency
+            FROM meeting NATURAL JOIN section
+            GROUP BY mid) AS frequency
+        ORDER BY frequency DESC 
+        LIMIT 5
+"""
         return self.read(query)
 

@@ -19,7 +19,7 @@ class ClassModel:
         """
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
 
         result = []
 
@@ -65,7 +65,7 @@ class ClassModel:
         response = dao.post_class(cname, ccode, cdesc, term, years, cred, csyllabus)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Class {cdesc} created successfully with cid: {response[1]}'), 201
 
@@ -100,7 +100,7 @@ class ClassModel:
         response = dao.put_class_by_cid(int(cid), data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
 
         return jsonify(f'Class {cid}: updated successfully'), 200
 
@@ -115,6 +115,6 @@ class ClassModel:
         response = dao.delete_class_by_id(int(cid))
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'Class {cid} deleted successfully'), 200
 
