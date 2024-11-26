@@ -1,0 +1,367 @@
+{
+	"info": {
+		"_postman_id": "5482261a-8af9-435c-b4c4-02f2791ee907",
+		"name": "All colections",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "39271276",
+		"_collection_link": "https://exceldb.postman.co/workspace/excel_db-Workspace~b6c485ec-7b4b-4e1f-8079-aa3773a80155/collection/39271276-5482261a-8af9-435c-b4c4-02f2791ee907?action=share&source=collection_link&creator=39271276"
+	},
+	"item": [
+		{
+			"name": "Add new class",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get one class",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update class",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Remove class",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get all classes",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Sections per year",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/year"
+			},
+			"response": []
+		},
+		{
+			"name": "Least Classes",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/least/classes"
+			},
+			"response": []
+		},
+		{
+			"name": "most prerequisite",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/prerequisite"
+			},
+			"response": []
+		},
+		{
+			"name": "most meeting",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/meeting"
+			},
+			"response": []
+		},
+		{
+			"name": "Most classes taught per semester",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/classes/:year/:semester",
+					"protocol": "https",
+					"host": [
+						"rumad-v2-app-excel-db-881d3c171d54",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"excel_db",
+						"classes",
+						":year",
+						":semester"
+					],
+					"variable": [
+						{
+							"key": "year",
+							"value": "2019"
+						},
+						{
+							"key": "semester",
+							"value": "Spring"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "top classes per room",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id/classes",
+					"protocol": "https",
+					"host": [
+						"rumad-v2-app-excel-db-881d3c171d54",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"excel_db",
+						"room",
+						":id",
+						"classes"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Building Statistics Capacity",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/capacity",
+					"protocol": "https",
+					"host": [
+						"rumad-v2-app-excel-db-881d3c171d54",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"excel_db",
+						"room",
+						":building",
+						"capacity"
+					],
+					"variable": [
+						{
+							"key": "building",
+							"value": "Stefani"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Building Statistics Ratio",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/ratio",
+					"protocol": "https",
+					"host": [
+						"rumad-v2-app-excel-db-881d3c171d54",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"excel_db",
+						"room",
+						":building",
+						"ratio"
+					],
+					"variable": [
+						{
+							"key": "building",
+							"value": "Stefani"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all meetings",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add new meeting",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get one meeting",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update meeting",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Remove meeting",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get all requisites",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add new requisite",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get one requisite",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update requisite",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Remove requisite",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get all rooms",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add new room",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get one room",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update room",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Remove room",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get all sections",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Add new section",
+			"request": {
+				"method": "POST",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Get one section",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Update section",
+			"request": {
+				"method": "PUT",
+				"header": []
+			},
+			"response": []
+		},
+		{
+			"name": "Remove section",
+			"request": {
+				"method": "DELETE",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

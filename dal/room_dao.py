@@ -1,4 +1,4 @@
-from dal.dao.dao import DAO
+from dal.dao import DAO
 
 class RoomDAO(DAO):
 
@@ -14,7 +14,9 @@ class RoomDAO(DAO):
         :param capacity: maximum capacity of room
         :return: True if success, False otherwise
         """
-        query = "INSERT INTO room (building, room_number, capacity) VALUES (%s, %s, %s)"
+        query = """INSERT INTO room (building, room_number, capacity)
+        VALUES (%s, %s, %s) RETURNING rid
+        """
         values = (building, room_number, capacity)
         return self.create(query, values)
 
@@ -64,35 +66,34 @@ class RoomDAO(DAO):
     # STATISTICS
     def get_top_rooms_in_building(self, building: str):
         """
-        Gets all rows from the rooms relation, specified by building
-        :param building:  name
-        :return: a list of tuples, or None if failed
+        Gets the top 3 rooms with the most capacity in a building
+        :return: a list of tuples, or False inside a tuple if failed
         """
         query = """
                 SELECT rid, building, room_number, capacity 
                 FROM room 
-                WHERE building = %s
+                WHERE building ILIKE %s
                 ORDER BY capacity DESC limit 3;
                 """
         values = [building]
         return self.read(query, values)
 
-    def get_top_ratio_rooms(self, building):
+    def get_top_ratio_rooms(self, building: str):
         """
-        Gets all rows from the rooms relation
-        :return: a list of tuples, or None if failed
+        Gets the top 3 rooms with the most student to capacity ratio.
+        :return: a list of tuples, or False inside a tuple if failed
         """
         query = """
-                SELECT rid, building, room_number, capacity
-                FROM (
-                    SELECT room.rid, room.building, room.room_number, room.capacity,
-                           CAST(CAST(section.capacity AS DECIMAL) / room.capacity AS DECIMAL(20, 3)) AS student_to_capacity_ratio
-                    FROM section
-                    JOIN room ON section.roomid = room.rid
-                    WHERE building = %s
-                ) AS subquery
-                ORDER BY student_to_capacity_ratio DESC
-                LIMIT 3;
+        SELECT rid, building, room_number, room.capacity,
+        CAST(students AS FLOAT) / CAST(seats AS FLOAT) AS ratio
+        FROM (SELECT rid, sum(section.capacity) AS students, sum(room.capacity) AS seats
+            FROM section, room
+            WHERE roomid = rid
+            AND building ILIKE %s
+            GROUP BY rid) AS sums
+        NATURAL JOIN room
+        ORDER BY ratio DESC
+        LIMIT 3;
         """
         values = [building]
         return self.read(query, values)
