@@ -1,11 +1,10 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import requests
+import bcrypt
 
 class Login:
-    """
-    A login/sign up page for Streamlit with side navigation bar.
-    """
+
     def __init__(self, cookies):
         self.cookies = cookies
 
@@ -21,23 +20,28 @@ class Login:
 
             if login_button:
                 try:
-                    response = requests.get(f"http://127.0.0.1:5000/excel_db/user/{username}")
+                    # Send login request to the backend
+                    data = {"username": username, "password": password}
+                    response = requests.post("http://127.0.0.1:5000/excel_db/user/login", json=data)
+
                     if response.status_code == 200:
                         user_data = response.json()
-                        if user_data[0]["password"] == password:
-                            st.session_state["LOGGED_IN"] = True
-                            st.session_state["USERNAME"] = username
-                            self.cookies["LOGGED_IN"] = "True"
-                            self.cookies["USERNAME"] = username
-                            self.cookies.save()
-                            return True
-                        else:
-                            st.error("Invalid Username or Password", icon="❌")
+                        st.session_state["LOGGED_IN"] = True
+                        st.session_state["USERNAME"] = user_data["username"]
+
+                        self.cookies["LOGGED_IN"] = "True"
+                        self.cookies["USERNAME"] = user_data["username"]
+                        self.cookies.save()
+
+                        st.success("Login successful!", icon="✅")
+                        return True
                     else:
-                        st.error("User not found or server error occurred.", icon="❌")
+                        error_message = response.json().get("error", "Invalid Username or Password")
+                        st.error(error_message, icon="❌")
                 except requests.exceptions.RequestException as e:
                     st.error(f"An error occurred: {str(e)}", icon="❌")
         return False
+
 
     def sign_up_widget(self):
         """
@@ -53,26 +57,24 @@ class Login:
 
             if sign_up_button:
                 try:
+                    # Hash the password and send sign-up request to the backend
                     data = {"username": username, "password": password, "email": email}
                     response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
 
                     if response.status_code == 201:
                         response_data = response.json()
-                        if response_data == "Success" :
+                        if response_data.get("message") == "User created successfully":
                             st.session_state["LOGGED_IN"] = True
                             st.session_state["USERNAME"] = username
-
                             self.cookies["LOGGED_IN"] = "True"
                             self.cookies["USERNAME"] = username
                             self.cookies.save()
-
                             st.success("Account created successfully!", icon="✅")
                             return True
                         else:
                             st.error("Signup failed. Please try again.", icon="❌")
                     else:
                         st.error(f"Error: {response.status_code}. Please try again later.", icon="❌")
-
                 except requests.exceptions.RequestException as e:
                     st.error(f"An error occurred: {str(e)}", icon="❌")
 
