@@ -71,6 +71,28 @@ def delete_user_by_email(email):
     handler = UserModel()
     return handler.delete_user_by_email(email)
 
+@app.route("/excel_db/user/login", methods=["POST"])
+def login_user():
+    try:
+        if not request.is_json:
+            return jsonify({"error": "Invalid content type. JSON required."}), 400
+
+        data = request.get_json(silent=True)
+        if data is None:
+            return jsonify({"error": "Invalid JSON payload"}), 400
+
+        username = data.get("username")
+        password = data.get("password")
+
+        if not username or not password:
+            return jsonify({"error": "Username and password are required"}), 400
+
+        response_data, status_code = handler.validate_user_login(username, password)
+        return jsonify(response_data), status_code
+    except Exception as e:
+        return jsonify({"error": "Internal server error"}), 500
+
+
 """ CLASS CRUD ROUTES """
 
 @app.route('/excel_db/class', methods=['GET', 'POST'])
