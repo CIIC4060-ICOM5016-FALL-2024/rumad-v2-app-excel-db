@@ -31,6 +31,7 @@ class Login:
                     st.success("Login successful!", icon="✅")
                     return True
                 else:
+                    print(response.text)
                     error_message = response.json().get("error", "An error occurred")
                     st.error(error_message, icon="❌")
                     return False
