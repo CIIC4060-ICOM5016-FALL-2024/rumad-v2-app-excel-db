@@ -1,3 +1,5 @@
+import json
+
 from langchain.prompts import ChatPromptTemplate
 from langchain_ollama import OllamaEmbeddings, OllamaLLM
 import requests
@@ -16,7 +18,7 @@ class SyllabusChatBot:
             }
             response = requests.post(
                 f"https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/embedding",
-                data=body,
+                data=json.dumps(body),
             )
             response.raise_for_status()
             syllabuses = response.json()
