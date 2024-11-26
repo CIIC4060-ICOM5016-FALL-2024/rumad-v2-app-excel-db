@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
 
+from model.user_model import UserModel
 from model.class_model import ClassModel
 from model.requisite_model import RequisiteModel
 from model.section_model import SectionModel
@@ -20,29 +21,55 @@ def home():
     return redirect('/excel_db', code=302)
 
 """ USER CRUD ROUTES """
-@app.route("/excel_db/user", methods=["GET"])
-def get_user():
-    return handler.get_users()
-
 @app.route("/excel_db/user", methods=["POST"])
 def post_user():
+    handler = UserModel()
     return handler.post_user(request.json)
 
 @app.route("/excel_db/user/<int:uid>", methods=["GET"])
 def get_user_by_id(uid):
+    handler = UserModel()
     return handler.get_user_by_id(uid)
 
 @app.route("/excel_db/user/<string:username>", methods=["GET"])
 def get_user_by_username(username):
-    return handler.get_user_by_name(username)
+    handler = UserModel()
+    return handler.get_user_by_username(username)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["GET"])
+def get_user_by_email(email):
+    handler = UserModel()
+    return handler.get_user_by_email(email)
 
 @app.route("/excel_db/user/<int:uid>", methods=["PUT"])
 def put_user_by_id(uid):
+    handler = UserModel()
     return handler.put_user_by_id(uid, request.json)
+
+@app.route("/excel_db/user/<string:username>", methods=["PUT"])
+def put_user_by_username(username):
+    handler = UserModel()
+    return handler.put_user_by_username(username, request.json)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["PUT"])
+def put_user_by_email(email):
+    handler = UserModel()
+    return handler.put_user_by_email(email, request.json)
 
 @app.route("/excel_db/user/<int:uid>", methods=["DELETE"])
 def delete_user_by_id(uid):
+    handler = UserModel()
     return handler.delete_user_by_id(uid)
+
+@app.route("/excel_db/user/<string:username>", methods=["DELETE"])
+def delete_user_by_username(username):
+    handler = UserModel()
+    return handler.delete_user_by_username(username)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["DELETE"])
+def delete_user_by_email(email):
+    handler = UserModel()
+    return handler.delete_user_by_email(email)
 
 """ CLASS CRUD ROUTES """
 
