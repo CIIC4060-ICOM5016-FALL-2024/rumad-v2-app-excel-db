@@ -215,11 +215,11 @@ def handle_syllables_by_id(chunk_id):
     else:
         return jsonify(f"Error: {request.method} Method Not Allowed"), 405
 
-@app.route('/excel_db/syllable/<string:embedding>', methods=['GET'])
-def handle_syllables_by_embedding(embedding):
+@app.route('/excel_db/syllable/embedding', methods=['POST'])
+def handle_syllables_by_embedding():
     handler = SyllabusModel()
-    if request.method == 'GET':
-        return handler.get_syllabus_by_embedding(embedding)
+    if request.method == 'POST':
+        return handler.get_syllabus_by_embedding(request.json)
     else:
         return jsonify(f"Error: {request.method} Method Not Allowed"), 405
 

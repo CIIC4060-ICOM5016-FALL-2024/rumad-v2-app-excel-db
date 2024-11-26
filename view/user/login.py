@@ -54,7 +54,7 @@ class Login:
             if sign_up_button:
                 try:
                     data = {"username": username, "password": password, "email": email}
-                    response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
+                    response = requests.post("https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user", json=data)
                     print(response)
 
                     print(response.status_code)
