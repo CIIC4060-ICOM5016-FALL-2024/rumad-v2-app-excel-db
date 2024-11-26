@@ -1,10 +1,9 @@
 import streamlit as st
-from streamlit_cookies_manager import EncryptedCookieManager
 import time
 
-from views.login import Login
+from streamlit_cookies_manager import EncryptedCookieManager
 from views.profile import Profile
-
+from views.login import Login
 
 def main():
     cookies = EncryptedCookieManager(password="admin")

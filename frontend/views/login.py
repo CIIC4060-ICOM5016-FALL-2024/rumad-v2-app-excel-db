@@ -59,7 +59,7 @@ class Login:
                         return True
 
                     else:
-                        error_message = response.json()
+                        error_message = response.json().get("error", "An error occurred")
                         st.error(error_message, icon="❌")
                 except requests.exceptions.RequestException as e:
                     st.error(f"An error occurred: {str(e)}", icon="❌")

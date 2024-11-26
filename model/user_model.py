@@ -70,20 +70,16 @@ class UserModel:
         password = user_attributes["password"]
 
         if not self.is_valid_email(email):
-            return jsonify({"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}), 400
+            return {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}, 400
 
         if not self.is_valid_password(password):
-            return jsonify({
-                "error": (
-                    "Password does not meet the requirements:\n"
+            return {"error": "Password does not meet the requirements:\n"
                     "- At least 8 characters in length\n"
                     "- Must contain at least 3 of the following 4 types of characters:\n"
-                    "  - Lowercase letters (a-z)\n"
-                    "  - Uppercase letters (A-Z)\n"
-                    "  - Numbers (i.e. 0-9)\n"
-                    "  - Special characters (e.g. !@#$%^&*)"
-                )
-            }), 400
+                    "- Lowercase letters (a-z)\n"
+                    "- Uppercase letters (A-Z)\n"
+                    "- Numbers (i.e. 0-9)\n"
+                    "- Special characters (e.g. !@#$%^&*)"}, 400
 
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
@@ -92,7 +88,7 @@ class UserModel:
         response = dao.post_user(username, email, hashed_password)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return {"error": response[2]}, 400
 
         return jsonify(f'User (uid: {response[1]}) successfully created'), 201
 
@@ -218,7 +214,7 @@ class UserModel:
             username = data['username']
             password = data['password']
         except KeyError:
-            return {"error": "Missing user or password"}, 401
+            return {"error": "Missing user or password"}, 400
 
         dao = UserDAO()
         response = dao.get_user_by_username(username)

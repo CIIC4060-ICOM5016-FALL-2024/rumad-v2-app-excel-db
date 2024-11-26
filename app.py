@@ -248,6 +248,7 @@ def least_global_statistics():
 
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
+    handler = StatisticsModel()
     return handler.total_sections()
 
 if __name__ == "__main__":
