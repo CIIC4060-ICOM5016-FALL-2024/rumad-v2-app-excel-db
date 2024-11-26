@@ -4,7 +4,6 @@ from pypdf import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
 from langchain_ollama import OllamaEmbeddings
 from flask import jsonify
-from torch.nn.functional import embedding
 
 from dal.class_dao import ClassDAO
 from dal.dao import DAO
