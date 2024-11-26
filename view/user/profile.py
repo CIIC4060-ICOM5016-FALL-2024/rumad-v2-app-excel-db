@@ -1,9 +1,7 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 
-from .dashboard import dashboard
-
-
+from user.dashboard import dashboard
 from chat.chatbot import chatbot
 
 
