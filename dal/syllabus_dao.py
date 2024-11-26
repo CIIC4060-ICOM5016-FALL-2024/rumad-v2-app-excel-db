@@ -6,7 +6,7 @@ class SyllabusDAO(DAO):
         super().__init__()
 
     # POST
-    def post_syllabus(self, cid: int, embedding: list, chunk: str):
+    def post_syllabus(self, cid: int, embedding: str, chunk: str):
         """
         Creates a tuple in the syllabus relation
         :param cid: class id

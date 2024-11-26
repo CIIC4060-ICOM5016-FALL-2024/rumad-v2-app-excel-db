@@ -2,8 +2,8 @@ import streamlit as st
 from streamlit_cookies_manager import EncryptedCookieManager
 import time
 
-from views.login import Login
-from views.profile import Profile
+from user.profile import Profile
+from user.login import Login
 
 
 def main():

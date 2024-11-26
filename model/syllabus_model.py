@@ -161,6 +161,7 @@ class SyllabusModel:
         @return: JSON and HTTP response code
         """
         response = self.syllabus_dao.get_from_embedding(embedding)
+        print(response)
         return self.jsonify_response(response)
 
     def put_syllabus_by_id(self, chunk_id, data):
