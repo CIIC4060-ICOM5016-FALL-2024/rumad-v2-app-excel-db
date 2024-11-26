@@ -7,7 +7,6 @@ from user.profile import Profile
 
 def main():
     cookies = EncryptedCookieManager(password="admin")
-
     while not cookies.ready():
         time.sleep(0.1)
 
@@ -26,4 +25,5 @@ def main():
 
 
 if __name__ == "__main__":
+    st.set_page_config(page_title="Excel", page_icon="🤖", layout="centered", initial_sidebar_state="auto")
     main()

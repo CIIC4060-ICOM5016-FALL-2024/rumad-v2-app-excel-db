@@ -10,17 +10,14 @@ def chatbot():
             with st.chat_message(message["role"]):
                 st.write(message["content"])
 
-    # st.set_page_config(page_title="Syllabus ChatBot", page_icon="🤖", layout="centered", initial_sidebar_state="auto")
-
     chatbot = SyllabusChatBot(model_name="mistral")
 
     st.title("Ask Questions About Your Syllabus")
+    with st.chat_message("assistant"):
+        st.write("Ask me a question about your syllabus!")
 
     if "messages" not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Ask me a question about your syllabus!"}
-        ]
-        display_chat()
+        st.session_state.messages = []
 
     if prompt := st.chat_input("Ask a question"):
         st.session_state.messages.append({"role": "user", "content": prompt})
