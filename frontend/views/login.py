@@ -55,21 +55,20 @@ class Login:
                 try:
                     data = {"username": username, "password": password, "email": email}
                     response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
+                    print(response)
+
+                    print(response.status_code)
 
                     if response.status_code == 201:
-                        response_data = response.json()
-                        if response_data == "Success" :
-                            st.session_state["LOGGED_IN"] = True
-                            st.session_state["USERNAME"] = username
+                        st.session_state["LOGGED_IN"] = True
+                        st.session_state["USERNAME"] = username
 
-                            self.cookies["LOGGED_IN"] = "True"
-                            self.cookies["USERNAME"] = username
-                            self.cookies.save()
+                        self.cookies["LOGGED_IN"] = "True"
+                        self.cookies["USERNAME"] = username
+                        self.cookies.save()
 
-                            st.success("Account created successfully!", icon="✅")
-                            return True
-                        else:
-                            st.error("Signup failed. Please try again.", icon="❌")
+                        st.success("Account created successfully!", icon="✅")
+                        return True
                     else:
                         st.error(f"Error: {response.status_code}. Please try again later.", icon="❌")
 
