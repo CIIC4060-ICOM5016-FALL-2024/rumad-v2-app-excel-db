@@ -1,4 +1,6 @@
 from dal.user_dao import UserDAO
+import re
+import bcrypt
 from flask import jsonify
 
 attributes = ["username", "email", "password"]
@@ -30,7 +32,28 @@ class UserModel:
         return jsonify(result), 200
 
     @staticmethod
-    def post_user(data):
+    def is_valid_password(password: str):
+        """
+        Checks if a password is valid.
+        @param password: password
+        @return: True if password is valid, False otherwise
+        """
+        if len(password) < 8 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password) or not re.search(r'\d', password):
+            return False
+        return True
+
+    @staticmethod
+    def is_valid_email(email: str):
+        """
+        Checks if email is valid and from the @upr.edu domain
+        @param email: email to check
+        @return: True if email is valid, False otherwise
+        """
+        if not re.match(r'^[a-z]+\.[a-z]+[0-9]*@upr\.edu$', email):
+            return False
+        return True
+
+    def post_user(self, data):
         """
         Creates a new user tuple in the user relation database.
         @param data: list with user attributes to be added
@@ -42,13 +65,31 @@ class UserModel:
             missing_attribute = e.args[0]
             return jsonify(f'Missing required attribute: {missing_attribute}'), 400
 
-        dao = UserDAO()
-
         username = user_attributes["username"]
         email = user_attributes["email"]
         password = user_attributes["password"]
 
-        response = dao.post_user(username, email, password)
+        if not self.is_valid_email(email):
+            return jsonify({"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}), 400
+
+        if not self.is_valid_password(password):
+            return jsonify({
+                "error": (
+                    "Password does not meet the requirements:\n"
+                    "- At least 8 characters in length\n"
+                    "- Must contain at least 3 of the following 4 types of characters:\n"
+                    "  - Lowercase letters (a-z)\n"
+                    "  - Uppercase letters (A-Z)\n"
+                    "  - Numbers (i.e. 0-9)\n"
+                    "  - Special characters (e.g. !@#$%^&*)"
+                )
+            }), 400
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+
+        dao = UserDAO()
+
+        response = dao.post_user(username, email, hashed_password)
 
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 400
@@ -165,3 +206,38 @@ class UserModel:
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 400
         return jsonify(f'User with email ({email}) successfully deleted'), 200
+
+    @staticmethod
+    def validate_user_login(data: dict):
+        """
+        Validates a user login.
+        @param data: login data
+        @return: JSON and HTTP response code
+        """
+        try:
+            username = data['username']
+            password = data['password']
+        except KeyError:
+            return {"error": "Missing user or password"}, 401
+
+        dao = UserDAO()
+        response = dao.get_user_by_username(username)
+
+        if False in response:
+            return {"error" : "Can't find user"}, 400
+
+        hashed_password = response[0][3]
+
+        # Validate password
+        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+            user_data = {
+                "uid": response[0][0],
+                "username": response[0][1],
+                "email": response[0][2]
+            }
+
+            return user_data, 200
+
+        return {"error": "Wrong password"}, 401
+
+

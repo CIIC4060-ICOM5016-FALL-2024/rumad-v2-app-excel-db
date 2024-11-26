@@ -15,28 +15,25 @@ class Login:
             login_button = st.form_submit_button("Login")
 
             if login_button:
-                try:
-                    # Send login request to the backend
-                    data = {"username": username, "password": password}
-                    response = requests.post("http://127.0.0.1:5000/excel_db/user/login", json=data)
+                # Send login request to the backend
+                data = {"username": username, "password": password}
+                response = requests.post("http://127.0.0.1:5000/excel_db/user/login", json=data)
 
-                    if response.status_code == 200:
-                        user_data = response.json()
-                        st.session_state["LOGGED_IN"] = True
-                        st.session_state["USERNAME"] = user_data["username"]
+                if response.status_code == 200:
+                    user_data = response.json()
+                    st.session_state["LOGGED_IN"] = True
+                    st.session_state["USERNAME"] = user_data["username"]
 
-                        self.cookies["LOGGED_IN"] = "True"
-                        self.cookies["USERNAME"] = user_data["username"]
-                        self.cookies.save()
+                    self.cookies["LOGGED_IN"] = "True"
+                    self.cookies["USERNAME"] = user_data["username"]
+                    self.cookies.save()
 
-                        st.success("Login successful!", icon="✅")
-                        return True
-                    else:
-                        error_message = response.json().get("error", "Invalid Username or Password")
-                        st.error(error_message, icon="❌")
-                except requests.exceptions.RequestException as e:
-                    st.error(f"An error occurred: {str(e)}", icon="❌")
-        return False
+                    st.success("Login successful!", icon="✅")
+                    return True
+                else:
+                    error_message = response.json().get("error", "An error occurred")
+                    st.error(error_message, icon="❌")
+                    return False
 
     def sign_up_widget(self):
         with st.form("Sign Up Form", clear_on_submit=True):
@@ -53,17 +50,16 @@ class Login:
                     response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
 
                     if response.status_code == 201:
-                        response_data = response.json()
-                        if response_data.get("message") == "User created successfully":
-                            st.session_state["LOGGED_IN"] = True
-                            st.session_state["USERNAME"] = username
-                            self.cookies["LOGGED_IN"] = "True"
-                            self.cookies["USERNAME"] = username
-                            self.cookies.save()
-                            st.success("Account created successfully!", icon="✅")
-                            return True
+                        st.session_state["LOGGED_IN"] = True
+                        st.session_state["USERNAME"] = username
+                        self.cookies["LOGGED_IN"] = "True"
+                        self.cookies["USERNAME"] = username
+                        self.cookies.save()
+                        st.success("Account created successfully!", icon="✅")
+                        return True
+
                     else:
-                        error_message = response.json().get("error", "Signup failed")
+                        error_message = response.json()
                         st.error(error_message, icon="❌")
                 except requests.exceptions.RequestException as e:
                     st.error(f"An error occurred: {str(e)}", icon="❌")

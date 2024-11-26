@@ -73,25 +73,9 @@ def delete_user_by_email(email):
 
 @app.route("/excel_db/user/login", methods=["POST"])
 def login_user():
-    try:
-        if not request.is_json:
-            return jsonify({"error": "Invalid content type. JSON required."}), 400
-
-        data = request.get_json(silent=True)
-        if data is None:
-            return jsonify({"error": "Invalid JSON payload"}), 400
-
-        username = data.get("username")
-        password = data.get("password")
-
-        if not username or not password:
-            return jsonify({"error": "Username and password are required"}), 400
-
-        response_data, status_code = handler.validate_user_login(username, password)
-        return jsonify(response_data), status_code
-    except Exception as e:
-        return jsonify({"error": "Internal server error"}), 500
-
+    login_data = request.get_json(silent=True)
+    handler = UserModel()
+    return handler.validate_user_login(login_data)
 
 """ CLASS CRUD ROUTES """
 
@@ -264,11 +248,7 @@ def least_global_statistics():
 
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
-    handler = StatisticsModel()
-    try:
-        return handler.total_sections()
-    except Exception as e:
-        return jsonify(f"Global Statistics: An error occurred while fetching the total sections per year, {str(e)}"), 500
+    return handler.total_sections()
 
 if __name__ == "__main__":
     app.run(debug=True)
