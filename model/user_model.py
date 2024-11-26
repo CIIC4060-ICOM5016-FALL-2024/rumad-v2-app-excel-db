@@ -1,3 +1,5 @@
+import psycopg2
+
 from dal.user_dao import UserDAO
 import re
 import bcrypt
@@ -217,7 +219,11 @@ class UserModel:
             return {"error": "Missing user or password"}, 400
 
         dao = UserDAO()
-        response = dao.get_user_by_username(username)
+
+        try:
+            response = dao.get_user_by_username(username) # Just in case
+        except psycopg2.Error as e:
+            return {"error": str(e)}, 500
 
         if False in response:
             return {"error" : "Can't find user"}, 400
@@ -225,14 +231,17 @@ class UserModel:
         hashed_password = response[0][3]
 
         # Validate password
-        if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
-            user_data = {
-                "uid": response[0][0],
-                "username": response[0][1],
-                "email": response[0][2]
-            }
+        try:
+            if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+                user_data = {
+                    "uid": response[0][0],
+                    "username": response[0][1],
+                    "email": response[0][2]
+                }
 
-            return user_data, 200
+                return user_data, 200
+        except ValueError as e:
+            return {"error": str(e)}, 400
 
         return {"error": "Wrong password"}, 401
 
