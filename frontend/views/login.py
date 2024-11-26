@@ -55,9 +55,6 @@ class Login:
                 try:
                     data = {"username": username, "password": password, "email": email}
                     response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
-                    print(response)
-
-                    print(response.status_code)
 
                     if response.status_code == 201:
                         st.session_state["LOGGED_IN"] = True
