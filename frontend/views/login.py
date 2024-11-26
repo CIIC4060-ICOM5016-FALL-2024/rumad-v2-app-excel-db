@@ -1,7 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
 import requests
-import bcrypt
 
 class Login:
 
@@ -9,9 +8,6 @@ class Login:
         self.cookies = cookies
 
     def login_widget(self):
-        """
-        Displays the login form and checks credentials.
-        """
         with st.form("Login Form", clear_on_submit=True):
             st.subheader("Login to Your Account")
             username = st.text_input("Username", max_chars=20, placeholder="Enter your username")
@@ -42,11 +38,7 @@ class Login:
                     st.error(f"An error occurred: {str(e)}", icon="❌")
         return False
 
-
     def sign_up_widget(self):
-        """
-        Displays the sign-up form to create a new account.
-        """
         with st.form("Sign Up Form", clear_on_submit=True):
             st.subheader("Create a New Account")
             username = st.text_input("Username", max_chars=20, placeholder="Choose a username")
@@ -57,7 +49,6 @@ class Login:
 
             if sign_up_button:
                 try:
-                    # Hash the password and send sign-up request to the backend
                     data = {"username": username, "password": password, "email": email}
                     response = requests.post("http://127.0.0.1:5000/excel_db/user", json=data)
 
@@ -71,17 +62,13 @@ class Login:
                             self.cookies.save()
                             st.success("Account created successfully!", icon="✅")
                             return True
-                        else:
-                            st.error("Signup failed. Please try again.", icon="❌")
                     else:
-                        st.error(f"Error: {response.status_code}. Please try again later.", icon="❌")
+                        error_message = response.json().get("error", "Signup failed")
+                        st.error(error_message, icon="❌")
                 except requests.exceptions.RequestException as e:
                     st.error(f"An error occurred: {str(e)}", icon="❌")
 
     def logout_widget(self):
-        """
-        Displays a logout button.
-        """
         if st.button("Logout", key="logout_button"):
             self.cookies["LOGGED_IN"] = "False"
             self.cookies["USERNAME"] = ""
@@ -90,9 +77,6 @@ class Login:
             st.rerun()
 
     def nav_sidebar(self):
-        """
-        Creates the side navigation bar.
-        """
         main_page_sidebar = st.sidebar.empty()
         with main_page_sidebar:
             selected_option = option_menu(
@@ -108,9 +92,6 @@ class Login:
         return selected_option
 
     def build_login_ui(self):
-        """
-        Builds the entire UI with navigation options.
-        """
         if "LOGGED_IN" not in st.session_state:
             st.session_state["LOGGED_IN"] = False
 

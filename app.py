@@ -56,7 +56,6 @@ def login_user():
         if not username or not password:
             return jsonify({"error": "Username and password are required"}), 400
 
-        # Call the handler function and validate its response
         response_data, status_code = handler.validate_user_login(username, password)
         return jsonify(response_data), status_code
     except Exception as e:

@@ -1,3 +1,4 @@
+import re
 import sqlite3
 from urllib.parse import unquote
 from dal.dao.class_dao import ClassDAO
@@ -91,13 +92,39 @@ class Handler:
         if not username or not email or not password:
             return jsonify({"error": "Missing required fields"}), 400
 
+        # Check for duplicate username and email
+        existing_user = dao.get_user_by_name(username)
+        if existing_user:
+            return jsonify({"error": "Username already taken"}), 409
+
+        existing_email = dao.get_user_by_email(email)
+        if existing_email:
+            return jsonify({"error": "Email already in use"}), 409
+
+        # Validate email format and domain
+        if not re.match(r'^[a-z]+\.[a-z]+[0-9]*@upr\.edu$', email):
+            return jsonify({"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}), 400
+
+        # Validate password
+        if not self.is_valid_password(password):
+            return jsonify({
+                "error": (
+                    "Password does not meet the requirements:\n"
+                    "- At least 8 characters in length\n"
+                    "- Must contain at least 3 of the following 4 types of characters:\n"
+                    "  - Lowercase letters (a-z)\n"
+                    "  - Uppercase letters (A-Z)\n"
+                    "  - Numbers (i.e. 0-9)\n"
+                    "  - Special characters (e.g. !@#$%^&*)"
+                )
+            }), 400
+
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
         if dao.post_user(username, email, hashed_password):
             return jsonify({"message": "User created successfully"}), 201
 
         return jsonify({"error": "Failed to create user"}), 500
-
 
     def get_users(self):
         dao = UserDAO()
@@ -126,9 +153,8 @@ class Handler:
         }
         return jsonify(user_data), 200
 
-
     def get_user_by_name(self, username):
-        dao = UserDAO()  # Use the DAO instance
+        dao = UserDAO()
         user = dao.get_user_by_name(username)
 
         if not user:
@@ -140,7 +166,6 @@ class Handler:
             "email": user["email"],
         }
         return jsonify(user_data), 200
- 
 
     def put_user_by_id(self, uid, data):
         dao = UserDAO()
@@ -150,13 +175,13 @@ class Handler:
             return jsonify({"message": "User updated successfully"}), 200
         return jsonify({"error": "Failed to update user"}), 500
 
-
     def delete_user_by_id(self, uid):
         dao = UserDAO()
         if dao.delete_user(uid):
             return jsonify({"message": "User deleted successfully"}), 200
         return jsonify({"error": "Failed to delete user"}), 500
 
+    """ USER VALIDATIONS """
     def validate_user_login(self, username, password):
             try:
                 if not username or not password:
@@ -184,6 +209,11 @@ class Handler:
                 return {"error": "Login failed"}, 401
             except Exception as e:
                 return {"error": "Internal server error"}, 500
+        
+    def is_valid_password(self, password):
+        if (len(password) < 8 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password) or not re.search(r'\d', password)):
+            return False
+        return True
 
 
     """ CLASS HANDLERS """
