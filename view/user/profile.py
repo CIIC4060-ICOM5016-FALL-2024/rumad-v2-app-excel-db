@@ -4,6 +4,9 @@ from streamlit_option_menu import option_menu
 from .dashboard import dashboard
 
 
+from chat.chatbot import chatbot
+
+
 class Profile:
     def __init__(self, cookies):
         self.cookies = cookies
@@ -105,6 +108,4 @@ class Profile:
         """
         Displays the chatbot page.
         """
-        st.title("Chatbot")
-        st.write("This is the chatbot interface.")
-        st.text_input("Type your message:", placeholder="Start chatting...")
+        chatbot()

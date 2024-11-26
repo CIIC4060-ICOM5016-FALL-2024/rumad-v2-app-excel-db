@@ -8,6 +8,7 @@ from model.section_model import SectionModel
 from model.meeting_model import MeetingModel
 from model.room_model import RoomModel
 from model.statistics_model import StatisticsModel
+from model.syllabus_model import SyllabusModel
 
 app = Flask(__name__)
 CORS(app)
@@ -194,6 +195,37 @@ def handle_rooms_by_id(rid):
         return handler.put_room_by_id(rid, request.json)
     elif request.method == 'DELETE':
         return handler.delete_room_by_id(rid)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
+""" SYLLABUSES CRUD ROUTES """
+@app.route('/excel_db/syllable', methods=['GET', 'POST'])
+def handle_syllables():
+    handler = SyllabusModel()
+    if request.method == 'GET':
+        return handler.get_all_syllabus()
+    elif request.method == 'POST':
+        return handler.post_syllabus(request.json)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
+@app.route('/excel_db/syllable/<int:chunk_id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_syllables_by_id(chunk_id):
+    handler = SyllabusModel()
+    if request.method == 'GET':
+        return handler.get_syllabus_by_id(chunk_id)
+    elif request.method == 'PUT':
+        return handler.put_syllabus_by_id(chunk_id, request.json)
+    elif request.method == 'DELETE':
+        return handler.delete_syllabus(chunk_id)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
+@app.route('/excel_db/syllable/<string:embedding>', methods=['GET'])
+def handle_syllables_by_embedding(embedding):
+    handler = SyllabusModel()
+    if request.method == 'GET':
+        return handler.get_syllabus_by_embedding(embedding)
     else:
         return jsonify(f"Error: {request.method} Method Not Allowed"), 405
 
