@@ -1,5 +1,6 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
+from dashboard import dashboard
 
 class Profile:
     def __init__(self, cookies):
@@ -96,6 +97,7 @@ class Profile:
         """
         st.title("Dashboard")
         st.write("This is the dashboard. Display relevant data here.")
+        dashboard()
 
     def show_chatbot(self):
         """
