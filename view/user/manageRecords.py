@@ -17,6 +17,7 @@ class ManageRecords:
         "login": [
             ("username", str),
             ("password", str),
+            ("email", str),
         ],
         "class": [
             ("cname", str),  # Course name
