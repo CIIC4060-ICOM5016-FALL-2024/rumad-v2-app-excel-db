@@ -3,6 +3,7 @@ from streamlit_option_menu import option_menu
 
 from user.dashboard import dashboard
 from chat.chatbot import chatbot
+from user.manageRecords import ManageRecords
 
 
 class Profile:
@@ -17,8 +18,8 @@ class Profile:
         with main_page_sidebar:
             selected_option = option_menu(
                 menu_title="Navigation",
-                options=["Profile", "Dashboard", "Chatbot"],
-                icons=["person", "speedometer", "chat-dots"],
+                options=["Profile", "Dashboard", "Chatbot", "Manage Records"],
+                icons=["person", "speedometer", "chat-dots", "folder"],
                 menu_icon="list",
                 default_index=0,
                 styles={
@@ -39,6 +40,8 @@ class Profile:
             self.show_dashboard()
         elif selected_option == "Chatbot":
             self.show_chatbot()
+        elif selected_option == "Manage Records":
+            self.show_manageRecords()
 
     def show_profile(self):
         """
@@ -107,3 +110,11 @@ class Profile:
         Displays the chatbot page.
         """
         chatbot()
+
+    def show_manageRecords(self):
+        """
+        Displays the manage records page.
+        """
+
+        manage_records = ManageRecords()
+        manage_records.create_as_admin()

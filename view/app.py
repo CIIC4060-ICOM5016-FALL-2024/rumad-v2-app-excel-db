@@ -5,8 +5,8 @@ from streamlit_cookies_manager import EncryptedCookieManager
 from user.login import Login
 from user.profile import Profile
 
-st.set_page_config(page_title="Excel", page_icon="🎄", layout="centered", initial_sidebar_state="collapsed")
-st.image("/home/g/db_project/christmas.png", use_container_width=True)
+# st.set_page_config(page_title="Excel", page_icon="🎄", layout="centered", initial_sidebar_state="collapsed")
+# st.image("/home/g/db_project/christmas.png", use_container_width=True)
 st.title("RUMAD 2.0")
 
 def main():

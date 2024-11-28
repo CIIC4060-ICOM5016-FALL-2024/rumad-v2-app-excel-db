@@ -70,11 +70,11 @@ class ManageRecords:
     ]
 
     def __init__(self):
-        self.login = st.session_state.fapp_singleton.loginHandle
-        self.mainRoute = st.session_state.fapp_singleton.mainRoute
+        self.mainRoute = "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/"
 
     def create_as_admin(self):
         st.write("# Manage Records")
+        st.subheader("You can create, update, or delete records in here.")
         selected_tab = st.selectbox(
             "Select to manage records", self.admin_manage, index=0
         )
@@ -166,7 +166,6 @@ class ManageRecords:
                     current_value = record.get(column_name, None)
 
                     if column[1] == "search":
-                        # Fetch options for related table (FK relationship)
                         response = requests.get(f"{self.mainRoute}{column_name}")
                         options = {record[column[3]]: record[column[2]] for record in response.json()}
                         selected_option = st.selectbox(
