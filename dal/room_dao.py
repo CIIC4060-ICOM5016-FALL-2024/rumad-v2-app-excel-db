@@ -86,7 +86,7 @@ class RoomDAO(DAO):
         query = """
         SELECT rid, building, room_number, room.capacity,
         CAST(students AS FLOAT) / CAST(seats AS FLOAT) AS ratio
-        FROM (SELECT rid, sum(section.capacity) AS students, sum(room.capacity) AS seats
+        FROM (SELECT rid, room.capacity AS seats, avg(section.capacity) AS students
             FROM section, room
             WHERE roomid = rid
             AND building ILIKE %s
