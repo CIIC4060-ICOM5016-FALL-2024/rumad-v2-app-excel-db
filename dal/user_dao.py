@@ -19,6 +19,14 @@ class UserDAO(DAO):
         values = [username, email, password]
         return self.create(query, values)
 
+    def get_all_user(self):
+        """
+        Gets a tuple from the user relation
+        @return: a list with a single tuple or tuple with False and error messages
+        """
+        query = "SELECT * FROM public.user"
+        return self.read(query)
+
     def get_user_by_id(self, uid: int):
         """
         Gets a tuple from the user relation

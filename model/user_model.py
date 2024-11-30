@@ -94,6 +94,15 @@ class UserModel:
 
         return jsonify(f'User (uid: {response[1]}) successfully created'), 201
 
+    def get_all_user(self):
+        """
+        Gets all users from the user relation database.
+        @return: JSON and HTTP response code
+        """
+        dao = UserDAO()
+        response = dao.get_all_user()
+        return jsonify(response), 200
+
     def get_user_by_id(self, uid: int):
         """
         Retrieves a user by uid.
