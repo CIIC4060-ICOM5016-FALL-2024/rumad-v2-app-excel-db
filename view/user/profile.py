@@ -98,8 +98,6 @@ class Profile:
         """
         Displays the dashboard page.
         """
-        st.title("Dashboard")
-        st.write("This is the dashboard. Display relevant data here.")
         dashboard()
 
     def show_chatbot(self):
