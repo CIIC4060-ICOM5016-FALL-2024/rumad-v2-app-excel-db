@@ -258,11 +258,16 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}{{port}}{{team}}most/meeting",
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/meeting",
+							"protocol": "https",
 							"host": [
-								"{{host}}{{port}}{{team}}most"
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
 							],
 							"path": [
+								"excel_db",
+								"most",
 								"meeting"
 							]
 						}
@@ -270,10 +275,24 @@
 					"response": []
 				},
 				{
-					"name": "Get top 3 classes Copy",
+					"name": "top prerequisite",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/prerequisite",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"most",
+								"prerequisite"
+							]
+						}
 					},
 					"response": []
 				},
@@ -335,11 +354,16 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}{{port}}{{team}}least/classes",
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/least/classes",
+							"protocol": "https",
 							"host": [
-								"{{host}}{{port}}{{team}}least"
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
 							],
 							"path": [
+								"excel_db",
+								"least",
 								"classes"
 							]
 						}
@@ -350,7 +374,21 @@
 					"name": "sections per year Copy",
 					"request": {
 						"method": "POST",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/year",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								"year"
+							]
+						}
 					},
 					"response": []
 				}
@@ -362,8 +400,62 @@
 				{
 					"name": "top 3 capacity Copy",
 					"request": {
-						"method": "GET",
-						"header": []
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/capacity",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":building",
+								"capacity"
+							],
+							"variable": [
+								{
+									"key": "building",
+									"value": "stefani"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top 3 classes per semester",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/classes/:year/:semester",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"classes",
+								":year",
+								":semester"
+							],
+							"variable": [
+								{
+									"key": "year",
+									"value": "2024"
+								},
+								{
+									"key": "semester",
+									"value": "fall"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -373,14 +465,24 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}{{port}}{{team}}/room/stefani/ratio",
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/ratio",
+							"protocol": "https",
 							"host": [
-								"{{host}}{{port}}{{team}}"
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
 							],
 							"path": [
+								"excel_db",
 								"room",
-								"stefani",
+								":building",
 								"ratio"
+							],
+							"variable": [
+								{
+									"key": "building",
+									"value": "stefani"
+								}
 							]
 						}
 					},
@@ -392,11 +494,15 @@
 						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{host}}{{port}}{{team}}/room/:id/classes",
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id/classes",
+							"protocol": "https",
 							"host": [
-								"{{host}}{{port}}{{team}}"
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
 							],
 							"path": [
+								"excel_db",
 								"room",
 								":id",
 								"classes"
@@ -404,7 +510,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "2"
+									"value": "14"
 								}
 							]
 						}
