@@ -15,18 +15,32 @@ class Profile:
         Creates the side navigation bar.
         """
         main_page_sidebar = st.sidebar.empty()
-        with main_page_sidebar:
-            selected_option = option_menu(
-                menu_title="Navigation",
-                options=["Profile", "Dashboard", "Chatbot", "Manage Records"],
-                icons=["person", "speedometer", "chat-dots", "folder"],
-                menu_icon="list",
-                default_index=0,
-                styles={
-                    "container": {"padding": "5px"},
-                    "nav-link": {"font-size": "14px", "text-align": "left", "margin": "0px"}
-                }
-            )
+        if self.cookies.get('USERNAME') == "admin":
+            with main_page_sidebar:
+                selected_option = option_menu(
+                    menu_title="Navigation",
+                    options=["Profile", "Dashboard", "Chatbot", "Manage Records"],
+                    icons=["person", "speedometer", "chat-dots", "folder"],
+                    menu_icon="list",
+                    default_index=0,
+                    styles={
+                        "container": {"padding": "5px"},
+                        "nav-link": {"font-size": "14px", "text-align": "left", "margin": "0px"}
+                    }
+                )
+        else:
+            with main_page_sidebar:
+                selected_option = option_menu(
+                    menu_title="Navigation",
+                    options=["Profile", "Dashboard", "Chatbot"],
+                    icons=["person", "speedometer", "chat-dots", "folder"],
+                    menu_icon="list",
+                    default_index=0,
+                    styles={
+                        "container": {"padding": "5px"},
+                        "nav-link": {"font-size": "14px", "text-align": "left", "margin": "0px"}
+                    }
+                )
         return selected_option
 
     def build_profile_ui(self):
