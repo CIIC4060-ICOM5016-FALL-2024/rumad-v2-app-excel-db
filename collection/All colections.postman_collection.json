@@ -2,366 +2,2031 @@
 	"info": {
 		"_postman_id": "5482261a-8af9-435c-b4c4-02f2791ee907",
 		"name": "All colections",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "39271276",
-		"_collection_link": "https://exceldb.postman.co/workspace/excel_db-Workspace~b6c485ec-7b4b-4e1f-8079-aa3773a80155/collection/39271276-5482261a-8af9-435c-b4c4-02f2791ee907?action=share&source=collection_link&creator=39271276"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "39266321",
+		"_collection_link": "https://exceldb.postman.co/workspace/excel_db-Workspace~b6c485ec-7b4b-4e1f-8079-aa3773a80155/collection/39271276-5482261a-8af9-435c-b4c4-02f2791ee907?action=share&source=collection_link&creator=39266321"
 	},
 	"item": [
 		{
-			"name": "Add new class",
-			"request": {
-				"method": "POST",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get one class",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update class",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Remove class",
-			"request": {
-				"method": "DELETE",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get all classes",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Sections per year",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/year"
-			},
-			"response": []
-		},
-		{
-			"name": "Least Classes",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/least/classes"
-			},
-			"response": []
-		},
-		{
-			"name": "most prerequisite",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/prerequisite"
-			},
-			"response": []
-		},
-		{
-			"name": "most meeting",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/most/meeting"
-			},
-			"response": []
-		},
-		{
-			"name": "Most classes taught per semester",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/classes/:year/:semester",
-					"protocol": "https",
-					"host": [
-						"rumad-v2-app-excel-db-881d3c171d54",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"excel_db",
-						"classes",
-						":year",
-						":semester"
-					],
-					"variable": [
-						{
-							"key": "year",
-							"value": "2019"
+			"name": "class",
+			"item": [
+				{
+					"name": "get all Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id (invalid) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "100000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post invalid (missing attribute) Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"cname\": \"CIIC\",\r\n    \"ccode\": 6078,\r\n    \"cdesc\": \"Boring aaah class\",\r\n    \"term\": \"Spring\",\r\n    \"years\": \"Odd Years\",\r\n    \"cred\": 3,\r\n    \"csyllabus\": \"https://www.....\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
-						{
-							"key": "semester",
-							"value": "Spring"
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class"
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "top classes per room",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id/classes",
-					"protocol": "https",
-					"host": [
-						"rumad-v2-app-excel-db-881d3c171d54",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"excel_db",
-						"room",
-						":id",
-						"classes"
-					],
-					"variable": [
-						{
-							"key": "id",
-							"value": "2"
+					},
+					"response": []
+				},
+				{
+					"name": "put invalid Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"years\": \"Odd Years\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "500"
+								}
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Building Statistics Capacity",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/capacity",
-					"protocol": "https",
-					"host": [
-						"rumad-v2-app-excel-db-881d3c171d54",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"excel_db",
-						"room",
-						":building",
-						"capacity"
-					],
-					"variable": [
-						{
-							"key": "building",
-							"value": "Stefani"
+					},
+					"response": []
+				},
+				{
+					"name": "put valid Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"years\": \"Odd Years\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Building Statistics Ratio",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:building/ratio",
-					"protocol": "https",
-					"host": [
-						"rumad-v2-app-excel-db-881d3c171d54",
-						"herokuapp",
-						"com"
-					],
-					"path": [
-						"excel_db",
-						"room",
-						":building",
-						"ratio"
-					],
-					"variable": [
-						{
-							"key": "building",
-							"value": "Stefani"
+					},
+					"response": []
+				},
+				{
+					"name": "delete invalid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "12345"
+								}
+							]
 						}
-					]
+					},
+					"response": []
+				},
+				{
+					"name": "delete valid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/class/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"class",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Get all meetings",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
+			"name": "global statistics",
+			"item": [
+				{
+					"name": "Get top 5 meetings Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{port}}{{team}}most/meeting",
+							"host": [
+								"{{host}}{{port}}{{team}}most"
+							],
+							"path": [
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get top 3 classes Copy",
+					"request": {
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get worst 3 classes Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var template = `\r",
+									"<style type=\"text/css\">\r",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+									"    .tftable tr {background-color:#ffffff;}\r",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+									"    .tftable tr:hover {background-color:#e0ffff;}\r",
+									"</style>\r",
+									"\r",
+									"<table class=\"tftable\" border=\"1\">\r",
+									"    <tr>\r",
+									"        <th>Code</th>\r",
+									"        <th>Description</th>\r",
+									"        <th>ID</th>\r",
+									"        <th>Name</th>\r",
+									"        <th>Credits</th>\r",
+									"        <th>Frequency</th>\r",
+									"        <th>Term</th>\r",
+									"        <th>Years</th>\r",
+									"    </tr>\r",
+									"    \r",
+									"    {{#each response}}\r",
+									"        <tr>\r",
+									"            <td>{{ccode}}</td>\r",
+									"            <td>{{cdesc}}</td>\r",
+									"            <td>{{cid}}</td>\r",
+									"            <td>{{cname}}</td>\r",
+									"            <td>{{cred}}</td>\r",
+									"            <td>{{frequency}}</td>\r",
+									"            <td>{{term}}</td>\r",
+									"            <td>{{years}}</td>\r",
+									"        </tr>\r",
+									"    {{/each}}\r",
+									"</table>\r",
+									"`;\r",
+									"\r",
+									"function constructVisualizerPayload() {\r",
+									"    return {response: pm.response.json()}\r",
+									"}\r",
+									"\r",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{port}}{{team}}least/classes",
+							"host": [
+								"{{host}}{{port}}{{team}}least"
+							],
+							"path": [
+								"classes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sections per year Copy",
+					"request": {
+						"method": "POST",
+						"header": []
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Add new meeting",
-			"request": {
-				"method": "POST",
-				"header": []
-			},
-			"response": []
+			"name": "local statistics",
+			"item": [
+				{
+					"name": "top 3 capacity Copy",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "top 3 ratios Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{port}}{{team}}/room/stefani/ratio",
+							"host": [
+								"{{host}}{{port}}{{team}}"
+							],
+							"path": [
+								"room",
+								"stefani",
+								"ratio"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "top 3 classes per room Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}{{port}}{{team}}/room/:id/classes",
+							"host": [
+								"{{host}}{{port}}{{team}}"
+							],
+							"path": [
+								"room",
+								":id",
+								"classes"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Get one meeting",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
+			"name": "meeting",
+			"item": [
+				{
+					"name": "get all Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get meeting by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "22"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get meeting by id (invalid) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "64"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "new meeting Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ccode\": \"110\",\r\n    \"starttime\": \"Mon, 01 Jan 1900 17:30:00 GMT\",\r\n    \"endtime\": \"Mon, 01 Jan 1900 18:20:00 GMT\",\r\n    \"cdays\": \"LWV\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put meeting Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ccode\": 115\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put meeting (invalid) Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"ccode\": 114\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete meeting invalid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "10000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete meeting Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/meeting/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"meeting",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Update meeting",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
+			"name": "requisite",
+			"item": [
+				{
+					"name": "get all Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get requisite by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite/:cid/:reqid",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite",
+								":cid",
+								":reqid"
+							],
+							"variable": [
+								{
+									"key": "cid",
+									"value": "22"
+								},
+								{
+									"key": "reqid",
+									"value": "37"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get requisite by id (invalid) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite/:cid/:reqid",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite",
+								":cid",
+								":reqid"
+							],
+							"variable": [
+								{
+									"key": "cid",
+									"value": "45"
+								},
+								{
+									"key": "reqid",
+									"value": "32"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post requisite Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"classid\": 2,\r\n    \"reqid\": 3,\r\n    \"prereq\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put requisite Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"prereq\": true\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite/:cid/:reqid",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite",
+								":cid",
+								":reqid"
+							],
+							"variable": [
+								{
+									"key": "cid",
+									"value": "2"
+								},
+								{
+									"key": "reqid",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete invalid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite/:cid/:reqid",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite",
+								":cid",
+								":reqid"
+							],
+							"variable": [
+								{
+									"key": "cid",
+									"value": "100"
+								},
+								{
+									"key": "reqid",
+									"value": "100"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete valid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/requisite/:cid/:reqid",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"requisite",
+								":cid",
+								":reqid"
+							],
+							"variable": [
+								{
+									"key": "cid",
+									"value": "2"
+								},
+								{
+									"key": "reqid",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Remove meeting",
-			"request": {
-				"method": "DELETE",
-				"header": []
-			},
-			"response": []
+			"name": "room",
+			"item": [
+				{
+					"name": "get all Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var template = `\r",
+									"<style type=\"text/css\">\r",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+									"    .tftable tr {background-color:#ffffff;}\r",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+									"    .tftable tr:hover {background-color:#e0ffff;}\r",
+									"</style>\r",
+									"\r",
+									"<table class=\"tftable\" border=\"1\">\r",
+									"    <tr>\r",
+									"        <th>Building</th>\r",
+									"        <th>Capacity</th>\r",
+									"        <th>Room ID</th>\r",
+									"        <th>Room Number</th>\r",
+									"    </tr>\r",
+									"    \r",
+									"    {{#each response}}\r",
+									"        <tr>\r",
+									"            <td>{{building}}</td>\r",
+									"            <td>{{capacity}}</td>\r",
+									"            <td>{{rid}}</td>\r",
+									"            <td>{{room_number}}</td>\r",
+									"        </tr>\r",
+									"    {{/each}}\r",
+									"</table>\r",
+									"`;\r",
+									"\r",
+									"function constructVisualizerPayload() {\r",
+									"    return {response: pm.response.json()}\r",
+									"}\r",
+									"\r",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "23"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id (invalid) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post room Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"building\": \"Mangual\",\r\n    \"room_number\": \"100\",\r\n    \"capacity\": 40\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put room Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"capacity\": 52\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "10000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete invalid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "300"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete valid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"room",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Get all requisites",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
+			"name": "section",
+			"item": [
+				{
+					"name": "get all Copy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var template = `\r",
+									"<style type=\"text/css\">\r",
+									"    .tftable {font-size:14px;color:#333333;width:100%;border-width: 1px;border-color: #87ceeb;border-collapse: collapse;}\r",
+									"    .tftable th {font-size:18px;background-color:#87ceeb;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;text-align:left;}\r",
+									"    .tftable tr {background-color:#ffffff;}\r",
+									"    .tftable td {font-size:14px;border-width: 1px;padding: 8px;border-style: solid;border-color: #87ceeb;}\r",
+									"    .tftable tr:hover {background-color:#e0ffff;}\r",
+									"</style>\r",
+									"\r",
+									"<table class=\"tftable\" border=\"1\">\r",
+									"    <tr>\r",
+									"        <th>Capacity</th>\r",
+									"        <th>CID</th>\r",
+									"        <th>MID</th>\r",
+									"        <th>Room ID</th>\r",
+									"        <th>Semester</th>\r",
+									"        <th>SID</th>\r",
+									"        <th>Years</th>\r",
+									"    </tr>\r",
+									"    \r",
+									"    {{#each response}}\r",
+									"        <tr>\r",
+									"            <td>{{capacity}}</td>\r",
+									"            <td>{{cid}}</td>\r",
+									"            <td>{{mid}}</td>\r",
+									"            <td>{{roomid}}</td>\r",
+									"            <td>{{semester}}</td>\r",
+									"            <td>{{sid}}</td>\r",
+									"            <td>{{years}}</td>\r",
+									"        </tr>\r",
+									"    {{/each}}\r",
+									"</table>\r",
+									"`;\r",
+									"\r",
+									"function constructVisualizerPayload() {\r",
+									"    return { response: pm.response.json() }\r",
+									"}\r",
+									"\r",
+									"pm.visualizer.set(template, constructVisualizerPayload());"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "124"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get by id (invalid) Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "597"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post invalid (conflicting classroom) Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomid\": 2,\r\n    \"cid\": 32,\r\n    \"mid\": 5,\r\n    \"semester\": \"Spring\",\r\n    \"years\": \"2024\",\r\n    \"capacity\": 23 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post invalid (conflicting section) Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomid\": 16,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2023\",\r\n    \"capacity\": 23 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post invalid (exceeds classroom capacity) Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomid\": 1,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2027\",\r\n    \"capacity\": 150 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post valid Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomid\": 1,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2027\",\r\n    \"capacity\": 112 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete invalid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "6"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete valid Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "40"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put invalid (conflicting classroom) Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"roomid\": 1,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2027\",\r\n    \"capacity\": 112 \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "100000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put valid Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"capacity\": 118\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/section/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"section",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1319"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Add new requisite",
-			"request": {
-				"method": "POST",
-				"header": []
-			},
-			"response": []
+			"name": "syllabus",
+			"item": [
+				{
+					"name": "get syllable Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get syllable by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put syllable by id Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\n        \"chunk\": 15,\n        \"chunkid\": 1000,\n        \"courseid\": \"[-1, 3,5,6]\",\n        \"embedding_text\": \"test put\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "put syllable by id Copy 2",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1000"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post syllable Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\n        \"chunk\": 15,\n        \"courseid\": \"[0,1,2,3,4]\",\n        \"embedding_text\": \"test\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post embedding Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "   {\n        \"embedding\": \"[2, 6, 5]\",\n        \"course\": \"CIIC 3015\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/syllable/embedding",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"syllable",
+								"embedding"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		},
 		{
-			"name": "Get one requisite",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update requisite",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Remove requisite",
-			"request": {
-				"method": "DELETE",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get all rooms",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Add new room",
-			"request": {
-				"method": "POST",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get one room",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update room",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Remove room",
-			"request": {
-				"method": "DELETE",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get all sections",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Add new section",
-			"request": {
-				"method": "POST",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Get one section",
-			"request": {
-				"method": "GET",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Update section",
-			"request": {
-				"method": "PUT",
-				"header": []
-			},
-			"response": []
-		},
-		{
-			"name": "Remove section",
-			"request": {
-				"method": "DELETE",
-				"header": []
-			},
-			"response": []
+			"name": "user",
+			"item": [
+				{
+					"name": "create user Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post login Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/login",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by email Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/email/:email",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								"email",
+								":email"
+							],
+							"variable": [
+								{
+									"key": "email",
+									"value": "janice.torres@upr.edu"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user by username Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/:username",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "jesus.rivera"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete user Copy",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "18"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create user Copy 2",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by id Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/:id",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by email Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/email/:email",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								"email",
+								":email"
+							],
+							"variable": [
+								{
+									"key": "email",
+									"value": "new.user@upr.edu"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user by username Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/:username",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "glerys.serrano"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user Copy",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	]
 }
