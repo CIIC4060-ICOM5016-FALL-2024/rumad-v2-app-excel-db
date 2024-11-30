@@ -6,7 +6,6 @@
 #     "host": "localhost",
 #     "port": "1234",
 # }
-
 # Heroku Connection
 pg_config = {
     'user' : 'ufm5iffjti843g',
