@@ -38,16 +38,27 @@ class SyllabusDAO(DAO):
         values = [chunk_id, ]
         return self.read( query, values)
 
-    def get_from_embedding(self, emb: str):
+    def get_from_embedding(self, emb: str, course: str):
         """
         Get all tuples from the syllabus relation by similarity of the embedding
         @param emb: query embedding
         @return: a list of tuples, or None if failed
         """
-        query = """SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk 
-                 FROM syllabus ORDER BY distance LIMIT 5"""
-        values = [emb, ]
-        return self.read(query, values)
+        if course != "%":
+            query = """SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk 
+                     FROM syllabus 
+                     WHERE chunk LIKE %s
+                     ORDER BY distance 
+                     LIMIT 5"""
+            values = [emb, course]
+            return self.read(query, values)
+        else:
+            query = """SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk 
+                        FROM syllabus 
+                        ORDER BY distance 
+                        LIMIT 5"""
+            values = [emb, ]
+            return self.read(query, values)
 
     # PUT
     def put_syllabus_by_chunk_id(self, chunk_id: int, data):
