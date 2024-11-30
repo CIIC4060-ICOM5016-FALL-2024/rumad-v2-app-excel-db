@@ -1,12 +1,14 @@
 from flask import Flask, jsonify, request, redirect
 from flask_cors import CORS
 
+from model.user_model import UserModel
 from model.class_model import ClassModel
 from model.requisite_model import RequisiteModel
 from model.section_model import SectionModel
 from model.meeting_model import MeetingModel
 from model.room_model import RoomModel
 from model.statistics_model import StatisticsModel
+from model.syllabus_model import SyllabusModel
 
 app = Flask(__name__)
 CORS(app)
@@ -18,6 +20,63 @@ def excel_db():
 @app.route("/")
 def home():
     return redirect('/excel_db', code=302)
+
+""" USER CRUD ROUTES """
+@app.route("/excel_db/user", methods=["POST"])
+def post_user():
+    handler = UserModel()
+    return handler.post_user(request.json)
+
+@app.route("/excel_db/user/<int:uid>", methods=["GET"])
+def get_user_by_id(uid):
+    handler = UserModel()
+    return handler.get_user_by_id(uid)
+
+@app.route("/excel_db/user/<string:username>", methods=["GET"])
+def get_user_by_username(username):
+    handler = UserModel()
+    return handler.get_user_by_username(username)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["GET"])
+def get_user_by_email(email):
+    handler = UserModel()
+    return handler.get_user_by_email(email)
+
+@app.route("/excel_db/user/<int:uid>", methods=["PUT"])
+def put_user_by_id(uid):
+    handler = UserModel()
+    return handler.put_user_by_id(uid, request.json)
+
+@app.route("/excel_db/user/<string:username>", methods=["PUT"])
+def put_user_by_username(username):
+    handler = UserModel()
+    return handler.put_user_by_username(username, request.json)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["PUT"])
+def put_user_by_email(email):
+    handler = UserModel()
+    return handler.put_user_by_email(email, request.json)
+
+@app.route("/excel_db/user/<int:uid>", methods=["DELETE"])
+def delete_user_by_id(uid):
+    handler = UserModel()
+    return handler.delete_user_by_id(uid)
+
+@app.route("/excel_db/user/<string:username>", methods=["DELETE"])
+def delete_user_by_username(username):
+    handler = UserModel()
+    return handler.delete_user_by_username(username)
+
+@app.route("/excel_db/user/email/<string:email>", methods=["DELETE"])
+def delete_user_by_email(email):
+    handler = UserModel()
+    return handler.delete_user_by_email(email)
+
+@app.route("/excel_db/user/login", methods=["POST"])
+def login_user():
+    login_data = request.get_json(silent=True)
+    handler = UserModel()
+    return handler.validate_user_login(login_data)
 
 """ CLASS CRUD ROUTES """
 
@@ -139,6 +198,37 @@ def handle_rooms_by_id(rid):
     else:
         return jsonify(f"Error: {request.method} Method Not Allowed"), 405
 
+""" SYLLABUSES CRUD ROUTES """
+@app.route('/excel_db/syllable', methods=['GET', 'POST'])
+def handle_syllables():
+    handler = SyllabusModel()
+    if request.method == 'GET':
+        return handler.get_all_syllabus()
+    elif request.method == 'POST':
+        return handler.post_syllabus(request.json)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
+@app.route('/excel_db/syllable/<int:chunk_id>', methods=['GET', 'PUT', 'DELETE'])
+def handle_syllables_by_id(chunk_id):
+    handler = SyllabusModel()
+    if request.method == 'GET':
+        return handler.get_syllabus_by_id(chunk_id)
+    elif request.method == 'PUT':
+        return handler.put_syllabus_by_id(chunk_id, request.json)
+    elif request.method == 'DELETE':
+        return handler.delete_syllabus(chunk_id)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
+@app.route('/excel_db/syllable/embedding', methods=['POST'])
+def handle_syllables_by_embedding():
+    handler = SyllabusModel()
+    if request.method == 'POST':
+        return handler.get_syllabus_by_embedding(request.json)
+    else:
+        return jsonify(f"Error: {request.method} Method Not Allowed"), 405
+
 """ LOCAL STATISTICS ROUTES """
 
 @app.route('/excel_db/room/<string:building>/<string:statistic>', methods=['POST'])
@@ -191,10 +281,7 @@ def least_global_statistics():
 @app.route('/excel_db/section/year', methods=['POST'])
 def total_sections_per_year():
     handler = StatisticsModel()
-    try:
-        return handler.total_sections()
-    except Exception as e:
-        return jsonify(f"Global Statistics: An error occurred while fetching the total sections per year, {str(e)}"), 500
+    return handler.total_sections()
 
 if __name__ == "__main__":
     app.run(debug=True)
