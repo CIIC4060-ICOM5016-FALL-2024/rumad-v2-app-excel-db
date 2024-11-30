@@ -9,7 +9,7 @@ from dal.class_dao import ClassDAO
 from dal.dao import DAO
 from dal.syllabus_dao import SyllabusDAO
 
-attributes = ["chunkid", "courseid", "embedding_text", "chunk"]
+attributes = ["courseid", "embedding_text", "chunk"]
 
 
 class SyllabusModel:
