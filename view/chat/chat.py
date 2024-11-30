@@ -138,7 +138,20 @@ class SyllabusChatBot:
                 else:
                     found = False
             if found:
-                context = self.get_context(question_embedding,"%"+ self.courses[index][0] + '%')
+                course = self.courses[index][0]
+                print(course)
+                if " " not in course:
+                    sep = True
+                    new_course = ""
+                    for i in course:
+                        if i.isdigit() and sep:
+                            new_course += " "
+                            new_course += i
+                            sep = False
+                        else:
+                            new_course += i
+                    course = new_course
+                context = self.get_context(question_embedding,"%"+ course + '%')
         else:
             found = False
 
