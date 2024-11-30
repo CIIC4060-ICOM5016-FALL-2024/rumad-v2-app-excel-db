@@ -16,7 +16,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def get_all_rooms():
         try:
@@ -27,7 +27,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def display_sections_per_year():
         try:
@@ -38,7 +38,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def display_least_offered_classes():
         try:
@@ -49,7 +49,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def display_top_prerequisite():
         try:
@@ -61,7 +61,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def display_top_5_meetings():
         try:
@@ -72,7 +72,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def top_rooms_per_building(building):
         try:
@@ -84,7 +84,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def top_ratio_per_building(building):
         try:
@@ -96,7 +96,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     def classes_taught_most_per_room(room):
         try:
@@ -108,7 +108,7 @@ def dashboard():
             return pd_result
         except requests.RequestException as e:
             print(f"An error occurred: {e}")
-            return ""
+            return "An Error occurred fetching the data. Please try again later."
 
     st.title("Metrics Dashboard")
     st.subheader("This page contains information on statistics for classes individually and globally")
@@ -143,16 +143,17 @@ def dashboard():
 
     if selected == "Top 3 classes that were offered the least":
         data = display_least_offered_classes()
+        data = data.sort_values(by='frequency', ascending=False)
         st.bar_chart(data, x='cdesc',
                      y='frequency',
                      x_label='Amount of times offered',
                      y_label='Class',
-                     horizontal=True,
                      width=500,
                      height=500)
 
     if selected == "Top 3 classes that appears the most as prerequisite to other classes":
         data = display_top_prerequisite()
+        data = data.sort_values(by='frequency', ascending=False)
         st.bar_chart(data,
                      x="cdesc",
                      y="frequency",
@@ -161,10 +162,11 @@ def dashboard():
 
     if selected == "Top 5 meetings with the most sections":
         data = display_top_5_meetings()
-        st.scatter_chart(data, x="mid"
+        data = data.sort_values(by='frequency', ascending=False)
+        st.bar_chart(data, x="mid"
                          , y="frequency",
-                         x_label='meeting id',
-                         y_label='Number of meetings')
+                         x_label='Meeting ID',
+                         y_label='Number of Sections')
         second_data = data.drop(columns=['frequency', 'ccode'])
         st.table(second_data)
 
@@ -185,8 +187,13 @@ def dashboard():
         with col1:
             building = st.radio("Choose the building you would like to see.", building_list)
             data = top_rooms_per_building(building)
+            data = data.sort_values(by='room_number', ascending=False)
         with col2:
-            st.bar_chart(data, x='rid', y='capacity', width=500, height=500)
+            st.bar_chart(data, x='room_number',
+                         y='capacity',
+                         x_label='Room Number',
+                         y_label='Capacity',
+                         width=500, height=500)
 
     if selected == "Top 3 room with the most student-to-capacity ratio":
         col1, col2 = st.columns(2)
@@ -197,8 +204,12 @@ def dashboard():
         with col1:
             building = st.radio("Choose the building you would like to see.", building_list)
             data = top_ratio_per_building(building)
+            data = data.sort_values(by='ratio', ascending=False)
         with col2:
-            st.bar_chart(data, x='rid', y='ratio', width=500, height=500)
+            st.bar_chart(data, x='room_number', y='ratio',
+                         x_label='Room Number',
+                         y_label='Ratio',
+                         width=500, height=500)
         st.table(data)
 
     if selected == "Top 3 classes that were taught the most per room":
@@ -213,11 +224,11 @@ def dashboard():
             st.write("Please enter a valid room id")
         else:
             data = classes_taught_most_per_room(input)
+            data = data.sort_values(by='amount', ascending=False)
             st.bar_chart(data, x='cdesc',
                          y='amount',
                          x_label="Class",
                          y_label="Amount taught",
-                         horizontal=True,
                          width=500, height=500)
 
     if selected == "Top 3 most taught classes per semester per year":
@@ -233,11 +244,11 @@ def dashboard():
         with col2:
             data = classes_per_semester(input, term)
             if isinstance(data, pd.DataFrame):
+                data = data.sort_values(by='section_amount', ascending=False)
                 st.bar_chart(data, x='cdesc',
-                             y='section_amount',
-                             x_label="Section Amount",
-                             y_label="Class",
-                             horizontal=True, width=500,
-                             height=500)
+                                 y='section_amount',
+                                 x_label="Section Amount",
+                                 y_label="Class", width=500,
+                                 height=500)
             else:
                 st.write(data)
