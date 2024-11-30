@@ -5,8 +5,7 @@ from streamlit_cookies_manager import EncryptedCookieManager
 from user.login import Login
 from user.profile import Profile
 
-st.set_page_config(page_title="Excel", page_icon="🎄", layout="centered", initial_sidebar_state="collapsed")
-st.image("rumad-v2-app-excel-db/excel_db_logo.jpg", use_container_width=True)
+st.image("excel_db_logo.jpg", width=100)
 st.title("RUMAD 2.0")
 
 def main():
