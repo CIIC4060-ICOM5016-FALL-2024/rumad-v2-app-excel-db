@@ -3,7 +3,7 @@ import os
 from langchain.prompts import ChatPromptTemplate
 import requests
 import json
-from langchain_ollama import OllamaLLM
+from langchain_ollama import OllamaLLM, OllamaEmbeddings
 
 
 class SyllabusChatBot:
@@ -11,33 +11,9 @@ class SyllabusChatBot:
         self.model_name = "llama3.1"
         self.model_emb = "nomic-embed-text"
         self.model = OllamaLLM(model=self.model_name, temperature=0.45)
-        self.ollama_server_url = "http://136.145.116.41:11434/api/chat"  # Ollama server URL
-        self.embedding_server_url = "http://136.145.116.41:11434/api/embeddings"  # URL for remote embedding service
-        self.max_retries = 3  # Maximum retries for failed requests
+        self.max_retries = 3
         self.conversation_history = history  # To store conversation history
         self.courses = matches
-
-    def get_embedding(self, text):
-        """Retrieve the embedding for the question from the remote embedding service."""
-        headers = {"Content-Type": "application/json"}
-        body = {
-            "model": self.model_emb,
-            "prompt": text,
-        }
-        attempt = 0
-        while attempt < self.max_retries:
-            try:
-                response = requests.post(self.embedding_server_url, json=body, headers=headers)
-                response.raise_for_status()
-                embedding = response.json().get("embedding")
-                if embedding:
-                    return embedding
-                else:
-                    raise ValueError("Embedding not found in the response.")
-            except (requests.RequestException, ValueError, KeyError) as e:
-                print(f"Attempt {attempt + 1}: Error requesting embedding: {e}")
-                attempt += 1
-        return None
 
     def get_context(self, question_embedding, course):
         """Retrieve relevant context from the database based on the embedding."""
@@ -66,28 +42,6 @@ class SyllabusChatBot:
                 attempt += 1
         return ""
 
-    def query_ollama(self, prompt):
-        """Send the prompt to the Ollama server and get the response."""
-        payload = {
-            "model": self.model_name,
-            "messages": [{"role": "user", "content": prompt}]
-        }
-        headers = {"Content-Type": "application/json"}
-        try:
-            response = requests.post(self.ollama_server_url, json=payload, headers=headers)
-            response.raise_for_status()
-            lines = response.text.strip().split("\n")
-            answer = ""
-            for line in lines:
-                try:
-                    data = json.loads(line)
-                    answer += str(data['message']['content'])
-                except json.JSONDecodeError as e:
-                    print(f"Error parsing JSON: {e}")
-            return answer.strip() or "Sorry, I could not generate an answer."
-        except requests.exceptions.RequestException as e:
-            return f"Error: {str(e)}"
-
     def generate_answer(self, previous_questions, question, context):
         """Generate an answer based on the question, context, and conversation history."""
         prompt_template = ChatPromptTemplate.from_template(
@@ -113,7 +67,7 @@ class SyllabusChatBot:
             """
         )
         prompt = prompt_template.format(documents=context, question=question, previous_questions=previous_questions)
-        return self.query_ollama(prompt)
+        return self.model.invoke(prompt)
 
     def answer_question(self, question):
         """Answer a syllabus-related question."""
@@ -122,8 +76,9 @@ class SyllabusChatBot:
         for i in range(len(self.conversation_history)-1):
             if self.conversation_history[i]['role'] == 'user':
                 history += self.conversation_history[i]['content'] + " "
-        question_embedding = self.get_embedding(question + history)
 
+        embedding = OllamaEmbeddings(model=self.model_emb)
+        question_embedding = embedding.embed_query(question)
         if not question_embedding:
             return "I couldn't retrieve the embedding to answer your question."
 
