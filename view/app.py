@@ -1,31 +1,28 @@
 import streamlit as st
-import time
 
-from streamlit_cookies_manager import EncryptedCookieManager
-from user.login import Login
-from user.profile import Profile
+if 'logged_in' not in st.session_state:
+    st.session_state.logged_in = False
 
-st.image("excel_db_logo.jpg", width=100)
-st.title("RUMAD 2.0")
-
-def main():
-    cookies = EncryptedCookieManager(password="admin")
-    while not cookies.ready():
-        time.sleep(0.1)
-
-    profile_page = Profile(cookies)
-    login_page = Login(cookies)
-    if cookies.get("LOGGED_IN") == "True":
-        profile_page.build_profile_ui()
-    else:
-        if login_page.build_login_ui():
-            cookies["LOGGED_IN"] = "True"
-            cookies["USERNAME"] = login_page.get_username()
-            st.session_state["LOGGED_IN"] = True
-            st.session_state["USERNAME"] = login_page.get_username()
-            st.stop()
+pages = {}
+if st.session_state.logged_in:
+    home_page = st.Page("pages/dashboard.py", title="Dashboard")
+    account_page = st.Page("pages/account.py", title="Account")
+    pages = {"Home": [home_page, account_page]}
+else:
+    login_page = st.Page("pages/login.py", title="Login")
+    register_page = st.Page("pages/register.py", title="Register")
+    pages = {"Account:": [register_page, login_page]}
 
 
+pg = st.navigation(pages)
 
-if __name__ == "__main__":
-    main()
+st.set_page_config(page_title="RUMAD 2.0",
+                   page_icon="img/sello_uprm.svg",
+                   layout="wide",
+                )
+st.logo('img/uprm_web_logo.png', icon_image='img/sello_uprm.svg')
+st.sidebar.title("RUMAD 2.0")
+
+
+pg.run()
+
