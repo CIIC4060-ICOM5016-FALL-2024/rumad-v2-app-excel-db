@@ -75,7 +75,7 @@ class SyllabusModel:
             token_split_text = [chunk for text in split_text for chunk in token_splitter.split_text(text)]
             embedding = OllamaEmbeddings(model=self.model)
             for chunk in token_split_text:
-                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]) + chunk
+                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]).upper() + chunk
                 emb = embedding.embed_query(chunk)
                 self.syllabus_dao.post_syllabus(class_id, str(emb), chunk)
 
@@ -186,3 +186,7 @@ class SyllabusModel:
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 500
         return jsonify(f'Syllabus {chunk_id} has been deleted'), 200
+
+if __name__ == '__main__':
+    s = SyllabusModel()
+    s.load_syllabuses()
