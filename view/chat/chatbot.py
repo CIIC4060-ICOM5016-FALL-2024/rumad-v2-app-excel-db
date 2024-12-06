@@ -16,7 +16,7 @@ def chatbot():
             with st.chat_message(message["role"]):
                 st.write(message["content"])
                 if message['role'] == 'user':
-                    matches.append([course.upper() for course in courses if course.strip() in message['content']])
+                    matches.append([course.upper() for course in courses if course.strip() in message['content'].upper()])
 
     st.title("Ask Questions About Your Syllabus")
     with st.chat_message("assistant"):

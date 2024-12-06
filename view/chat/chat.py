@@ -129,34 +129,21 @@ class SyllabusChatBot:
 
         # Get relevant context for the question based on its embedding
         index = -1
-        found = True
-        context = ""
-        if self.courses and  len(self.courses) > abs(index):
-            while len(self.courses[index]) == 0:
-                if len(self.courses) > abs(index) + 1:
-                    index -= 1
-                else:
-                    found = False
-            if found:
-                course = self.courses[index][0]
-                print(course)
-                if " " not in course:
-                    sep = True
-                    new_course = ""
-                    for i in course:
-                        if i.isdigit() and sep:
-                            new_course += " "
-                            new_course += i
-                            sep = False
-                        else:
-                            new_course += i
-                    course = new_course
-                context = self.get_context(question_embedding,"%"+ course + '%')
-        else:
-            found = False
+        if self.courses and len(self.courses) > abs(index):
+            while index >= -len(self.courses) and not self.courses[index]:
+                index -= 1
 
-        if not found:
+            if index >= -len(self.courses):
+                course = self.courses[index][0]
+                if " " not in course:
+                    course = "".join(f" {char}" if char.isdigit() and (i == 0 or not course[i - 1].isdigit()) else char
+                                     for i, char in enumerate(course))
+                context = self.get_context(question_embedding, f"%{course}%")
+            else:
+                context = self.get_context(question_embedding, "%")
+        else:
             context = self.get_context(question_embedding, "%")
+
         if not context:
             return "I couldn't find relevant information to answer your question."
 
