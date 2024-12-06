@@ -102,6 +102,40 @@ class Profile:
 
     def show_chatbot(self):
         """
-        Displays the chatbot page.
+        Displays the chatbot page with support for multiple chats.
         """
-        chatbot()
+        # Initialize session state for chats
+        if "chats" not in st.session_state:
+            st.session_state.chats = {}  # Dictionary to store chat histories
+        if "active_chat" not in st.session_state:
+            st.session_state.active_chat = None  # Active chat ID
+
+        # Sidebar for managing chats
+        with st.sidebar:
+            st.subheader("Manage Chats")
+            if st.button("Create New Chat"):
+                chat_id = f"Chat {len(st.session_state.chats) + 1}"
+                st.session_state.chats[chat_id] = []  # Initialize with empty chat history
+                st.session_state.active_chat = chat_id
+
+            # Display current chats
+            if st.session_state.chats:
+                st.session_state.active_chat = st.selectbox(
+                    "Select a Chat",
+                    options=list(st.session_state.chats.keys()),
+                    index=0 if st.session_state.active_chat is None else list(st.session_state.chats.keys()).index(
+                        st.session_state.active_chat)
+                )
+
+                if st.button("Delete Selected Chat"):
+                    if st.session_state.active_chat in st.session_state.chats:
+                        del st.session_state.chats[st.session_state.active_chat]
+                        st.session_state.active_chat = None if not st.session_state.chats else next(
+                            iter(st.session_state.chats))
+
+        # Display the active chatbot
+        if st.session_state.active_chat:
+            chatbot(st.session_state.active_chat)
+        else:
+            st.write("No active chat. Create a new chat to start!")
+
