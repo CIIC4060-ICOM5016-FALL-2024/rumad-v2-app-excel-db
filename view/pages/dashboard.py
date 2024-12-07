@@ -34,10 +34,10 @@ room_pd = get_data(room_api)
 # Create a dictionary to store entity names and data
 entities = {
     "Classes :books:": class_pd,
-    "Requisites :bookmark:": requisite_pd,
+    "Requisites :clipboard:": requisite_pd,
     "Sections :male-teacher:": sections_pd,
     "Meetings :calendar:": meeting_pd,
-    "Rooms :house_with_garden:": room_pd,
+    "Rooms :school:": room_pd,
 }
 
 

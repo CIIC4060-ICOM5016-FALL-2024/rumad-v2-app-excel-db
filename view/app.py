@@ -7,11 +7,14 @@ pages = {}
 if st.session_state.logged_in:
     home_page = st.Page("pages/dashboard.py", title="Dashboard")
     account_page = st.Page("pages/account.py", title="Account")
-    pages = {"Home": [home_page, account_page]}
+    class_page = st.Page("pages/class.py", title="Classes")
+    pages = {"Home": [home_page, account_page],
+             "Statistics": [class_page]}
 else:
     login_page = st.Page("pages/login.py", title="Login")
     register_page = st.Page("pages/register.py", title="Register")
-    pages = {"Account:": [register_page, login_page]}
+    pages = {"Account": [register_page, login_page]}
+
 
 
 pg = st.navigation(pages)
