@@ -139,3 +139,4 @@ class Profile:
         else:
             st.write("No active chat. Create a new chat to start!")
 
+
