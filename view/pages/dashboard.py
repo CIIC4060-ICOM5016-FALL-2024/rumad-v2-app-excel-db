@@ -59,3 +59,28 @@ for i in range(0, len(entity_list), cols_per_row):
             st.subheader(entity)
             st.title(data.shape[0] if data is not None else "No Data")
 
+# Mapping dictionary for display names (without emojis)
+entity_mapping = {
+    "Classes :books:": "Classes",
+    "Requisites :clipboard:": "Requisites",
+    "Sections :male-teacher:": "Sections",
+    "Meetings :calendar:": "Meetings",
+    "Rooms :school:": "Rooms",
+}
+
+dropdown_options = [entity_mapping[key] for key in entities.keys()]
+
+# Dropdown for selecting entity
+selected_display_name = st.selectbox("Select an entity to view details:", options=dropdown_options)
+
+selected_entity = next(key for key, value in entity_mapping.items() if value == selected_display_name)
+
+# Display table for the selected entity
+if selected_entity:
+    st.write(f"### {selected_entity} Details")
+    data = entities[selected_entity]
+    if data is not None and not data.empty:
+        reordered_data = data[list(data.columns)]  # Preserve the current order
+        st.dataframe(reordered_data)  # Display the reordered dataframe
+    else:
+        st.warning("No data available for the selected entity.")
