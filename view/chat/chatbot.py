@@ -3,15 +3,6 @@ from gtts import gTTS
 import streamlit as st
 from chat.chat import SyllabusChatBot
 
-# List of courses
-courses = ['CIIC 4998', 'CIIC4998', 'Undergraduate Research', 'CIIC 3075', 'CIIC3075',
-           'Foundations of Computing', 'INSO 4151', 'INSO4151', 'Software Engineering',
-           'INSO 4116', 'INSO4116', 'Software Design', 'CIIC 3081', 'CIIC3081',
-           'Computer Architecture', 'CIIC 5017', 'CIIC5017', 'Operating Systems',
-           'CIIC 4030', 'CIIC4030', 'Programming Languages', 'CIIC 5015', 'CIIC5015',
-           'Artificial Intelligence', 'CIIC 4060', 'CIIC4060', 'Database Systems',
-           'CIIC 5130', 'CIIC5130', 'Cloud Computing']
-
 def initialize_session_state():
     """Initialize session state variables."""
     if "chats" not in st.session_state:
@@ -41,8 +32,13 @@ def chatbot(chat_id):
         for message in chat_history:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
-
-    local = st.toggle("Activate to run Ollama locally")
+                
+    with st.sidebar:
+        st.subheader("Chat Settings")
+        use_history = st.toggle("Enable History")
+        local = st.toggle("Run Ollama locally")
+        temp = st.slider("Chat temp", 0.00, 1.00, 0.45, 0.05)
+        
     display_chat()
     
     if prompt := st.chat_input("Ask a question"):
@@ -52,7 +48,7 @@ def chatbot(chat_id):
         with st.chat_message("assistant"):
             typing_placeholder = st.empty()
             typing_placeholder.write("Bot is typing...")
-            chatbot = SyllabusChatBot(chat_history, [])
+            chatbot = SyllabusChatBot(temp, use_history, chat_history)
             answer = chatbot.answer_question(prompt, local)
             typing_placeholder.write(answer)
             chat_history.append({"role": "assistant", "content": answer})

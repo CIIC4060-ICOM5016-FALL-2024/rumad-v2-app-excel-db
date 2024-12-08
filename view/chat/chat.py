@@ -1,5 +1,4 @@
 import os
-
 from langchain.prompts import ChatPromptTemplate
 import requests
 import json
@@ -7,15 +6,15 @@ from langchain_ollama import OllamaLLM
 
 
 class SyllabusChatBot:
-    def __init__(self, history, matches):
+    def __init__(self, temp, use_history, history):
         self.model_name = "llama3.1"
         self.model_emb = "nomic-embed-text"
-        self.model = OllamaLLM(model=self.model_name, temperature=0.45)
+        self.model = OllamaLLM(model=self.model_name, temperature=temp)
         self.ollama_server_url = "http://136.145.116.41:11434/api/chat"  # Ollama server URL
         self.embedding_server_url = "http://136.145.116.41:11434/api/embeddings"  # URL for remote embedding service
         self.max_retries = 3  # Maximum retries for failed requests
-        # self.conversation_history = history  # To store conversation history
-        # self.courses = matches
+        self.use_history = use_history
+        self.conversation_history = history  # To store conversation history
 
     def get_embedding(self, text):
         """Retrieve the embedding for the question from the remote embedding service."""
@@ -88,27 +87,34 @@ class SyllabusChatBot:
         except requests.exceptions.RequestException as e:
             return f"Error: {str(e)}"
 
-    def generate_answer(self, question, context):
+    def generate_answer(self, question, context, history_context):
         """Generate an answer based on the question, context, and conversation history."""
         prompt_template = ChatPromptTemplate.from_template(
             """You are an assistant trained to answer questions based on syllabus documents.
-            Your role is to help users understand their syllabus, answer questions about courses, and provide information based on the provided documents.
+        Your role is to help users understand their syllabus, answer course-related questions, and provide information directly from the provided documents.
 
-            Instructions:
-            - Use the provided syllabus documents to answer questions as accurately as possible.
-            - If there is no information available in the documents to answer a question, respond with: "Sorry, I don't know."
-            - Keep answers concise and confident, ideally within five sentences. Use bullet points for clarity when listing multiple points.
+        Instructions:
+        - Use the provided syllabus documents to answer questions as accurately as possible, only referencing the relevant course information.
+        - If the user asks about a specific course (e.g., CIIC 4151), focus on the syllabus information related to that course.
+        - If the question is about requisites, grading, or other course-specific information, ensure the answer matches the exact course in the question.
+        - Refer to previous conversation history only if it provides relevant context or clarification, and ensure it stays focused on the course in question.
+        - If the syllabus does not contain the required information or the question cannot be answered, respond with: "Sorry, I don't know."
+        - Keep your answers concise, confident, and ideally under five sentences. Use bullet points for clarity when listing multiple points.
+        - Maintain a professional, helpful tone at all times.
 
-            Context:
-            {documents}
+        Context:
+        {documents}
 
-            Current Question:
-            {question}
+        Current Question:
+        {question}
 
-            Answer:
-            """
-        )
-        prompt = prompt_template.format(documents=context, question=question)
+        Conversation History:
+        {conversation}
+
+        Answer:
+        """
+        )        
+        prompt = prompt_template.format(documents=context, question=question, conversation=history_context)
         return self.query_ollama(prompt)
 
     def answer_question(self, question, local):
@@ -117,17 +123,31 @@ class SyllabusChatBot:
             self.embedding_server_url = "http://127.0.0.1:11434/api/embeddings" # Ollama server URL
             self.ollama_server_url = "http://127.0.0.1:11434/api/chat"  # Ollama server URL
         
+        history_context = ""
+        if self.use_history and self.conversation_history:
+            history = ""
+            for entry in self.conversation_history:
+                history += f"{entry['content']} \n"
+        
+            history_context = self.get_context(history_embedding)
+            if not history_context:
+                return "I couldn't find relevant information to answer your question"
+
+            history_embedding = self.get_embedding(history)
+            if not history_embedding:
+                return "I couldn't retrieve the embedding to answer your question"
+        
         question_embedding = self.get_embedding(question)
 
         if not question_embedding:
             return "I couldn't retrieve the embedding to answer your question."
+        
 
         context = self.get_context(question_embedding)
-        print(context)
         if not context:
             return "I couldn't find relevant information to answer your question."
-
+        
         # Generate and return an answer based on the conversation history and context
-        answer = self.generate_answer(question, context)
+        answer = self.generate_answer(question, context, history_context)
 
         return answer
