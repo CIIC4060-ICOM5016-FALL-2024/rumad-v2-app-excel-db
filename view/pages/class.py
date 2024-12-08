@@ -6,27 +6,49 @@ room_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/ro
 general_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db'
 
 def get_data(api_url):
-    res_data = requests.get(api_url)
-    if res_data.status_code == 200:
-        return pd.DataFrame(res_data.json())
-    else:
+    """
+    Gets a dataframe from the api url
+    @param api_url: URL of the api endpoint
+    @return: A dataframe or None
+    """
+    try:
+        res_data = requests.get(api_url)
+        if res_data.status_code == 200:
+            return pd.DataFrame(res_data.json())
+        else:
+            return None
+    except Exception:
         return None
+
 
 #get statistics
 def post_data(api_url):
-    res_data = requests.post(api_url)
-    if res_data.status_code == 200:
-        return pd.DataFrame(res_data.json())
-    else:
+    """
+    Gets a dataframe from the api url. This work for statistics.
+    @param api_url: URL of the api endpoint
+    @return: A dataframe or None
+    """
+    try:
+        res_data = requests.post(api_url)
+        if res_data.status_code == 200:
+            return pd.DataFrame(res_data.json())
+        else:
+            return None
+    except Exception:
         return None
 
 def display_error(message: str):
+    """
+    Displays a friendly error message
+    @param message: a message to display
+    """
     c1, c2 = st.columns(2)
     with c1:
         st.header('WOOF!')
         st.subheader(message)
     with c2:
         st.image("img/tarzan.png", width=200)
+
 
 
 st.title('Class Statistics :books:')

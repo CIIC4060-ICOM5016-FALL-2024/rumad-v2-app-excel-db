@@ -18,10 +18,13 @@ if 'uid' not in st.session_state:
         st.toast("Couldn't find user id")
 
 def get_data(api_url):
-    res_data = requests.get(api_url)
-    if res_data.status_code == 200:
-        return pd.DataFrame(res_data.json())
-    else:
+    try:
+        res_data = requests.get(api_url)
+        if res_data.status_code == 200:
+            return pd.DataFrame(res_data.json())
+        else:
+            return None
+    except Exception:
         return None
 
 # Fetch data
