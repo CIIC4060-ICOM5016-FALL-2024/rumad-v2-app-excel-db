@@ -22,10 +22,14 @@ def home():
     return redirect('/excel_db', code=302)
 
 """ USER CRUD ROUTES """
-@app.route("/excel_db/user", methods=["POST"])
+@app.route("/excel_db/user", methods=["POST","GET"])
 def post_user():
-    handler = UserModel()
-    return handler.post_user(request.json)
+    if request.method == "POST":
+        handler = UserModel()
+        return handler.post_user(request.json)
+    if request.method == "GET":
+        handler = UserModel()
+        return handler.get_all_user()
 
 @app.route("/excel_db/user/<int:uid>", methods=["GET"])
 def get_user_by_id(uid):
