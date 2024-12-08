@@ -14,8 +14,8 @@ class SyllabusChatBot:
         self.ollama_server_url = "http://136.145.116.41:11434/api/chat"  # Ollama server URL
         self.embedding_server_url = "http://136.145.116.41:11434/api/embeddings"  # URL for remote embedding service
         self.max_retries = 3  # Maximum retries for failed requests
-        self.conversation_history = history  # To store conversation history
-        self.courses = matches
+        # self.conversation_history = history  # To store conversation history
+        # self.courses = matches
 
     def get_embedding(self, text):
         """Retrieve the embedding for the question from the remote embedding service."""
@@ -39,10 +39,10 @@ class SyllabusChatBot:
                 attempt += 1
         return None
 
-    def get_context(self, question_embedding, course):
+    def get_context(self, question_embedding):
         """Retrieve relevant context from the database based on the embedding."""
         headers = {"Content-Type": "application/json"}
-        body = {"embedding": str(question_embedding), "course": str(course)}
+        body = {"embedding": str(question_embedding)}
         attempt = 0
         while attempt < self.max_retries:
             try:
@@ -88,15 +88,14 @@ class SyllabusChatBot:
         except requests.exceptions.RequestException as e:
             return f"Error: {str(e)}"
 
-    def generate_answer(self, previous_questions, question, context):
+    def generate_answer(self, question, context):
         """Generate an answer based on the question, context, and conversation history."""
         prompt_template = ChatPromptTemplate.from_template(
             """You are an assistant trained to answer questions based on syllabus documents.
-            Your role is to help users understand their syllabus, answer questions about courses, and provide information based on the provided documents and conversation history.
+            Your role is to help users understand their syllabus, answer questions about courses, and provide information based on the provided documents.
 
             Instructions:
             - Use the provided syllabus documents to answer questions as accurately as possible.
-            - If the current question does not mention a specific course, refer to the course mentioned in previous questions.
             - If there is no information available in the documents to answer a question, respond with: "Sorry, I don't know."
             - Keep answers concise and confident, ideally within five sentences. Use bullet points for clarity when listing multiple points.
 
@@ -106,48 +105,29 @@ class SyllabusChatBot:
             Current Question:
             {question}
 
-            Previous Questions:
-            {previous_questions}
-
             Answer:
             """
         )
-        prompt = prompt_template.format(documents=context, question=question, previous_questions=previous_questions)
+        prompt = prompt_template.format(documents=context, question=question)
         return self.query_ollama(prompt)
 
-    def answer_question(self, question):
+    def answer_question(self, question, local):
         """Answer a syllabus-related question."""
-
-        history = ""
-        for i in range(len(self.conversation_history)-1):
-            if self.conversation_history[i]['role'] == 'user':
-                history += self.conversation_history[i]['content'] + " "
-        question_embedding = self.get_embedding(question + history)
+        if local:
+            self.embedding_server_url = "http://127.0.0.1:11434/api/embeddings" # Ollama server URL
+            self.ollama_server_url = "http://127.0.0.1:11434/api/chat"  # Ollama server URL
+        
+        question_embedding = self.get_embedding(question)
 
         if not question_embedding:
             return "I couldn't retrieve the embedding to answer your question."
 
-        # Get relevant context for the question based on its embedding
-        index = -1
-        if self.courses and len(self.courses) > abs(index):
-            while index >= -len(self.courses) and not self.courses[index]:
-                index -= 1
-
-            if index >= -len(self.courses):
-                course = self.courses[index][0]
-                if " " not in course:
-                    course = "".join(f" {char}" if char.isdigit() and (i == 0 or not course[i - 1].isdigit()) else char
-                                     for i, char in enumerate(course))
-                context = self.get_context(question_embedding, f"%{course}%")
-            else:
-                context = self.get_context(question_embedding, "%")
-        else:
-            context = self.get_context(question_embedding, "%")
-
+        context = self.get_context(question_embedding)
+        print(context)
         if not context:
             return "I couldn't find relevant information to answer your question."
 
         # Generate and return an answer based on the conversation history and context
-        answer = self.generate_answer(history, question, context)
+        answer = self.generate_answer(question, context)
 
         return answer

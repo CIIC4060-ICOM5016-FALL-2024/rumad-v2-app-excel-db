@@ -17,7 +17,7 @@ class MeetingModel:
         """
         if False in response:
             return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
-
+        print(response)
         result = []
         for meet in response:
             result_dict = {

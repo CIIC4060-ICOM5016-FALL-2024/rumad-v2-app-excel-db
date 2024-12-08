@@ -42,8 +42,9 @@ def chatbot(chat_id):
             with st.chat_message(message["role"]):
                 st.write(message["content"])
 
+    local = st.toggle("Activate to run Ollama locally")
     display_chat()
-
+    
     if prompt := st.chat_input("Ask a question"):
         chat_history.append({"role": "user", "content": prompt})
         with st.chat_message("user"):
@@ -52,7 +53,7 @@ def chatbot(chat_id):
             typing_placeholder = st.empty()
             typing_placeholder.write("Bot is typing...")
             chatbot = SyllabusChatBot(chat_history, [])
-            answer = chatbot.answer_question(prompt)
+            answer = chatbot.answer_question(prompt, local)
             typing_placeholder.write(answer)
             chat_history.append({"role": "assistant", "content": answer})
             audio_file_path = f"{chat_id}_audio_{len(chat_history)}.mp3"
