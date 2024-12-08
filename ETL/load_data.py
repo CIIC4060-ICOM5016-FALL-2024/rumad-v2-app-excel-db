@@ -1,11 +1,9 @@
 import psycopg2
 import pandas as pd
-from ETL.extract_data import get_sections, get_meetings, get_rooms, get_courses, get_requisites
-from ETL.transform_data import transform_data
+# from ETL.extract_data import get_sections, get_meetings, get_rooms, get_courses, get_requisites
 import os
 import requests
-
-from config.dbconfig import pg_config
+from DataLoader.loader import get_clean_classes,get_clean_meetings,get_clean_rooms,get_clean_requisites,get_clean_sections
 
 
 def create_db(cursor):
@@ -90,6 +88,15 @@ def create_db(cursor):
             capacity INTEGER,
             UNIQUE (roomid, mid, semester, years),
             UNIQUE (cid, mid, semester, years)
+        );
+        
+        CREATE TABLE IF NOT EXISTS "user"(
+        uid     SERIAL CONSTRAINT uid PRIMARY KEY,
+        username VARCHAR NOT NULL,
+        email    VARCHAR NOT NULL,
+        password VARCHAR NOT NULL,
+        UNIQUE (username),
+        UNIQUE (email)
         );
         
         CREATE OR REPLACE FUNCTION check_section_capacity()
@@ -223,14 +230,14 @@ def load_classes(courses, cursor):
         """
     for index, row in courses.iterrows():
         cursor.execute(insert_query, (
-            row['classid'],
+            row['cid'],
             row['cname'],
             row['ccode'],
-            row['description'],
+            row['cdesc'],
             row['term'],
             row['years'],
             row['cred'],
-            row['syllabus']
+            row['csyllabus']
         ))
 
 def load_meeting(meetings, cursor):
@@ -250,15 +257,15 @@ def load_meeting(meetings, cursor):
                 endtime = EXCLUDED.endtime,
                 cdays = EXCLUDED.cdays;
         """
-    meetings['start'] = pd.to_datetime(meetings['start'])
-    meetings['end'] = pd.to_datetime(meetings['end'])
+    meetings['starttime'] = pd.to_datetime(meetings['starttime'])
+    meetings['endtime'] = pd.to_datetime(meetings['endtime'])
     for index, row in meetings.iterrows():
         cursor.execute(insert_query, (
             row['mid'],
             row['ccode'],
-            row['start'],
-            row['end'],
-            row['day'],
+            row['starttime'],
+            row['endtime'],
+            row['cdays'],
         ))
 
 def load_requisite(requisites, cursor):
@@ -274,12 +281,12 @@ def load_requisite(requisites, cursor):
                 VALUES (%s, %s, %s)
                 ON CONFLICT (classid, reqid) DO UPDATE SET prereq = EXCLUDED.prereq
             """
-    requisites['preReq'] = requisites['preReq'].map({1: True, 0: False})
+    requisites['prereq'] = requisites['prereq'].map({1: True, 0: False})
     for index, row in requisites.iterrows():
         cursor.execute(insert_query, (
-            row['cid'],
-            row['requisiteid'],
-            row['preReq'],
+            row['classid'],
+            row['reqid'],
+            bool(row['prereq']),
         ))
 
 def load_room(rooms, cursor):
@@ -299,9 +306,9 @@ def load_room(rooms, cursor):
                     """
     for index, row in rooms.iterrows():
         cursor.execute(insert_query, (
-            row['id'],
+            row['rid'],
             row['building'],
-            row['number'],
+            row['room_number'],
             row['capacity'],
         ))
 
@@ -327,11 +334,11 @@ def load_section(sections, cursor):
     for index, row in sections.iterrows():
         cursor.execute(insert_query, (
             row['sid'],
-            row['room_id'],
-            row['class_id'],
-            row['meeting_id'],
+            row['roomid'],
+            row['cid'],
+            row['mid'],
             row['semester'],
-            row['year'],
+            row['years'],
             row['capacity'],
         ))
 
@@ -403,25 +410,32 @@ def load_data():
     """
 
     # Extract data
-    courses = get_courses('Data')
-    meetings = get_meetings('Data')
-    requisites = get_requisites('Data')
-    rooms = get_rooms('Data')
-    sections = get_sections('Data')
+    courses = get_clean_classes('DataLoader/CleanData')
+    meetings = get_clean_meetings('DataLoader/CleanData')
+    requisites = get_clean_requisites('DataLoader/CleanData')
+    rooms = get_clean_rooms('DataLoader/CleanData')
+    sections = get_clean_sections('DataLoader/CleanData')
 
     # Transform data
-    sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
+    # sections, meetings, rooms, courses = transform_data(sections, meetings, rooms, courses)
     # Test Load data
-    engine = psycopg2.connect(
-        user = pg_config["user"],
-        password = pg_config["password"],
-        host = pg_config["host"],
-        database = pg_config["dbname"],
-        port = pg_config["port"]
-    )
+    # engine = psycopg2.connect(
+    #     user = pg_config["user"],
+    #     password = pg_config["password"],
+    #     host = pg_config["host"],
+    #     database = pg_config["dbname"],
+    #     port = pg_config["port"]
+    # )
 
     # Heroku Load data
     # Load data
+    engine = psycopg2.connect(
+        dbname="excel_db",
+        user="excel",
+        password="password",
+        host="localhost",
+        port="1234",
+    )
     # engine = psycopg2.connect(
     #     dbname="dc79t7ga9hc6ud",
     #     user="ufm5iffjti843g",
