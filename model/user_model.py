@@ -148,7 +148,7 @@ class UserModel:
             except psycopg2.IntegrityError:  # Handle duplicate key violations
                 return jsonify({"error": "Username or email is already taken"}), 400
             except Exception as e:
-                return jsonify({"error": "An unexpected error occurred"}), 500
+                return jsonify({"error": response}), 500
 
             if False in response:
                 return jsonify({"error": response[2]}), 400
