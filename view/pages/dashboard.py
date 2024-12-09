@@ -81,6 +81,6 @@ if selected_entity:
     data = entities[selected_entity]
     if data is not None and not data.empty:
         reordered_data = data[list(data.columns)]  # Preserve the current order
-        st.dataframe(reordered_data) 
+        st.dataframe(reordered_data)  # Display the reordered dataframe
     else:
         st.warning("No data available for the selected entity.")
