@@ -10,7 +10,7 @@ class SectionModel:
         pass
 
     @staticmethod  # It runs the same in any instance of the class
-    def jsonify_response(response):
+    def jsonify_response(response, sid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
@@ -18,7 +18,7 @@ class SectionModel:
         """
         if False in response:
             return (
-                jsonify(f"The requested section with ID {response[1]} was not found."),
+                jsonify(f"The requested section with ID {sid} was not found."),
                 404,
             )  # Not found
 
@@ -83,7 +83,7 @@ class SectionModel:
         """
         dao = SectionDAO()
         response = dao.get_section_by_sid(int(sid))
-        return self.jsonify_response(response)
+        return self.jsonify_response(response, sid)
 
     @staticmethod
     def put_section_by_id(sid, data):
@@ -95,6 +95,21 @@ class SectionModel:
         """
         dao = SectionDAO()
         response = dao.put_section_by_sid(int(sid), data)
+
+        if False in response:
+            if False in dao.get_class_by_cid(int(sid)):
+                return (
+                    jsonify(
+                        f"Could not update section with ID {sid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not update section with ID {sid}."
+                    ),
+                    400,
+                )
 
         if False in response:
             return jsonify(f"Failed to update section with ID {sid}."), 400
@@ -111,5 +126,17 @@ class SectionModel:
         response = dao.delete_section(int(sid))
 
         if False in response:
-            return jsonify(f"Could not delete section with ID {sid}."), 400
+            if False in dao.get_class_by_cid(int(sid)):
+                return (
+                    jsonify(
+                        f"Could not delete section with ID {sid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not delete section with ID {sid}."
+                    ),
+                    400,
+                )
         return jsonify(f"Section with sid {sid} deleted: {response[1]}"), 200

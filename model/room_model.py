@@ -10,7 +10,7 @@ class RoomModel:
         pass
 
     @staticmethod
-    def jsonify_response(response):
+    def jsonify_response(response, rid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
@@ -19,7 +19,7 @@ class RoomModel:
 
         if False in response:
             return (
-                jsonify(f"The requested room with ID {response[1]} was not found."),
+                jsonify(f"The requested room with ID {rid} was not found."),
                 404,
             )  # not found
 
@@ -86,7 +86,7 @@ class RoomModel:
         """
         dao = RoomDAO()
         response = dao.get_room_by_rid(rid)
-        return self.jsonify_response(response)
+        return self.jsonify_response(response,rid)
 
     @staticmethod
     def put_room_by_id(rid, data):
@@ -100,7 +100,20 @@ class RoomModel:
         response = dao.put_room_by_rid(rid, data)
 
         if False in response:
-            return jsonify(f"Failed to update room with ID {rid}."), 400
+            if False in dao.get_room_by_rid(int(rid)):
+                return (
+                    jsonify(
+                        f"Could not update room with ID {rid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not update room with ID {rid}."
+                    ),
+                    400,
+                )
+
         return jsonify(f"Room {rid} has been updated."), 200
 
     @staticmethod
@@ -114,5 +127,17 @@ class RoomModel:
         response = dao.delete_room(rid)
 
         if False in response:
-            return jsonify(f"Could not delete room with ID {rid}."), 400
+            if False in dao.get_room_by_rid(int(rid)):
+                return (
+                    jsonify(
+                        f"Could not delete room with ID {rid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not delete room with ID {rid}."
+                    ),
+                    400,
+                )
         return jsonify(f"Room {rid} has been deleted."), 200

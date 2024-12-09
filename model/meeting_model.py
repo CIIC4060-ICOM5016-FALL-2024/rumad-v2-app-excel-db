@@ -10,7 +10,7 @@ class MeetingModel:
         pass
 
     @staticmethod
-    def jsonify_response(response):
+    def jsonify_response(response, mid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
@@ -18,7 +18,7 @@ class MeetingModel:
         """
         if False in response:
             return (
-                jsonify(f"The requested meeting with ID {response[1]} was not found."),
+                jsonify(f"The requested meeting with ID {mid} was not found."),
                 404,
             )  # not found
 
@@ -79,7 +79,7 @@ class MeetingModel:
         """
         dao = MeetingDAO()
         response = dao.get_meeting_by_mid(int(mid))
-        return self.jsonify_response(response)
+        return self.jsonify_response(response,mid)
 
     @staticmethod
     def put_meeting_by_id(mid, data):
@@ -91,8 +91,21 @@ class MeetingModel:
         """
         dao = MeetingDAO()
         response = dao.put_meeting_by_mid(int(mid), data)
+
         if False in response:
-            return jsonify(f"Failed to update meeting {mid}."), 400
+            if False in dao.get_meeting_by_mid(int(mid)):
+                return (
+                    jsonify(
+                        f"Could not update meeting with ID {mid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not update meeting with ID {mid}."
+                    ),
+                    400,
+                )
         return jsonify(f"Meeting {mid} has been updated"), 200
 
     @staticmethod
@@ -104,6 +117,19 @@ class MeetingModel:
         """
         dao = MeetingDAO()
         response = dao.delete_meeting(int(mid))
+        
         if False in response:
-            return jsonify(f"Could not delete meeting with ID {mid}."), 400
+            if False in dao.get_meeting_by_mid(int(mid)):
+                return (
+                    jsonify(
+                        f"Could not delete meeting with ID {mid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not delete meeting with ID {mid}."
+                    ),
+                    400,
+                )
         return jsonify(f"Meeting {mid} has been deleted"), 200

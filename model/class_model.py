@@ -12,7 +12,7 @@ class ClassModel:
         pass
 
     @staticmethod
-    def jsonify_response(response):
+    def jsonify_response(response, cid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
@@ -22,7 +22,7 @@ class ClassModel:
         if False in response:
             return (
                 jsonify(
-                    f"The requested class with ID {response[1]} was not found. Reason: {response[1]} - {response[2]}"
+                    f"The requested class with ID {cid} was not found."
                 ),
                 404,
             )  # not found
@@ -73,7 +73,7 @@ class ClassModel:
         if False in response:
             return (
                 jsonify(
-                    f"Could not create class {cdesc}. Reason: {response[1]} - {response[2]}."
+                    f"Could not create class {cdesc}."
                 ),
                 400,
             )
@@ -100,7 +100,7 @@ class ClassModel:
         """
         dao = ClassDAO()
         response = dao.get_class_by_cid(int(cid))
-        return self.jsonify_response(response)
+        return self.jsonify_response(response, cid)
 
     @staticmethod
     def put_class_by_id(cid, data):
@@ -114,12 +114,19 @@ class ClassModel:
         response = dao.put_class_by_cid(int(cid), data)
 
         if False in response:
+            if False in dao.get_class_by_cid(int(cid)):
+                return (
+                    jsonify(
+                        f"Could not update class with ID {cid}. ID does not exist."
+                    ),
+                    400,
+                )
             return (
-                jsonify(
-                    f"Failed to update class {cid}. Reason: {response[1]} - {response[2]}."
-                ),
-                400,
-            )
+                    jsonify(
+                        f"Could not update class with ID {cid}."
+                    ),
+                    400,
+                )
 
         return jsonify(f"Class {cid}: updated successfully"), 200
 
@@ -134,10 +141,17 @@ class ClassModel:
         response = dao.delete_class_by_id(int(cid))
 
         if False in response:
+            if False in dao.get_class_by_cid(int(cid)):
+                return (
+                    jsonify(
+                        f"Could not delete class with ID {cid}. ID does not exist."
+                    ),
+                    400,
+                )
             return (
-                jsonify(
-                    f"Could not delete class with ID {cid}. Reason: {response[1]} - {response[2]}."
-                ),
-                400,
-            )
+                    jsonify(
+                        f"Could not delete class with ID {cid}."
+                    ),
+                    400,
+                )
         return jsonify(f"Class {cid} deleted successfully"), 200
