@@ -110,7 +110,7 @@ To run Ollama locally, open a terminal and execute:
   run ollama serve
 ```
 ### Step 2: Run the Frontend 
-To run the frontend, navigate to the view directory in your terminal. Then, execute the following command:
+To run the frontend, navigate to the view directory in a new terminal. Then, execute the following command:
 
  ```bash
   streamlit run app.py
