@@ -45,7 +45,7 @@ class SyllabusDAO(DAO):
         @return: a list of tuples, or None if failed
         """
 
-        query = """SELECT chunkid, courseid, embedding_text <=> %s as distance, chunk 
+        query = """SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk 
                     FROM syllabus 
                     ORDER BY distance 
                     LIMIT 5"""
