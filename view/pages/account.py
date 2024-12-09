@@ -38,7 +38,7 @@ with col2:
                         status.update(label="Account Updated", state="complete", expanded=False)
                     else:
                         status.update(label="Couldn't update account", state="error", expanded=True)
-                        st.write(response.json())
+                        st.write(response.json()["error"])
 
         if logout_button:
             for key in st.session_state.keys():
