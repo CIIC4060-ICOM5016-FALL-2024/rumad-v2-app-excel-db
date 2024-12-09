@@ -77,7 +77,7 @@ with local_tab:
                 room_list.append(f'{row["rid"]} - {row["building"]} {row["room_number"]}')
             room_tuple = tuple(room_list)
             #selected_rid = st.number_input(label= "Please enter a room id", min_value = 0, step = 1, value = 1)
-            selected_rid = st.selectbox("Select room id you would like to see", room_tuple,placeholder="Select room id")
+            selected_rid = st.selectbox("Select room id you would like to see", room_tuple,placeholder="Select room id", index=1 )
             selected_rid = selected_rid.split(' ')[0]
 
         with col2:
