@@ -19,7 +19,7 @@ class RequisiteModel:
         if False in response:
             return (
                 jsonify(
-                    {f"Error":"The requested requisite with ID {reqid} with class ID {classid} was not found."}
+                    {"Error": f"The requested requisite with ID {reqid} with class ID {classid} was not found."}
                 ),
                 404,
             )
