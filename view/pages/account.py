@@ -29,8 +29,6 @@ with col2:
                         body['username'] = username
                     if email != st.session_state.email:
                         body['email'] = email
-                    if password != st.session_state.password:
-                        body['password'] = password
                     response = requests.put(user_api + f"/{st.session_state.uid}", json=body)
                     if response.status_code == 200:
                         if username:
