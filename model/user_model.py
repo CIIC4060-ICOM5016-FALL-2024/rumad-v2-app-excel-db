@@ -284,6 +284,7 @@ class UserModel:
         password = data.get("password")
 
         dao = UserDAO()
+        print(username, email, password)
 
         # Check if username already exists
         if username:
