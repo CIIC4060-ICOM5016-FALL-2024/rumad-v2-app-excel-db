@@ -96,28 +96,29 @@ with local_tab:
                 stat_call = room_api + f'/{selected_building}/capacity'
                 rooms_w_most_capacity_pd = post_data(stat_call)
                 if rooms_w_most_capacity_pd is not None:
-                    rooms_w_most_capacity_pd['rid'] = rooms_w_most_capacity_pd["building"] + "-" + rooms_w_most_capacity_pd["room_number"] 
+                    rooms_w_most_capacity_pd['rid'] = rooms_w_most_capacity_pd["building"] + "-" + \
+                                                      rooms_w_most_capacity_pd["room_number"]
                     bar_chart = (
                         alt.Chart(rooms_w_most_capacity_pd)
                         .mark_bar()
                         .encode(
                             x=alt.X(
-                                "rid",axis=alt.Axis(labelAngle=0),
+                                "rid", axis=alt.Axis(labelAngle=0),
                                 title="Classroom Name",
                                 type="nominal",
                                 sort=alt.EncodingSortField(field="capacity", order=order),
                             ),
                             y=alt.Y("capacity", title="Capacity")
                         )
-                        ).properties(
-                            title={
-                                'text':f'Top 3 Rooms with Most Capacity in {selected_building}',
-                                'align': 'center',
-                                'anchor': 'middle',
-                                'fontSize': 30
-                            },
-                            width=600,
-                            height=400
+                    ).properties(
+                        title={
+                            'text': f'Top 3 Rooms with Most Capacity in {selected_building}',
+                            'align': 'center',
+                            'anchor': 'middle',
+                            'fontSize': 30
+                        },
+                        width=600,
+                        height=400
                     )
                     st.altair_chart(bar_chart, use_container_width=True)
                     st.write(post_data(stat_call))
@@ -139,7 +140,12 @@ with local_tab:
                     # Dynamically handle up to 3 rooms
                     cols = st.columns(min(3, len(rooms_w_most_capacity_pd)))
 
-                    for idx, (room_id, row) in enumerate(rooms_w_most_capacity_pd.iterrows()):
+                    if order == 'ascending':
+                        rows = enumerate(rooms_w_most_capacity_pd.iterrows())
+                    else:
+                        rows = enumerate(rooms_w_most_capacity_pd.iloc[::-1].iterrows())
+
+                    for idx, (room_id, row) in rows:
                         if idx >= 3:
                             break
                         with cols[idx]:
