@@ -103,17 +103,21 @@ with local_tab:
                         .encode(
                             x=alt.X(
                                 "rid",axis=alt.Axis(labelAngle=0),
-                                title="Class Room",
+                                title="Classroom Name",
                                 type="nominal",
                                 sort=alt.EncodingSortField(field="capacity", order=order),
                             ),
                             y=alt.Y("capacity", title="Capacity")
                         )
-                        .properties(
-                            title="Bar Chart by Class Description",
+                        ).properties(
+                            title={
+                                'text':f'Top 3 Rooms with Most Capacity in {selected_building}',
+                                'align': 'center',
+                                'anchor': 'middle',
+                                'fontSize': 30
+                            },
                             width=600,
-                            height=400,
-                        )
+                            height=400
                     )
                     st.altair_chart(bar_chart, use_container_width=True)
                     st.write(post_data(stat_call))
