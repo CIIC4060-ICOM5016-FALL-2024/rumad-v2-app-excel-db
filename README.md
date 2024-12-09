@@ -13,7 +13,8 @@
 - [Project Overview](#project-overview)
 - [Production Database Credentials](#production-database-credentials)
 - [Getting Started](#getting-started)
-  - [Local setup](#local-setup)
+  - [Local Setup](#local-setup)
+- [How to Run the Frontend](#how-to-run-the-frontend)
 - [Contributors](#contributors)
 
 # Objectives
@@ -21,6 +22,7 @@
 2. Understand the use of table diagram for database application design. 
 3. Gain experience by implementing applications using layers of increasing complexity and complex data structures.
 4. Gain further experience with Web programming concepts including REST.
+5. Gain experience with vector database and Langchain for AI chatbot implementation. 
 
 # Project Overview 
 You will design, implement, and test the backend of an application based on RUMAD to view sections 
@@ -28,8 +30,9 @@ and learn about the course. The data in the application is managed by a relation
 exposed to client applications through a REST API. You will build the database application and REST 
 API using Flask, which forms the system’s backend. Your database engine must be PostgreSQL (14 or 
 higher), and you must implement the code in Python. The backend site will provide the user with the 
-features specified in this document. In addition, your solution will offer a Web-based dashboard and an 
-AI agent using the tool provided in a later phase indicating relevant statistics. 
+features specified in this document. In addition, your solution will offer a Web-based dashboard using 
+Streamlit and an AI agent using Ollama using the tool provided in a later phase indicating relevant 
+statistics.  . 
 
 # Production Database Credentials
 
@@ -94,6 +97,38 @@ Configure Connection Settings:
 - User: excel
 - Password: password
 - Database: excel_db
+
+# How to Run the Frontend:
+
+First, download ollama in your local machine: https://ollama.com/
+
+### Step 1: Run Ollama
+
+To run Ollama locally, open a terminal and execute: 
+
+```bash
+  run ollama serve
+```
+### Step 2: Run the Frontend 
+To run the frontend, navigate to the view directory in your terminal. Then, execute the following command:
+
+ ```bash
+  streamlit run app.py
+```
+### Frontend Options: Local or Rmeote
+In the frontend, on the chatbot page, you have two options: run the chatbot locally or remotely.
+
+#### To run the chatbot remotely:
+
+- You need to be connected to RUMNET or RUMNETEP inside the Stefani Building.
+
+- Alternatively, you can use a VPN. To request VPN access, please contact luis.lugo11@upr.edu. (Note: You only need to have the VPN running.)
+
+#### To run the chatbot locally:
+
+- Enable the local option in the frontend.
+
+- Ensure that all required dependencies are installed beforehand.
 
 ## Contributors:
 - Alanis Negroni Santiago 
