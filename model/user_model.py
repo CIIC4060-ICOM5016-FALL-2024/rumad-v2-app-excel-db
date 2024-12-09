@@ -134,7 +134,7 @@ class UserModel:
             user_attributes = {key: data[key] for key in data.keys()}
 
             # Validate and process user data
-            valid, processed_data = UserModel.validate_and_process_user_data(user_attributes, exclude_uid=uid)
+            valid, processed_data = UserModel.validate_and_process_user_data(user_attributes)
             if not valid:
                 return jsonify(processed_data), 400
 
