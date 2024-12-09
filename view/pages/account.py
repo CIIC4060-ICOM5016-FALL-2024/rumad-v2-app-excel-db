@@ -25,11 +25,11 @@ with col2:
                 with st.status("update_account") as status:
                     status.update(label="Updating...", state="running", expanded=False)
                     body = {}
-                    if username:
+                    if username != st.session_state.username:
                         body['username'] = username
-                    if email:
+                    if email != st.session_state.email:
                         body['email'] = email
-                    if password:
+                    if password != st.session_state.password:
                         body['password'] = password
                     response = requests.put(user_api + f"/{st.session_state.uid}", json=body)
                     if response.status_code == 200:

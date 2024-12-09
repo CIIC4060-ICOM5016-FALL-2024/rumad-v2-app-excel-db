@@ -304,7 +304,7 @@ class UserModel:
 
         # Validate and hash password
         if password:
-            if not UserModel.is_valid_password(password):
+            if UserModel.is_valid_password(password):
                 return False, {"error": "Password does not meet the requirements:\n"
                                         "- At least 8 characters in length\n"
                                         "- Must contain at least 3 of the following 4 types of characters:\n"
