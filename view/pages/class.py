@@ -91,14 +91,19 @@ with local_tab:
                 .encode(
                     x=alt.X(
                         "cdesc",axis=alt.Axis(labelAngle=0),
-                        title="Class Description",
+                        title="Course Name",
                         sort=alt.EncodingSortField(field="amount", order=order),
                     ),
                     y=alt.Y("amount:Q", title="Amount"),
-                    color=alt.Color("cdesc:N", title="Class Description"),
+                    color=alt.Color("cdesc:N", title="Course Name"),
                 )
                 .properties(
-                    title="Bar Chart by Class Description",
+                    title={
+                        'text':f'Top 3 Classes that were Taught the Most in {building}-{room_number}',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
                     width=600,
                     height=400,
                 )
@@ -136,16 +141,21 @@ with local_tab:
                     .encode(
                         x=alt.X(
                             "cdesc", axis=alt.Axis(labelAngle=0),
-                            title="Class Description",
+                            title="Course Name",
                             sort=alt.EncodingSortField(field="section_amount", order=order),
                         ),
                         y=alt.Y("section_amount", title="Amount"),
-                        color=alt.Color("cdesc", title="Class Description"),
+                        color=alt.Color("cdesc", title="Course Name"),
                     )
                     .properties(
-                        title="Bar Chart by Class Description",
-                        width=600,
-                        height=400,
+                    title={
+                        'text':f'Top 3 Classes in {selected_term.capitalize()} {selected_year}',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
+                    width=600,
+                    height=400,
                     )
                 )
                 st.altair_chart(bar_chart, use_container_width=True)
@@ -167,14 +177,19 @@ with global_tab:
                 .encode(
                     x=alt.X(
                         "cdesc", axis=alt.Axis(labelAngle=0),
-                        title="Class Description",
+                        title="Course Name",
                         sort=alt.EncodingSortField(field="frequency", order=order),
                     ),
                     y=alt.Y("frequency", title="Amount"),
-                    color=alt.Color("cdesc", title="Class Description"),
+                    color=alt.Color("cdesc", title="Course Name"),
                 )
                 .properties(
-                    title="Bar Chart by Class Description",
+                    title={
+                        'text':f'Top 3 Classes that Appears the Most as Prerequisite to Other Classes',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
                     width=600,
                     height=400,
                 )
@@ -195,17 +210,22 @@ with global_tab:
                 .encode(
                     x=alt.X(
                         "cdesc", axis=alt.Axis(labelAngle=0),
-                        title="Class Description",
+                        title="Course Name",
                         sort=alt.EncodingSortField(field="frequency", order=order),
                     ),
                     y=alt.Y("frequency", title="Amount"),
-                    color=alt.Color("cdesc", title="Class Description"),
+                    color=alt.Color("cdesc", title="Course Name"),
                 )
                 .properties(
-                    title="Bar Chart by Class Description",
+                    title={
+                        'text':f'Top 3 Classes that were Offered the Least',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
                     width=600,
                     height=400,
-                )
+                ) 
             )
             st.altair_chart(bar_chart, use_container_width=True)
             st.write(least_pd)

@@ -85,11 +85,15 @@ with global_tab:
                     ),
                     y=alt.Y("frequency", title="Sections Amount"),
                 )
-                .properties(
-                    title="Top 5 Meeting with the Most Sections",
+                ).properties(
+                    title={
+                        'text':f'Top 5 Meetings with the Most Sections',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
                     width=600,
-                    height=400,
-                )
+                    height=400
             )
             st.altair_chart(bar_chart)
             st.write(post_data(stat_call))

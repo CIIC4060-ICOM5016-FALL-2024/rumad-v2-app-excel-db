@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import altair as alt
 
 general_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db'
 
@@ -46,7 +47,22 @@ with global_tab:
         stat_call = general_api + f'/section/year'
         sections_per_year = post_data(stat_call)
         if sections_per_year is not None:
-            st.line_chart(sections_per_year, x="year", y="total_sections", y_label="Sections",x_label="Year")
+            line_chart = alt.Chart(sections_per_year).mark_line(strokeWidth=5).encode(
+                x=alt.X('year:O', title='Year', axis=alt.Axis(labelAngle=0)),  # Horizontal labels
+                y=alt.Y('total_sections:Q', title='Sections'),
+                ).properties(
+                    title={
+                        'text':f'Total Number of Sections per Year',
+                        'align': 'center',
+                        'anchor': 'middle',
+                        'fontSize': 30
+                    },
+                    width=600,
+                    height=400
+                )
+
+            # Display the chart and the DataFrame
+            st.altair_chart(line_chart, use_container_width=True) 
             st.write(sections_per_year)
         else:
             display_error("No sections found")
