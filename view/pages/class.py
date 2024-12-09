@@ -137,7 +137,7 @@ with local_tab:
         col1, col2 = st.columns(2)
         with col1:
             data = get_data(general_api + f'/section')
-            if data:
+            if not data.empty:
                 data['semester'] = data['semester'].replace('V1', 'First Summer')
                 data['semester'] = data['semester'].replace('V2', 'Second Summer')
                 terms = data['semester'].unique()
