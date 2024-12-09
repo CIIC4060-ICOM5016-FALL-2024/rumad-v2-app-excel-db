@@ -39,6 +39,16 @@ def post_data(api_url):
             return None
     except Exception:
         return None
+    
+def get_data(api_url):
+    try:
+        res_data = requests.get(api_url)
+        if res_data.status_code == 200:
+            return pd.DataFrame(res_data.json())
+        else:
+            return None
+    except Exception:
+        return None
 
 def display_error(message: str):
     """
@@ -126,7 +136,14 @@ with local_tab:
     with stat_d:
         col1, col2 = st.columns(2)
         with col1:
-            options = ["Fall", "Spring", "First Summer", "Second Summer"]
+            data = get_data(general_api + f'/section')
+            if data:
+                data['semester'] = data['semester'].replace('V1', 'First Summer')
+                data['semester'] = data['semester'].replace('V2', 'Second Summer')
+                terms = data['semester'].unique()
+                options = terms.tolist()
+            else:
+                options = ["Fall", "Spring", "First Summer", "Second Summer"]
             selected_term = st.pills(label = "Please select a term", options = options, selection_mode="single", default="Fall")
         with col2:
             selected_year = st.number_input(label="Please enter a year", min_value=0, step=1, value=2017)
