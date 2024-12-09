@@ -29,6 +29,10 @@ def chatbot(chat_id):
     """Chatbot interaction for a specific chat."""
     chat_history = st.session_state.chats[chat_id]
 
+    with st.chat_message("assistant"):
+        st.write("""Hello! I'm here to help you understand your syllabus and answer any course-related questions.
+                 Which specific course would you like to know more about?""")
+
     def display_chat():
         """Display the chat history."""
         for message in chat_history:
