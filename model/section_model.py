@@ -71,7 +71,7 @@ class SectionModel:
         response = dao.post_section(roomid, cid, mid, semester, years, capacity)
 
         if False in response:
-            return jsonify(f"Could not create section (sid: {response[1]})."), 400
+            return jsonify(f"Could not create section: {response[2]}"), 400
         return jsonify(f"Section (sid: {response[1]}) successfully created"), 201
 
     def get_section_by_id(self, sid):
