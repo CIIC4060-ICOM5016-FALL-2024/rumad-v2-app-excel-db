@@ -281,6 +281,7 @@ class UserModel:
         @return: A tuple (True, processed_data) if validation is successful,
                 (False, error_message) otherwise.
         """
+        print(data)
         username = data.get("username")
         email = data.get("email")
         password = data.get("password")
@@ -290,14 +291,14 @@ class UserModel:
         # Check if username already exists
         if username:
             existing_user = dao.get_user_by_username(username)
-            if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
-                return False, {"error": f"Username is already taken"}
+            # if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
+            #     return False, {"error": f"Username is already taken"}
 
         # Check if email already exists
         if email:
             existing_user = dao.get_user_by_email(email)
-            if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
-                return False, {"error": f"Email is already registered"}
+            # if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
+            #     return False, {"error": f"Email is already registered"}
 
         # Validate email format
         if not UserModel.is_valid_email(email):
