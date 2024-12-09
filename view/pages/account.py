@@ -17,7 +17,8 @@ with col2:
         username = st.text_input(label="username", value=st.session_state.username)
         email = st.text_input(label="email", value=st.session_state.email)
         password = st.text_input(label="password", type="password", disabled=True)
-        
+        print(username)
+        print(email)
         update_button = st.form_submit_button(label="Update Account")
         logout_button = st.form_submit_button(label="Logout")
        

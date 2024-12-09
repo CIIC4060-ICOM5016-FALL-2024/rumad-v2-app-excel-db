@@ -139,7 +139,7 @@ class UserModel:
             valid, processed_data = UserModel.validate_and_process_user_data(user_attributes)
             if not valid:
                 return jsonify(processed_data), 400
-
+            print(processed_data)
             dao = UserDAO()
             try:
                 # Update user in the database
