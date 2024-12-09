@@ -75,7 +75,7 @@ class SyllabusModel:
             token_split_text = [chunk for text in split_text for chunk in token_splitter.split_text(text)]
             embedding = OllamaEmbeddings(model=self.model)
             for chunk in token_split_text:
-                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]).upper() + chunk
+                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]) + chunk
                 emb = embedding.embed_query(chunk)
                 self.syllabus_dao.post_syllabus(class_id, str(emb), chunk)
 
