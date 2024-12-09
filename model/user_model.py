@@ -158,7 +158,6 @@ class UserModel:
             missing_attribute = e.args[0]
             return jsonify(f'Missing required attribute: {missing_attribute}'), 400
         except Exception as e:
-            # Catch any other unexpected errors
             print(f"Unexpected error: {str(e)}")
             return jsonify({"error": "An unexpected error occurred"}), 500
 
@@ -280,7 +279,6 @@ class UserModel:
         @return: A tuple (True, processed_data) if validation is successful,
                 (False, error_message) otherwise.
         """
-        print(data)
         username = data.get("username")
         email = data.get("email")
         password = data.get("password")
@@ -301,7 +299,6 @@ class UserModel:
 
         # Validate email format
         if not UserModel().is_valid_email(email):
-            print(email)
             return False, {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}
 
         # Validate and hash password

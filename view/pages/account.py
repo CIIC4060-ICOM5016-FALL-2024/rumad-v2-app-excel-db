@@ -20,7 +20,9 @@ with col2:
         
         update_button = st.form_submit_button(label="Update Account")
         logout_button = st.form_submit_button(label="Logout")
+       
         nothing_to_update = True
+        
         if update_button:
                 with st.status("update_account") as status:
                     status.update(label="Updating...", state="running", expanded=False)
