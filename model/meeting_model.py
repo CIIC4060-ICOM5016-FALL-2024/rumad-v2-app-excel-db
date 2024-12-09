@@ -9,22 +9,26 @@ class MeetingModel:
         pass
 
     @staticmethod
-    def jsonify_response(response):
+    def jsonify_response(response, mid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
+            return (
+                jsonify(f"The requested meeting with ID {mid} was not found."),
+                404,
+            )  # not found
 
         result = []
         for meet in response:
             result_dict = {
                 "mid": meet[0],
-                "starttime": meet[1],
-                "endtime": meet[2],
-                "cdays": meet[3],
+                "ccode": meet[1],
+                "starttime": meet[2],
+                "endtime": meet[3],
+                "cdays": meet[4],
             }
             result.append(result_dict)
 
@@ -51,7 +55,7 @@ class MeetingModel:
             meeting_attributes = {key: data[key] for key in attributes}
         except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         ccode = meeting_attributes["ccode"]
         starttime = meeting_attributes["starttime"]
@@ -62,9 +66,9 @@ class MeetingModel:
         response = dao.post_meeting(ccode, starttime, endtime, cdays)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return jsonify(f"Could not create meeting for course {ccode}."), 400
 
-        return jsonify(f'Meeting has been created with mid: {response[1]}'), 201
+        return jsonify(f"Meeting has been created with mid: {response[1]}"), 201
 
     def get_meeting_by_id(self, mid):
         """
@@ -74,7 +78,7 @@ class MeetingModel:
         """
         dao = MeetingDAO()
         response = dao.get_meeting_by_mid(int(mid))
-        return self.jsonify_response(response)
+        return self.jsonify_response(response,mid)
 
     @staticmethod
     def put_meeting_by_id(mid, data):
@@ -87,8 +91,20 @@ class MeetingModel:
         dao = MeetingDAO()
         response = dao.put_meeting_by_mid(int(mid), data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Meeting {mid} has been updated'), 200
+            if False in dao.get_meeting_by_mid(int(mid)):
+                return (
+                    jsonify(
+                        f"Could not update meeting with ID {mid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not update meeting with ID {mid}."
+                    ),
+                    400,
+                )
+        return jsonify(f"Meeting {mid} has been updated"), 200
 
     @staticmethod
     def delete_meeting(mid):
@@ -100,5 +116,17 @@ class MeetingModel:
         dao = MeetingDAO()
         response = dao.delete_meeting(int(mid))
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Meeting {mid} has been deleted'), 200
+            if False in dao.get_meeting_by_mid(int(mid)):
+                return (
+                    jsonify(
+                        f"Could not delete meeting with ID {mid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not delete meeting with ID {mid}."
+                    ),
+                    400,
+                )
+        return jsonify(f"Meeting {mid} has been deleted"), 200

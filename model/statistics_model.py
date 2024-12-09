@@ -1,4 +1,3 @@
-
 from dal.section_dao import SectionDAO
 from dal.class_dao import ClassDAO
 from dal.meeting_dao import MeetingDAO
@@ -24,7 +23,7 @@ class StatisticsModel:
         response = dao.get_top_rooms_in_building(building)
         result = []
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify( f"Failed to retrieve room data for building {building}."), 500  # Internal Server Error
         for item in response:
             result_dict = {
                 "rid": item[0],
@@ -46,7 +45,7 @@ class StatisticsModel:
         response = dao.get_top_ratio_rooms(building)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve room ratio data for building {building}."), 500
 
         result = []
 
@@ -73,7 +72,7 @@ class StatisticsModel:
         response = dao.get_top_classes_per_room(rid)
         result = []
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve classes for room ID {rid}."), 500
         for item in response:
             result_dict = {
                 "cid" : item[0],
@@ -101,7 +100,7 @@ class StatisticsModel:
         response = dao.get_top_classes_per_year(year, semester)
         result = []
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve classes for year {year} and semester {semester}"), 500
         for item in response:
             result_dict = {
                 "cid" : item[0],
@@ -128,7 +127,7 @@ class StatisticsModel:
         response = dao.get_top_meetings()
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve top meetings."), 500
 
         result = []
 
@@ -156,7 +155,7 @@ class StatisticsModel:
 
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve top prerequisites."), 500
 
         result = []
 
@@ -178,7 +177,7 @@ class StatisticsModel:
         response = dao.get_least_classes()
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve least offered classes."), 500
 
         result = []
 
@@ -199,12 +198,10 @@ class StatisticsModel:
         response = dao.get_sections_per_year()
         result = []
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to retrieve total sections per year."), 500
 
         for item in response:
             result_dict = { "year" : item[0], "total_sections" : item[1] }
             result.append(result_dict)
 
         return jsonify(result), 200
-
-

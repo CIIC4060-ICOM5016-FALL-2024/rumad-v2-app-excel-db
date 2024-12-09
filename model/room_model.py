@@ -10,7 +10,7 @@ class RoomModel:
         pass
 
     @staticmethod
-    def jsonify_response(response):
+    def jsonify_response(response, rid = None):
         """
         Turns a list of tuples into a JSON response if response has True.
         @param response: A list of tuples or a single tuple
@@ -18,7 +18,10 @@ class RoomModel:
         """
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
+            return (
+                jsonify(f"The requested room with ID {rid} was not found."),
+                404,
+            )  # not found
 
         result = []
 
@@ -55,7 +58,7 @@ class RoomModel:
             room_attributes = {key: data[key] for key in attributes}
         except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         building = room_attributes["building"]
         room_number = room_attributes["room_number"]
@@ -66,9 +69,14 @@ class RoomModel:
         response = dao.post_room(building, room_number, capacity)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return jsonify(f"Could not create room {room_number} in {building}."), 400
 
-        return jsonify(f'Room {room_number} in {building} has been created with rid {response[1]}.'), 201
+        return (
+            jsonify(
+                f"Room {room_number} in {building} has been created with rid {response[1]}."
+            ),
+            201,
+        )
 
     def get_room_by_id(self, rid):
         """
@@ -78,7 +86,7 @@ class RoomModel:
         """
         dao = RoomDAO()
         response = dao.get_room_by_rid(rid)
-        return self.jsonify_response(response)
+        return self.jsonify_response(response,rid)
 
     @staticmethod
     def put_room_by_id(rid, data):
@@ -92,8 +100,21 @@ class RoomModel:
         response = dao.put_room_by_rid(rid, data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Room {rid} has been updated.'), 200
+            if False in dao.get_room_by_rid(int(rid)):
+                return (
+                    jsonify(
+                        f"Could not update room with ID {rid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not update room with ID {rid}."
+                    ),
+                    400,
+                )
+
+        return jsonify(f"Room {rid} has been updated."), 200
 
     @staticmethod
     def delete_room_by_id(rid):
@@ -106,5 +127,17 @@ class RoomModel:
         response = dao.delete_room(rid)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Room {rid} has been deleted.'), 200
+            if False in dao.get_room_by_rid(int(rid)):
+                return (
+                    jsonify(
+                        f"Could not delete room with ID {rid}. ID does not exist."
+                    ),
+                    400,
+                )
+            return (
+                    jsonify(
+                        f"Could not delete room with ID {rid}."
+                    ),
+                    400,
+                )
+        return jsonify(f"Room {rid} has been deleted."), 200
