@@ -1,40 +1,58 @@
 import os
-
+from gtts import gTTS
 import streamlit as st
-
 from chat.chat import SyllabusChatBot
 
+def initialize_session_state():
+    """Initialize session state variables."""
+    if "chats" not in st.session_state:
+        st.session_state.chats = {}  # Dictionary to store chat histories
+    if "active_chat" not in st.session_state:
+        st.session_state.active_chat = None  # Active chat ID
 
-courses = ['CIIC 4998', 'CIIC4998', 'Undergraduate Research ', 'CIIC 3075', 'CIIC3075', 'Foundations of', 'Foundations of Computing ', 'INSO 4151', 'INSO4151', 'Software Engineering', 'Software Engineering Project', 'Software Engineering Project I ', 'INSO 4116', 'INSO4116', 'Software Design ', 'CIIC 3081', 'CIIC3081', 'Computer Architecture', 'Computer Architecture I ', 'CIIC 5017', 'CIIC5017', 'Operating Systems', 'Operating Systems and', 'Operating Systems and Network', 'Operating Systems and Network Administration', 'Operating Systems and Network Administration and', 'Operating Systems and Network Administration and Security ', 'CIIC 5110', 'CIIC5110', 'Bioinformatics Algorithms ', 'CIIC 5140', 'CIIC5140', 'Big Data', 'Big Data Analytics ', 'CIIC 5019', 'CIIC5019', 'High Performance', 'High Performance Computing ', 'CIIC 4030', 'CIIC4030', 'Programming Languages ', 'INSO 4101', 'INSO4101', 'Introduction to', 'Introduction to Software', 'Introduction to Software Engineering ', 'CIIC 5029', 'CIIC5029', 'Compilers Development ', 'CIIC 4025', 'CIIC4025', 'Analysis and', 'Analysis and Design', 'Analysis and Design of', 'Analysis and Design of Algorithms ', 'CIIC 5120', 'CIIC5120', 'Virtual Machines ', 'CIIC 5150', 'CIIC5150', 'Machine Learning', 'Machine Learning Algorithms ', 'INSO 4115', 'INSO4115', 'Software Engineering', 'Software Engineering Requirements ', 'CIIC 5015', 'CIIC5015', 'Artificial Intelligence ', 'INSO 5111', 'INSO5111', 'Introduction to', 'Introduction to Human', 'Introduction to Human Computer', 'Introduction to Human Computer Interaction ', 'CIIC 4070', 'CIIC4070', 'Computer Networks ', 'CIIC 3015', 'CIIC3015', 'Introduction to', 'Introduction to Computer', 'Introduction to Computer Programming', 'Introduction to Computer Programming I ', 'INSO 4995', 'INSO4995', 'CIIC 4082', 'CIIC4082', 'Computer Architecture', 'Computer Architecture II ', 'CIIC 4050', 'CIIC4050', 'Operating Systems ', 'CIIC 4010', 'CIIC4010', 'Advanced Programming ', 'CIIC 5018', 'CIIC5018', 'Cryptography and', 'Cryptography and Network', 'Cryptography and Network Security ', 'CIIC 4151', 'CIIC4151', 'Senior Design', 'Senior Design Project', 'Senior Design Project I ', 'CIIC 5995', 'CIIC5995', 'Selected Topics ', 'CIIC 4020', 'CIIC4020', 'Data Structures ', 'CIIC 4995', 'CIIC4995', 'Engineering Practice', 'Engineering Practice for', 'Engineering Practice for Coop', 'Engineering Practice for Coop Students ', 'CIIC 5045', 'CIIC5045', 'Automata and', 'Automata and Formal', 'Automata and Formal Languages ', 'INSO 5118', 'INSO5118', 'Software Engineering', 'Software Engineering Project', 'Software Engineering Project Management ', 'INSO 4998', 'INSO4998', 'Undergraduate Research', 'Undergraduate Research in', 'Undergraduate Research in Software', 'Undergraduate Research in Software Engineering ', 'CIIC 4060', 'CIIC4060', 'Database Systems ', 'INSO 4117', 'INSO4117', 'Software Reliability', 'Software Reliability Testing ', 'CIIC 5130', 'CIIC5130', 'Cloud Computing', 'Cloud Computing Infrastructures ']
+def create_chat():
+    """Create a new chat and add it to the session state."""
+    chat_id = f"Chat {len(st.session_state.chats) + 1}"
+    st.session_state.chats[chat_id] = []  # Initialize with an empty chat history
+    st.session_state.active_chat = chat_id  # Set the newly created chat as active
 
-matches = []
-def chatbot():
-    global matches
-    # Function to display the chat history and add new messages
+def delete_chat(chat_id):
+    """Delete a chat and remove it from the session state."""
+    if chat_id in st.session_state.chats:
+        del st.session_state.chats[chat_id]
+        # Set active chat to None or to another available chat
+        st.session_state.active_chat = next(iter(st.session_state.chats), None)
+
+def chatbot(chat_id):
+    """Chatbot interaction for a specific chat."""
+    chat_history = st.session_state.chats[chat_id]
+
     def display_chat():
-        global matches
-        for message in st.session_state.messages:
+        """Display the chat history."""
+        for message in chat_history:
             with st.chat_message(message["role"]):
                 st.write(message["content"])
-                if message['role'] == 'user':
-                    matches.append([course for course in courses if course.strip() in message['content']])
-
-    st.title("Ask Questions About Your Syllabus")
-    with st.chat_message("assistant"):
-        st.write("Ask me a question about your syllabus!")
-
-    if "messages" not in st.session_state:
-        st.session_state.messages = []
-
-    chatbot = SyllabusChatBot(st.session_state.messages, matches)
-
+                
+    with st.sidebar:
+        st.subheader("Chat Settings")
+        use_history = st.toggle("Enable History")
+        local = st.toggle("Run Ollama locally")
+        temp = st.slider("Chat temp", 0.00, 1.00, 0.45, 0.05)
+        
+    display_chat()
+    
     if prompt := st.chat_input("Ask a question"):
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        display_chat()
-        chatbot.courses = matches
+        chat_history.append({"role": "user", "content": prompt})
+        with st.chat_message("user"):
+            st.write(prompt)
         with st.chat_message("assistant"):
             typing_placeholder = st.empty()
             typing_placeholder.write("Bot is typing...")
-        answer = chatbot.answer_question(prompt)
-        typing_placeholder.write(answer)
-        st.session_state.messages.append({"role": "assistant", "content": answer})
+            chatbot = SyllabusChatBot(temp, use_history, chat_history)
+            answer = chatbot.answer_question(prompt, local)
+            typing_placeholder.write(answer)
+            chat_history.append({"role": "assistant", "content": answer})
+            audio_file_path = f"{chat_id}_audio_{len(chat_history)}.mp3"
+            tts = gTTS(text=answer, lang="en")
+            tts.save(audio_file_path)
+            st.audio(audio_file_path, format="audio/mp3")

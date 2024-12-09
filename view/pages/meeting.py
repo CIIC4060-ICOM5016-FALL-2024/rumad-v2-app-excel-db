@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
 import requests
+import altair as alt
+from datetime import datetime
 
 general_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db'
 
@@ -55,6 +57,13 @@ st.title('Meeting Statistics :calendar:')
 tabs = st.tabs(["Global"])
 global_tab = tabs[0]  # Access the first tab
 
+with st.sidebar:
+    st.header("Graph Settings")
+    ascending = st.toggle("Ascending")
+    order = "descending"
+    if ascending:
+        order = "ascending"
+
 # Work within the global tab
 with global_tab:
     sub_tabs = st.tabs(["Top 5 meetings with the most sections"])
@@ -63,6 +72,26 @@ with global_tab:
         stat_call = general_api + f'/most/meeting'
         meetings_w_most_sections_pd = post_data(stat_call)
         if meetings_w_most_sections_pd is not None:
-            st.bar_chart(meetings_w_most_sections_pd, x="mid", y="frequency", y_label="Sections", color="mid")
+            meetings_w_most_sections_pd['mid'] = meetings_w_most_sections_pd['cdays'] + ' -' + meetings_w_most_sections_pd['starttime'].apply(lambda x: x[16:-7] if isinstance(x, str) else '')
+            bar_chart = (
+                alt.Chart(meetings_w_most_sections_pd)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "mid",axis=alt.Axis(labelAngle=0),
+                        title="Meeting",
+                        type="nominal",
+                        sort=alt.EncodingSortField(field="frequency", order=order),
+                    ),
+                    y=alt.Y("frequency", title="Sections Amount"),
+                )
+                .properties(
+                    title="Top 5 Meeting with the Most Sections",
+                    width=600,
+                    height=400,
+                )
+            )
+            st.altair_chart(bar_chart)
+            st.write(post_data(stat_call))
         else:
             display_error("No meetings found")

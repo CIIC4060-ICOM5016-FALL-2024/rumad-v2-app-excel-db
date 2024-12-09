@@ -45,7 +45,7 @@ entities = {
 
 
 st.title(f'Welcome, {st.session_state.username}!')
-st.subheader('Dashboard')
+st.header('Dashboard')
 
 # Display data in a 3x3 grid
 cols_per_row = 3
@@ -56,7 +56,7 @@ for i in range(0, len(entity_list), cols_per_row):
     row = st.columns(cols_per_row)
     for col, (entity, data) in zip(row, entity_list[i:i + cols_per_row]):
         with col.container(border=True):
-            st.subheader(entity)
+            st.header(entity)
             st.title(data.shape[0] if data is not None else "No Data")
 
 # Mapping dictionary for display names (without emojis)
@@ -81,6 +81,6 @@ if selected_entity:
     data = entities[selected_entity]
     if data is not None and not data.empty:
         reordered_data = data[list(data.columns)]  # Preserve the current order
-        st.dataframe(reordered_data) 
+        st.dataframe(reordered_data)  # Display the reordered dataframe
     else:
         st.warning("No data available for the selected entity.")

@@ -173,8 +173,7 @@ class SyllabusModel:
         @return: JSON and HTTP response code
         """
         embedding = data.get("embedding")
-        course = data.get("course")
-        response = self.syllabus_dao.get_from_embedding(embedding, course)
+        response = self.syllabus_dao.get_from_embedding(embedding)
         return self.jsonify_response(response)
 
     def put_syllabus_by_id(self, chunk_id, data):
@@ -199,3 +198,7 @@ class SyllabusModel:
         if False in response:
             return jsonify(f"Failed to delete syllabus record with ID {chunk_id}."), 500
         return jsonify(f"Syllabus {chunk_id} has been deleted"), 200
+
+if __name__ == '__main__':
+    s = SyllabusModel()
+    s.load_syllabuses()
