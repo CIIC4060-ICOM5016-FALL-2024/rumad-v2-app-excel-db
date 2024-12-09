@@ -159,7 +159,7 @@ with local_tab:
                             )
                             ax.axis('equal')  # Equal aspect ensures a circular pie chart.
                             st.pyplot(fig)
-                            st.write(rooms_w_most_capacity_pd)
+                    st.write(rooms_w_most_capacity_pd)
                 else:
                     display_error("No rooms found")
             else:
