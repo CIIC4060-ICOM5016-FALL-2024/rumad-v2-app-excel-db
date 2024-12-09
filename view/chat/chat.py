@@ -129,13 +129,14 @@ class SyllabusChatBot:
             for entry in self.conversation_history:
                 history += f"{entry['content']} \n"
         
+            history_embedding = self.get_embedding(history)
+            if not history_embedding:
+                return "I couldn't retrieve the embedding to answer your question"
+            
             history_context = self.get_context(history_embedding)
             if not history_context:
                 return "I couldn't find relevant information to answer your question"
 
-            history_embedding = self.get_embedding(history)
-            if not history_embedding:
-                return "I couldn't retrieve the embedding to answer your question"
         
         question_embedding = self.get_embedding(question)
 
