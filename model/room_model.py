@@ -18,7 +18,10 @@ class RoomModel:
         """
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404 # not found
+            return (
+                jsonify(f"The requested room with ID {response[1]} was not found."),
+                404,
+            )  # not found
 
         result = []
 
@@ -55,7 +58,7 @@ class RoomModel:
             room_attributes = {key: data[key] for key in attributes}
         except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         building = room_attributes["building"]
         room_number = room_attributes["room_number"]
@@ -66,9 +69,14 @@ class RoomModel:
         response = dao.post_room(building, room_number, capacity)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return jsonify(f"Could not create room {room_number} in {building}."), 400
 
-        return jsonify(f'Room {room_number} in {building} has been created with rid {response[1]}.'), 201
+        return (
+            jsonify(
+                f"Room {room_number} in {building} has been created with rid {response[1]}."
+            ),
+            201,
+        )
 
     def get_room_by_id(self, rid):
         """
@@ -92,8 +100,8 @@ class RoomModel:
         response = dao.put_room_by_rid(rid, data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Room {rid} has been updated.'), 200
+            return jsonify(f"Failed to update room with ID {rid}."), 400
+        return jsonify(f"Room {rid} has been updated."), 200
 
     @staticmethod
     def delete_room_by_id(rid):
@@ -106,5 +114,5 @@ class RoomModel:
         response = dao.delete_room(rid)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Room {rid} has been deleted.'), 200
+            return jsonify(f"Could not delete room with ID {rid}."), 400
+        return jsonify(f"Room {rid} has been deleted."), 200

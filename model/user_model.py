@@ -20,7 +20,10 @@ class UserModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404  # not found
+            return (
+                jsonify(f"The requested user with ID {response[1]} was not found."),
+                404,
+            )  # not found
 
         result = []
         for user in response:
@@ -28,7 +31,7 @@ class UserModel:
                 "uid": user[0],
                 "username": user[1],
                 "email": user[2],
-                "password": user[3]
+                "password": user[3],
             }
             result.append(result_dict)
         return jsonify(result), 200
@@ -40,7 +43,11 @@ class UserModel:
         @param password: password
         @return: True if password is valid, False otherwise
         """
-        if len(password) < 8 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password) or not re.search(r'\d', password):
+        if (
+            len(password) < 8
+            or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password)
+            or not re.search(r"\d", password)
+        ):
             return False
         return True
 
@@ -51,7 +58,7 @@ class UserModel:
         @param email: email to check
         @return: True if email is valid, False otherwise
         """
-        if not re.match(r'^[a-z]+\.[a-z]+[0-9]*@upr\.edu$', email):
+        if not re.match(r"^[a-z]+\.[a-z]+[0-9]*@upr\.edu$", email):
             return False
         return True
 
@@ -63,27 +70,33 @@ class UserModel:
         """
         try:
             user_attributes = {key: data[key] for key in attributes}
-        except KeyError as e:  #bad request
+        except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         username = user_attributes["username"]
         email = user_attributes["email"]
         password = user_attributes["password"]
 
         if not self.is_valid_email(email):
-            return {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}, 400
+            return {
+                "error": "Invalid email format. Must follow: firstname.lastname@upr.edu"
+            }, 400
 
         if not self.is_valid_password(password):
-            return {"error": "Password does not meet the requirements:\n"
-                    "- At least 8 characters in length\n"
-                    "- Must contain at least 3 of the following 4 types of characters:\n"
-                    "- Lowercase letters (a-z)\n"
-                    "- Uppercase letters (A-Z)\n"
-                    "- Numbers (i.e. 0-9)\n"
-                    "- Special characters (e.g. !@#$%^&*)"}, 400
+            return {
+                "error": "Password does not meet the requirements:\n"
+                "- At least 8 characters in length\n"
+                "- Must contain at least 3 of the following 4 types of characters:\n"
+                "- Lowercase letters (a-z)\n"
+                "- Uppercase letters (A-Z)\n"
+                "- Numbers (i.e. 0-9)\n"
+                "- Special characters (e.g. !@#$%^&*)"
+            }, 400
 
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        hashed_password = bcrypt.hashpw(
+            password.encode("utf-8"), bcrypt.gensalt()
+        ).decode("utf-8")
 
         dao = UserDAO()
 
@@ -92,7 +105,7 @@ class UserModel:
         if False in response:
             return {"error": response[2]}, 400
 
-        return jsonify(f'User (uid: {response[1]}) successfully created'), 201
+        return jsonify(f"User (uid: {response[1]}) successfully created"), 201
 
     def get_all_user(self):
         """
@@ -144,8 +157,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.put_user_by_id(uid, data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with uid {uid} successfully updated'), 200
+            return jsonify(f"Unable to update user with ID {uid}."), 400
+        return jsonify(f"User with uid {uid} successfully updated"), 200
 
     @staticmethod
     def put_user_by_username(username: str, data: dict):
@@ -158,8 +171,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.put_user_by_username(username, data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with username ({username}) successfully updated'), 200
+            return jsonify(f"Unable to update user with username {username}"), 400
+        return jsonify(f"User with username ({username}) successfully updated"), 200
 
     @staticmethod
     def put_user_by_email(email: str, data: dict):
@@ -172,8 +185,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.put_user_by_email(email, data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Section with email ({email}) successfully updated'), 200
+            return jsonify(f"Unable to update user with email {email}"), 400
+        return jsonify(f"Section with email ({email}) successfully updated"), 200
 
     @staticmethod
     def delete_user_by_id(uid: int):
@@ -185,8 +198,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_id(uid)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with uid {uid} successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with uid: {uid}."), 400
+        return jsonify(f"User with uid {uid} successfully deleted"), 200
 
     @staticmethod
     def delete_user_by_username(username: str):
@@ -198,8 +211,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_username(username)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with username ({username}) successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with username: {username}."), 400
+        return jsonify(f"User with username ({username}) successfully deleted"), 200
 
     @staticmethod
     def delete_user_by_email(email: str):
@@ -211,8 +224,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_email(email)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with email ({email}) successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with email: {email}."), 400
+        return jsonify(f"User with email ({email}) successfully deleted"), 200
 
     @staticmethod
     def validate_user_login(data: dict):
@@ -222,36 +235,38 @@ class UserModel:
         @return: JSON and HTTP response code
         """
         try:
-            username = data['username']
-            password = data['password']
+            username = data["username"]
+            password = data["password"]
         except KeyError:
             return {"error": "Missing user or password"}, 400
 
         dao = UserDAO()
 
         try:
-            response = dao.get_user_by_username(username) # Just in case
+            response = dao.get_user_by_username(username)  # Just in case
         except psycopg2.Error as e:
             return {"error": str(e)}, 500
 
         if False in response:
-            return {"error" : "Can't find user"}, 400
+            return {"error": "Can't find user"}, 400
 
         hashed_password = response[0][3]
 
         # Validate password
         try:
-            if bcrypt.checkpw(password.encode('utf-8'), hashed_password.encode('utf-8')):
+            if bcrypt.checkpw(
+                password.encode("utf-8"), hashed_password.encode("utf-8")
+            ):
                 user_data = {
                     "uid": response[0][0],
                     "username": response[0][1],
-                    "email": response[0][2]
+                    "email": response[0][2],
                 }
 
                 return user_data, 200
         except ValueError as e:
             return {"error": str(e)}, 400
 
-        return {"error": "Wrong password"}, 401
-
-
+        return {
+            "error": "The password provided does not match our records. Please try again."
+        }, 401

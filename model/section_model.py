@@ -3,6 +3,7 @@ from flask import jsonify
 
 attributes = ["roomid", "cid", "mid", "semester", "years", "capacity"]
 
+
 class SectionModel:
 
     def __init__(self):
@@ -16,7 +17,10 @@ class SectionModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404  # Not found
+            return (
+                jsonify(f"The requested section with ID {response[1]} was not found."),
+                404,
+            )  # Not found
 
         result = []
         for section in response:
@@ -27,7 +31,7 @@ class SectionModel:
                 "mid": section[3],
                 "semester": section[4],
                 "years": section[5],
-                "capacity": section[6]
+                "capacity": section[6],
             }
             result.append(result_dict)
         return jsonify(result), 200
@@ -52,9 +56,9 @@ class SectionModel:
         # Check that all attributes are present
         try:
             section_attributes = {key: data[key] for key in attributes}
-        except KeyError as e: # bad request
+        except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         dao = SectionDAO()
 
@@ -68,8 +72,8 @@ class SectionModel:
         response = dao.post_section(roomid, cid, mid, semester, years, capacity)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Section (sid: {response[1]}) successfully created'), 201
+            return jsonify(f"Could not create section (sid: {response[1]})."), 400
+        return jsonify(f"Section (sid: {response[1]}) successfully created"), 201
 
     def get_section_by_id(self, sid):
         """
@@ -93,8 +97,8 @@ class SectionModel:
         response = dao.put_section_by_sid(int(sid), data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Section with sid {sid} successfully updated'), 200
+            return jsonify(f"Failed to update section with ID {sid}."), 400
+        return jsonify(f"Section with sid {sid} successfully updated"), 200
 
     @staticmethod
     def delete_section(sid):
@@ -107,5 +111,5 @@ class SectionModel:
         response = dao.delete_section(int(sid))
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Section with sid {sid} deleted: {response[1]}'), 200
+            return jsonify(f"Could not delete section with ID {sid}."), 400
+        return jsonify(f"Section with sid {sid} deleted: {response[1]}"), 200

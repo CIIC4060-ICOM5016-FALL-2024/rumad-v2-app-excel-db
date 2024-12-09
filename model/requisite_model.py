@@ -17,7 +17,12 @@ class RequisiteModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404 # nothing found
+            return (
+                jsonify(
+                    {f"The requested requisite with ID {response[1]} was not found."}
+                ),
+                404,
+            )
 
         result = []
 
@@ -43,7 +48,7 @@ class RequisiteModel:
             req_attributes = {key: data[key] for key in attributes}
         except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         classid = req_attributes["classid"]
         reqid = req_attributes["reqid"]
@@ -54,9 +59,19 @@ class RequisiteModel:
         response = dao.post_requisite(classid, reqid, prereq)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return (
+                jsonify(
+                    f"Could not create requisite ({classid},{reqid}). Reason: {response[1]} - {response[2]}"
+                ),
+                400,
+            )
 
-        return jsonify(f'Requisite ({classid},{reqid}) created successfully'), 201
+        return (
+            jsonify(
+                f"Requisite (class id:{classid},req id:{reqid}) created successfully"
+            ),
+            201,
+        )
 
     def get_all_requisites(self):
         """
@@ -91,9 +106,19 @@ class RequisiteModel:
         response = dao.put_requisite_by_classid_reqid(classid, reqid, data)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return (
+                jsonify(
+                    f"No requisite found with class ID {classid} and req ID {reqid}"
+                ),
+                400,
+            )
 
-        return jsonify(f'Requisite ({classid},{reqid}) updated successfully'), 200
+        return (
+            jsonify(
+                f"Requisite (class id:{classid},req id:{reqid}) updated successfully"
+            ),
+            200,
+        )
 
     @staticmethod
     def delete_requisite(classid, reqid):
@@ -107,6 +132,16 @@ class RequisiteModel:
         response = dao.delete_requisite(int(classid), int(reqid))
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
+            return (
+                jsonify(
+                    f"Could not delete requisite ({classid},{reqid}). Reason: {response[1]} - {response[2]}."
+                ),
+                400,
+            )
 
-        return jsonify(f'Requisite ({classid},{reqid}) deleted successfully'), 200
+        return (
+            jsonify(
+                f"Requisite (class id:{classid},req id:{reqid}) deleted successfully"
+            ),
+            200,
+        )
