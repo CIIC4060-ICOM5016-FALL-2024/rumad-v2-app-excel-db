@@ -11,8 +11,10 @@ if st.session_state.logged_in:
     sections_page = st.Page("pages/section.py", title="Sections")
     meeting_page = st.Page("pages/meeting.py", title="Meetings")
     room_page = st.Page("pages/room.py", title="Rooms")
+    chat_page = st.Page("pages/chat.py", title="RUMAD Chat")
     pages = {"Home": [home_page, account_page],
-             "Statistics": [class_page, sections_page, meeting_page, room_page]}
+             "Statistics": [class_page, sections_page, meeting_page, room_page],
+             "Chatbot": [chat_page]}
 else:
     login_page = st.Page("pages/login.py", title="Login")
     register_page = st.Page("pages/register.py", title="Register")
