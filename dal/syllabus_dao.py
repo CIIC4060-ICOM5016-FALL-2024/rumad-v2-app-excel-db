@@ -48,7 +48,7 @@ class SyllabusDAO(DAO):
         query = """SELECT chunkid, courseid, embedding_text <-> %s as distance, chunk 
                     FROM syllabus 
                     ORDER BY distance 
-                    LIMIT 3"""
+                    LIMIT 5"""
         values = [emb, ]
         return self.read(query, values)
 
