@@ -77,6 +77,13 @@ st.title('Room Statistics :school:')
 tabs = st.tabs(["Local"])
 local_tab = tabs[0]
 
+with st.sidebar:
+    st.header("Graph Settings")
+    ascending = st.toggle("Ascending")
+    order = "descending"
+    if ascending:
+        order = "ascending"
+
 with local_tab:
     stat_a, stat_b = st.tabs(
         ["Top 3 rooms per building with the most capacity", "Top 3 room with the most student-to-capacity ratio"])
@@ -89,15 +96,16 @@ with local_tab:
                 stat_call = room_api + f'/{selected_building}/capacity'
                 rooms_w_most_capacity_pd = post_data(stat_call)
                 if rooms_w_most_capacity_pd is not None:
+                    rooms_w_most_capacity_pd['rid'] = rooms_w_most_capacity_pd["building"] + "-" + rooms_w_most_capacity_pd["room_number"] 
                     bar_chart = (
                         alt.Chart(rooms_w_most_capacity_pd)
                         .mark_bar()
                         .encode(
                             x=alt.X(
                                 "rid",axis=alt.Axis(labelAngle=0),
-                                title="Room Id",
+                                title="Class Room",
                                 type="nominal",
-                                sort=alt.EncodingSortField(field="capacity", order="ascending"),
+                                sort=alt.EncodingSortField(field="capacity", order=order),
                             ),
                             y=alt.Y("capacity", title="Capacity")
                         )
@@ -108,7 +116,7 @@ with local_tab:
                         )
                     )
                     st.altair_chart(bar_chart, use_container_width=True)
-                    st.write(rooms_w_most_capacity_pd)
+                    st.write(post_data(stat_call))
                 else:
                     display_error("No rooms found")
             else:
