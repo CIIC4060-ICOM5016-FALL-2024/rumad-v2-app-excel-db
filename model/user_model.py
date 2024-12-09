@@ -55,7 +55,8 @@ class UserModel:
             return False
         return True
 
-    def post_user(self, data):
+    @staticmethod
+    def post_user(data):
         """
         Creates a new user tuple in the user relation database.
         @param data: list with user attributes to be added
@@ -63,34 +64,24 @@ class UserModel:
         """
         try:
             user_attributes = {key: data[key] for key in attributes}
-        except KeyError as e:  #bad request
+        except KeyError as e:
             missing_attribute = e.args[0]
             return jsonify(f'Missing required attribute: {missing_attribute}'), 400
 
-        username = user_attributes["username"]
-        email = user_attributes["email"]
-        password = user_attributes["password"]
-
-        if not self.is_valid_email(email):
-            return {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}, 400
-
-        if not self.is_valid_password(password):
-            return {"error": "Password does not meet the requirements:\n"
-                    "- At least 8 characters in length\n"
-                    "- Must contain at least 3 of the following 4 types of characters:\n"
-                    "- Lowercase letters (a-z)\n"
-                    "- Uppercase letters (A-Z)\n"
-                    "- Numbers (i.e. 0-9)\n"
-                    "- Special characters (e.g. !@#$%^&*)"}, 400
-
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        valid, processed_data = UserModel.validate_and_process_user_data(user_attributes)
+        if not valid:
+            return jsonify(processed_data), 400
 
         dao = UserDAO()
-
-        response = dao.post_user(username, email, hashed_password)
+        try:
+            response = dao.post_user(processed_data["username"], processed_data["email"], processed_data["password"])
+        except psycopg2.IntegrityError:  # Catch duplicate key constraint violations
+            return jsonify({"error": "Invalid username or password"}), 400
+        except Exception as e:
+            return jsonify({"error": "An unexpected error occurred"}), 500
 
         if False in response:
-            return {"error": response[2]}, 400
+            return jsonify({"error": response[2]}), 400
 
         return jsonify(f'User (uid: {response[1]}) successfully created'), 201
 
@@ -141,12 +132,38 @@ class UserModel:
         @param data: attributes to be updated
         @return: JSON and HTTP response code
         """
-        dao = UserDAO()
-        response = dao.put_user_by_id(uid, data)
-        if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with uid {uid} successfully updated'), 200
+        try:
+            # Ensure all required attributes are present in the data
+            user_attributes = {key: data[key] for key in data.keys()}
 
+            # Validate and process user data
+            valid, processed_data = UserModel.validate_and_process_user_data(user_attributes, exclude_uid=uid)
+            if not valid:
+                return jsonify(processed_data), 400
+
+            dao = UserDAO()
+            try:
+                # Update user in the database
+                response = dao.put_user_by_id(uid, processed_data)
+            except psycopg2.IntegrityError:  # Handle duplicate key violations
+                return jsonify({"error": "Username or email is already taken"}), 400
+            except Exception as e:
+                return jsonify({"error": "An unexpected error occurred"}), 500
+
+            if False in response:
+                return jsonify({"error": response[2]}), 400
+
+            return jsonify(f'User with uid {uid} successfully updated'), 200
+
+        except KeyError as e:
+            missing_attribute = e.args[0]
+            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+        except Exception as e:
+            # Catch any other unexpected errors
+            print(f"Unexpected error: {str(e)}")
+            return jsonify({"error": "An unexpected error occurred"}), 500
+
+    
     @staticmethod
     def put_user_by_username(username: str, data: dict):
         """
@@ -254,4 +271,50 @@ class UserModel:
 
         return {"error": "Wrong password"}, 401
 
+    @staticmethod
+    def validate_and_process_user_data(data, exclude_uid=None):
+        """
+        Validates user data (username, email, password), checks if username and email are unique,
+        and hashes the password if provided.
+        @param data: dictionary containing user attributes
+        @param exclude_uid: user ID to exclude from uniqueness checks (used for updates)
+        @return: A tuple (True, processed_data) if validation is successful,
+                (False, error_message) otherwise.
+        """
+        username = data.get("username")
+        email = data.get("email")
+        password = data.get("password")
+
+        dao = UserDAO()
+
+        # Check if username already exists
+        if username:
+            existing_user = dao.get_user_by_username(username)
+            if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
+                return False, {"error": f"Username is already taken"}
+
+        # Check if email already exists
+        if email:
+            existing_user = dao.get_user_by_email(email)
+            if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
+                return False, {"error": f"Email is already registered"}
+
+        # Validate email format
+        if not UserModel.is_valid_email(email):
+            return False, {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}
+
+        # Validate and hash password
+        if password:
+            if not UserModel.is_valid_password(password):
+                return False, {"error": "Password does not meet the requirements:\n"
+                                        "- At least 8 characters in length\n"
+                                        "- Must contain at least 3 of the following 4 types of characters:\n"
+                                        "- Lowercase letters (a-z)\n"
+                                        "- Uppercase letters (A-Z)\n"
+                                        "- Numbers (i.e. 0-9)\n"
+                                        "- Special characters (e.g. !@#$%^&*)"}
+            hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+            data["password"] = hashed_password
+
+        return True, data
 
