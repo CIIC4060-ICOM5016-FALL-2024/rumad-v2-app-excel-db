@@ -288,13 +288,13 @@ class UserModel:
         # Check if username already exists
         if username:
             existing_user = dao.get_user_by_username(username)
-            if False in existing_user:
+            if not False in existing_user:
                 return False, {"error": f"Username is already taken"}
 
         # Check if email already exists
         if email:
             existing_user = dao.get_user_by_email(email)
-            if False in  existing_user:
+            if not False in  existing_user:
                 return False, {"error": f"Email is already registered"}
 
         # Validate email format
