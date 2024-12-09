@@ -97,7 +97,7 @@ class SectionModel:
         response = dao.put_section_by_sid(int(sid), data)
 
         if False in response:
-            if False in dao.get_class_by_cid(int(sid)):
+            if False in dao.get_section_by_sid(int(sid)):
                 return (
                     jsonify(
                         f"Could not update section with ID {sid}. ID does not exist."
@@ -126,7 +126,7 @@ class SectionModel:
         response = dao.delete_section(int(sid))
 
         if False in response:
-            if False in dao.get_class_by_cid(int(sid)):
+            if False in dao.get_section_by_sid(int(sid)):
                 return (
                     jsonify(
                         f"Could not delete section with ID {sid}. ID does not exist."

@@ -19,7 +19,7 @@ class RequisiteModel:
         if False in response:
             return (
                 jsonify(
-                    {f"The requested requisite with ID {reqid} with class ID {classid} was not found."}
+                    {f"Error":"The requested requisite with ID {reqid} with class ID {classid} was not found."}
                 ),
                 404,
             )
@@ -91,7 +91,7 @@ class RequisiteModel:
         """
         dao = RequisiteDAO()
         response = dao.get_requisite_by_reqid(int(classid), int(reqid))
-        return self.jsonify_response(response,classid,reqid)
+        return self.jsonify_response(response, classid, reqid)
 
     @staticmethod
     def put_requisite_by_classid_reqid(classid, reqid, data):
@@ -142,13 +142,13 @@ class RequisiteModel:
             if False in dao.get_requisite_by_reqid(int(classid),int(reqid)):
                 return (
                     jsonify(
-                        f"Could not delete requiste with ID {reqid} with class ID{classid}. ID does not exist."
+                        f"Could not delete requiste with ID {reqid} with class ID {classid}. ID does not exist."
                     ),
                     400,
                 )
             return (
                     jsonify(
-                        f"Could not delete requiste with ID {reqid} with class ID{classid}."
+                        f"Could not delete requiste with ID {reqid} with class ID {classid}."
                     ),
                     400,
                 )
