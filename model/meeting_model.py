@@ -22,9 +22,10 @@ class MeetingModel:
         for meet in response:
             result_dict = {
                 "mid": meet[0],
-                "starttime": meet[1],
-                "endtime": meet[2],
-                "cdays": meet[3],
+                "ccode": meet[1],
+                "starttime": meet[2],
+                "endtime": meet[3],
+                "cdays": meet[4],
             }
             result.append(result_dict)
 

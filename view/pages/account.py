@@ -4,7 +4,7 @@ from aiohttp import payload
 
 user_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user'
 
-st.subheader("Account Details")
+st.header("Account Details")
 
 col1, col2 = st.columns(2)
 

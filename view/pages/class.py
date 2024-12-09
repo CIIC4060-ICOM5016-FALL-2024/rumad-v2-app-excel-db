@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import altair as alt
 
 room_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/room'
 general_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db'
@@ -55,6 +56,12 @@ st.title('Class Statistics :books:')
 
 local_tab, global_tab = st.tabs(["Local", "Global"])
 
+with st.sidebar:
+    st.header("Graph Settings")
+    ascending = st.toggle("Ascending")
+    order = "descending"
+    if ascending:
+        order = "ascending"
 
 with local_tab:
     stat_c, stat_d = st.tabs(["Top 3 classes that were taught the most per room",
@@ -77,7 +84,27 @@ with local_tab:
         stats_call = room_api + f'/{selected_rid}/classes'
         per_room_pd = post_data(stats_call)
         if per_room_pd is not None:
-            st.bar_chart(per_room_pd, x="cdesc", y="amount", color="cdesc", horizontal=True)
+            per_room_pd["cdesc"] = per_room_pd["cname"] + per_room_pd["ccode"]
+            bar_chart = (
+                alt.Chart(per_room_pd)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "cdesc",axis=alt.Axis(labelAngle=0),
+                        title="Class Description",
+                        sort=alt.EncodingSortField(field="amount", order=order),
+                    ),
+                    y=alt.Y("amount:Q", title="Amount"),
+                    color=alt.Color("cdesc:N", title="Class Description"),
+                )
+                .properties(
+                    title="Bar Chart by Class Description",
+                    width=600,
+                    height=400,
+                )
+            )
+            st.altair_chart(bar_chart, use_container_width=True)
+            st.write(post_data(stats_call))
         else:
             display_error("Couldn't find classes for that room")
 
@@ -102,7 +129,27 @@ with local_tab:
             per_term_per_year_pd = post_data(stats_call)
 
             if per_term_per_year_pd is not None:
-                st.bar_chart(per_term_per_year_pd, x="cdesc", y="section_amount", color="cdesc", horizontal=True)
+                per_term_per_year_pd["cdesc"] = per_term_per_year_pd["cname"] + per_term_per_year_pd["ccode"]
+                bar_chart = (
+                    alt.Chart(per_term_per_year_pd)
+                    .mark_bar()
+                    .encode(
+                        x=alt.X(
+                            "cdesc", axis=alt.Axis(labelAngle=0),
+                            title="Class Description",
+                            sort=alt.EncodingSortField(field="section_amount", order=order),
+                        ),
+                        y=alt.Y("section_amount", title="Amount"),
+                        color=alt.Color("cdesc", title="Class Description"),
+                    )
+                    .properties(
+                        title="Bar Chart by Class Description",
+                        width=600,
+                        height=400,
+                    )
+                )
+                st.altair_chart(bar_chart, use_container_width=True)
+                st.write(post_data(stats_call))
             else:
                 display_error("Couldn't find classes for that term")
 
@@ -113,7 +160,27 @@ with global_tab:
         stat_call = general_api + f'/most/prerequisite'
         most_prerequisite_pd = post_data(stat_call)
         if most_prerequisite_pd is not None:
-            st.bar_chart(most_prerequisite_pd, x="cdesc", y="frequency", color="cdesc", horizontal=True)
+            most_prerequisite_pd["cdesc"] = most_prerequisite_pd["cname"] + most_prerequisite_pd["ccode"]
+            bar_chart = (
+                alt.Chart(most_prerequisite_pd)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "cdesc", axis=alt.Axis(labelAngle=0),
+                        title="Class Description",
+                        sort=alt.EncodingSortField(field="frequency", order=order),
+                    ),
+                    y=alt.Y("frequency", title="Amount"),
+                    color=alt.Color("cdesc", title="Class Description"),
+                )
+                .properties(
+                    title="Bar Chart by Class Description",
+                    width=600,
+                    height=400,
+                )
+            )
+            st.altair_chart(bar_chart, use_container_width=True)
+            st.write(post_data(stat_call))
         else:
             display_error("Couldn't find classes with prerequisites")
 
@@ -121,7 +188,27 @@ with global_tab:
         stat_call = general_api + f'/least/classes'
         least_pd = post_data(stat_call)
         if least_pd is not None:
-            st.bar_chart(least_pd, x="cdesc", y="frequency", color="cdesc", horizontal=True)
+            least_pd["cdesc"] = least_pd["cname"] + least_pd["ccode"]
+            bar_chart = (
+                alt.Chart(least_pd)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "cdesc", axis=alt.Axis(labelAngle=0),
+                        title="Class Description",
+                        sort=alt.EncodingSortField(field="frequency", order=order),
+                    ),
+                    y=alt.Y("frequency", title="Amount"),
+                    color=alt.Color("cdesc", title="Class Description"),
+                )
+                .properties(
+                    title="Bar Chart by Class Description",
+                    width=600,
+                    height=400,
+                )
+            )
+            st.altair_chart(bar_chart, use_container_width=True)
+            st.write(least_pd)
         else:
             display_error("Couldn't find any classes")
 

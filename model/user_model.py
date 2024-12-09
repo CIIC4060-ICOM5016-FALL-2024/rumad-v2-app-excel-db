@@ -1,5 +1,4 @@
 import psycopg2
-
 from dal.user_dao import UserDAO
 import re
 import bcrypt
@@ -101,7 +100,16 @@ class UserModel:
         """
         dao = UserDAO()
         response = dao.get_all_user()
-        return jsonify(response), 200
+        result = []
+        for user in response:
+            resultdict = {}
+            resultdict['uid'] = user[0]
+            resultdict['username'] = user[1]
+            resultdict['email'] = user[2]
+            resultdict['password'] = user[3]
+            result.append(resultdict)
+
+        return jsonify(result), 200
 
     def get_user_by_id(self, uid: int):
         """
