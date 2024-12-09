@@ -20,25 +20,30 @@ with col2:
         
         update_button = st.form_submit_button(label="Update Account")
         logout_button = st.form_submit_button(label="Logout")
-        
+        nothing_to_update = True
         if update_button:
                 with st.status("update_account") as status:
                     status.update(label="Updating...", state="running", expanded=False)
                     body = {}
                     if username != st.session_state.username:
                         body['username'] = username
+                        nothing_to_update = False
                     if email != st.session_state.email:
                         body['email'] = email
-                    response = requests.put(user_api + f"/{st.session_state.uid}", json=body)
-                    if response.status_code == 200:
-                        if username:
-                            st.session_state.username = username
-                        if email:
-                            st.session_state.email = email
-                        status.update(label="Account Updated", state="complete", expanded=False)
+                        nothing_to_update = False
+                    if nothing_to_update:
+                        status.update(label="Nothing to Update", state="error", expanded=False)
                     else:
-                        status.update(label="Couldn't update account", state="error", expanded=True)
-                        st.write(response.json()["error"])
+                        response = requests.put(user_api + f"/{st.session_state.uid}", json=body)
+                        if response.status_code == 200:
+                            if username:
+                                st.session_state.username = username
+                            if email:
+                                st.session_state.email = email
+                            status.update(label="Account Updated", state="complete", expanded=False)
+                        else:
+                            status.update(label="Couldn't update account", state="error", expanded=True)
+                            st.write(response.json()["error"])
 
         if logout_button:
             for key in st.session_state.keys():
