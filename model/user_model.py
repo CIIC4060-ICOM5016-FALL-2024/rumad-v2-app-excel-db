@@ -40,9 +40,7 @@ class UserModel:
         @param password: password
         @return: True if password is valid, False otherwise
         """
-        if len(password) < 8 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password) or not re.search(r'\d', password):
-            return False
-        return True
+        return len(password) < 8 or not re.search(r'[!@#$%^&*(),.?":{}|<>]', password) or not re.search(r'\d', password)
 
     @staticmethod
     def is_valid_email(email: str):
@@ -51,9 +49,8 @@ class UserModel:
         @param email: email to check
         @return: True if email is valid, False otherwise
         """
-        if not re.match(r'^[a-z]+\.[a-z]+[0-9]*@upr\.edu$', email):
-            return False
-        return True
+        return re.match(r'^[a-z]+\.[a-z]+[0-9]*@upr\.edu$', email)
+    
 
     @staticmethod
     def post_user(data):
@@ -272,7 +269,7 @@ class UserModel:
         return {"error": "Wrong password"}, 401
 
     @staticmethod
-    def validate_and_process_user_data(data, exclude_uid=None):
+    def validate_and_process_user_data(data):
         """
         Validates user data (username, email, password), checks if username and email are unique,
         and hashes the password if provided.
@@ -291,17 +288,18 @@ class UserModel:
         # Check if username already exists
         if username:
             existing_user = dao.get_user_by_username(username)
-            # if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
-            #     return False, {"error": f"Username is already taken"}
+            if not existing_user[0]:
+                return False, {"error": f"Username is already taken"}
 
         # Check if email already exists
         if email:
             existing_user = dao.get_user_by_email(email)
-            # if existing_user and (exclude_uid is None or existing_user[0][0] != exclude_uid):
-            #     return False, {"error": f"Email is already registered"}
+            if not existing_user[0]:
+                return False, {"error": f"Email is already registered"}
 
         # Validate email format
-        if not UserModel.is_valid_email(email):
+        if not UserModel().is_valid_email(email):
+            print(email)
             return False, {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}
 
         # Validate and hash password
