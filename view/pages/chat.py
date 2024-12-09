@@ -1,4 +1,3 @@
-import os
 from gtts import gTTS
 import streamlit as st
 from chat.chat import SyllabusChatBot
