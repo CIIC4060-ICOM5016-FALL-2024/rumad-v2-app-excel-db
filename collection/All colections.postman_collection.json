@@ -3,15 +3,15 @@
 		"_postman_id": "5482261a-8af9-435c-b4c4-02f2791ee907",
 		"name": "All colections",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "39266321",
-		"_collection_link": "https://exceldb.postman.co/workspace/excel_db-Workspace~b6c485ec-7b4b-4e1f-8079-aa3773a80155/collection/39271276-5482261a-8af9-435c-b4c4-02f2791ee907?action=share&source=collection_link&creator=39266321"
+		"_exporter_id": "39271276",
+		"_collection_link": "https://exceldb.postman.co/workspace/excel_db-Workspace~b6c485ec-7b4b-4e1f-8079-aa3773a80155/collection/39271276-5482261a-8af9-435c-b4c4-02f2791ee907?action=share&source=collection_link&creator=39271276"
 	},
 	"item": [
 		{
 			"name": "class",
 			"item": [
 				{
-					"name": "get all Copy",
+					"name": "get all",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -32,7 +32,7 @@
 					"response": []
 				},
 				{
-					"name": "get by id Copy",
+					"name": "get by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -118,7 +118,7 @@
 					"response": []
 				},
 				{
-					"name": "put invalid Copy",
+					"name": "put invalid",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -155,7 +155,7 @@
 					"response": []
 				},
 				{
-					"name": "put valid Copy",
+					"name": "put valid",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -192,7 +192,7 @@
 					"response": []
 				},
 				{
-					"name": "delete invalid Copy",
+					"name": "delete invalid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -220,7 +220,7 @@
 					"response": []
 				},
 				{
-					"name": "delete valid Copy",
+					"name": "delete valid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -253,7 +253,7 @@
 			"name": "global statistics",
 			"item": [
 				{
-					"name": "Get top 5 meetings Copy",
+					"name": "Get top 5 meetings",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -297,7 +297,7 @@
 					"response": []
 				},
 				{
-					"name": "get worst 3 classes Copy",
+					"name": "get worst 3 classes",
 					"event": [
 						{
 							"listen": "test",
@@ -371,7 +371,7 @@
 					"response": []
 				},
 				{
-					"name": "sections per year Copy",
+					"name": "sections per year",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -398,7 +398,7 @@
 			"name": "local statistics",
 			"item": [
 				{
-					"name": "top 3 capacity Copy",
+					"name": "top 3 capacity",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -460,7 +460,7 @@
 					"response": []
 				},
 				{
-					"name": "top 3 ratios Copy",
+					"name": "top 3 ratios",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -489,7 +489,7 @@
 					"response": []
 				},
 				{
-					"name": "top 3 classes per room Copy",
+					"name": "top 3 classes per room",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -774,7 +774,7 @@
 			"name": "requisite",
 			"item": [
 				{
-					"name": "get all Copy",
+					"name": "get all",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -795,7 +795,7 @@
 					"response": []
 				},
 				{
-					"name": "get requisite by id Copy",
+					"name": "get requisite by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -828,7 +828,7 @@
 					"response": []
 				},
 				{
-					"name": "get requisite by id (invalid) Copy",
+					"name": "get requisite by id (invalid)",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -861,7 +861,7 @@
 					"response": []
 				},
 				{
-					"name": "post requisite Copy",
+					"name": "post requisite",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -891,7 +891,7 @@
 					"response": []
 				},
 				{
-					"name": "put requisite Copy",
+					"name": "put requisite",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -933,7 +933,7 @@
 					"response": []
 				},
 				{
-					"name": "delete invalid Copy",
+					"name": "delete invalid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -966,7 +966,7 @@
 					"response": []
 				},
 				{
-					"name": "delete valid Copy",
+					"name": "delete valid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1004,7 +1004,7 @@
 			"name": "room",
 			"item": [
 				{
-					"name": "get all Copy",
+					"name": "get all",
 					"event": [
 						{
 							"listen": "test",
@@ -1069,7 +1069,7 @@
 					"response": []
 				},
 				{
-					"name": "get by id Copy",
+					"name": "get by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1097,7 +1097,7 @@
 					"response": []
 				},
 				{
-					"name": "get by id (invalid) Copy",
+					"name": "get by id (invalid)",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1125,7 +1125,7 @@
 					"response": []
 				},
 				{
-					"name": "post room Copy",
+					"name": "post room",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1155,7 +1155,7 @@
 					"response": []
 				},
 				{
-					"name": "put room Copy",
+					"name": "put room",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -1192,7 +1192,7 @@
 					"response": []
 				},
 				{
-					"name": "delete invalid Copy",
+					"name": "delete invalid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1220,7 +1220,7 @@
 					"response": []
 				},
 				{
-					"name": "delete valid Copy",
+					"name": "delete valid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1253,7 +1253,7 @@
 			"name": "section",
 			"item": [
 				{
-					"name": "get all Copy",
+					"name": "get all",
 					"event": [
 						{
 							"listen": "test",
@@ -1324,7 +1324,7 @@
 					"response": []
 				},
 				{
-					"name": "get by id Copy",
+					"name": "get by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1352,7 +1352,7 @@
 					"response": []
 				},
 				{
-					"name": "get by id (invalid) Copy",
+					"name": "get by id (invalid)",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1380,7 +1380,7 @@
 					"response": []
 				},
 				{
-					"name": "post invalid (conflicting classroom) Copy",
+					"name": "post invalid (conflicting classroom)",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1410,7 +1410,7 @@
 					"response": []
 				},
 				{
-					"name": "post invalid (conflicting section) Copy",
+					"name": "post invalid (conflicting section)",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1440,7 +1440,7 @@
 					"response": []
 				},
 				{
-					"name": "post invalid (exceeds classroom capacity) Copy",
+					"name": "post invalid (exceeds classroom capacity)",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1470,13 +1470,13 @@
 					"response": []
 				},
 				{
-					"name": "post valid Copy",
+					"name": "post valid",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"roomid\": 1,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2027\",\r\n    \"capacity\": 112 \r\n}",
+							"raw": "{\r\n    \"roomid\": 1,\r\n    \"cid\": 17,\r\n    \"mid\": 16,\r\n    \"semester\": \"Fall\",\r\n    \"years\": \"2029\",\r\n    \"capacity\": 112 \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1500,7 +1500,7 @@
 					"response": []
 				},
 				{
-					"name": "delete invalid Copy",
+					"name": "delete invalid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1528,7 +1528,7 @@
 					"response": []
 				},
 				{
-					"name": "delete valid Copy",
+					"name": "delete valid",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1548,7 +1548,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "40"
+									"value": "1329"
 								}
 							]
 						}
@@ -1593,7 +1593,7 @@
 					"response": []
 				},
 				{
-					"name": "put valid Copy",
+					"name": "put valid",
 					"request": {
 						"method": "PUT",
 						"header": [],
@@ -1824,13 +1824,13 @@
 			"name": "user",
 			"item": [
 				{
-					"name": "create user Copy",
+					"name": "create user",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n        \"email\": \"new.user@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"new_user\"\n    }",
+							"raw": "{\n        \"email\": \"pepito.maldonado@upr.edu\",\n        \"password\": \"new_User#1245\",\n        \"username\": \"pepito2\"\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1854,7 +1854,38 @@
 					"response": []
 				},
 				{
-					"name": "post login Copy",
+					"name": "put user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n        \"username\": \"pepito4\"\n    }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db/user/84",
+							"protocol": "https",
+							"host": [
+								"rumad-v2-app-excel-db-881d3c171d54",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"excel_db",
+								"user",
+								"84"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "post login",
 					"request": {
 						"method": "POST",
 						"header": [],
@@ -1885,7 +1916,7 @@
 					"response": []
 				},
 				{
-					"name": "delete user by email Copy",
+					"name": "delete user by email",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1923,7 +1954,7 @@
 					"response": []
 				},
 				{
-					"name": "delete user by username Copy",
+					"name": "delete user by username",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1952,7 +1983,7 @@
 							"variable": [
 								{
 									"key": "username",
-									"value": "jesus.rivera"
+									"value": "pepito2"
 								}
 							]
 						}
@@ -1960,7 +1991,7 @@
 					"response": []
 				},
 				{
-					"name": "delete user Copy",
+					"name": "delete user",
 					"request": {
 						"method": "DELETE",
 						"header": [],
@@ -1989,7 +2020,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "18"
+									"value": "87"
 								}
 							]
 						}
@@ -2027,7 +2058,7 @@
 					"response": []
 				},
 				{
-					"name": "get user by id Copy",
+					"name": "get user by id",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2055,7 +2086,7 @@
 					"response": []
 				},
 				{
-					"name": "get user by email Copy",
+					"name": "get user by email",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2084,7 +2115,7 @@
 					"response": []
 				},
 				{
-					"name": "get user by username Copy",
+					"name": "get user by username",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -2129,6 +2160,14 @@
 								"user"
 							]
 						}
+					},
+					"response": []
+				},
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": []
 					},
 					"response": []
 				}
