@@ -1,5 +1,4 @@
 import psycopg2
-
 from dal.user_dao import UserDAO
 import re
 import bcrypt
@@ -20,7 +19,10 @@ class UserModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 404  # not found
+            return (
+                jsonify(f"The requested user with ID {response[1]} was not found."),
+                404,
+            )  # not found
 
         result = []
         for user in response:
@@ -28,7 +30,7 @@ class UserModel:
                 "uid": user[0],
                 "username": user[1],
                 "email": user[2],
-                "password": user[3]
+                "password": user[3],
             }
             result.append(result_dict)
         return jsonify(result), 200
@@ -80,7 +82,7 @@ class UserModel:
         if False in response:
             return jsonify({"error": response[2]}), 400
 
-        return jsonify(f'User (uid: {response[1]}) successfully created'), 201
+        return jsonify(f"User (uid: {response[1]}) successfully created"), 201
 
     def get_all_user(self):
         """
@@ -145,12 +147,12 @@ class UserModel:
             except psycopg2.IntegrityError:  # Handle duplicate key violations
                 return jsonify({"error": "Username or email is already taken"}), 400
             except Exception as e:
-                return jsonify({"error": response}), 500
+                return jsonify(f"Unable to update user with ID {uid}."), 400
 
             if False in response:
                 return jsonify({"error": response[2]}), 400
 
-            return jsonify(f'User with uid {uid} successfully updated'), 200
+            return jsonify(f"User with uid {uid} successfully updated"), 200
 
         except KeyError as e:
             missing_attribute = e.args[0]
@@ -172,8 +174,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.put_user_by_username(username, data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with username ({username}) successfully updated'), 200
+            return jsonify(f"Unable to update user with username {username}"), 400
+        return jsonify(f"User with username ({username}) successfully updated"), 200
 
     @staticmethod
     def put_user_by_email(email: str, data: dict):
@@ -186,8 +188,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.put_user_by_email(email, data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'Section with email ({email}) successfully updated'), 200
+            return jsonify(f"Unable to update user with email {email}"), 400
+        return jsonify(f"Section with email ({email}) successfully updated"), 200
 
     @staticmethod
     def delete_user_by_id(uid: int):
@@ -199,8 +201,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_id(uid)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with uid {uid} successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with uid: {uid}."), 400
+        return jsonify(f"User with uid {uid} successfully deleted"), 200
 
     @staticmethod
     def delete_user_by_username(username: str):
@@ -212,8 +214,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_username(username)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with username ({username}) successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with username: {username}."), 400
+        return jsonify(f"User with username ({username}) successfully deleted"), 200
 
     @staticmethod
     def delete_user_by_email(email: str):
@@ -225,8 +227,8 @@ class UserModel:
         dao = UserDAO()
         response = dao.delete_user_by_email(email)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 400
-        return jsonify(f'User with email ({email}) successfully deleted'), 200
+            return jsonify(f"Unable to delete the user with email: {email}."), 400
+        return jsonify(f"User with email ({email}) successfully deleted"), 200
 
     @staticmethod
     def validate_user_login(data: dict):
@@ -236,20 +238,20 @@ class UserModel:
         @return: JSON and HTTP response code
         """
         try:
-            username = data['username']
-            password = data['password']
+            username = data["username"]
+            password = data["password"]
         except KeyError:
             return {"error": "Missing user or password"}, 400
 
         dao = UserDAO()
 
         try:
-            response = dao.get_user_by_username(username) # Just in case
+            response = dao.get_user_by_username(username)  # Just in case
         except psycopg2.Error as e:
             return {"error": str(e)}, 500
 
         if False in response:
-            return {"error" : "Can't find user"}, 400
+            return {"error": "Can't find user"}, 400
 
         hashed_password = response[0][3]
 

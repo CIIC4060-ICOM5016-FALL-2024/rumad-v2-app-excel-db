@@ -1,7 +1,10 @@
 import os
 import re
 from pypdf import PdfReader
-from langchain.text_splitter import RecursiveCharacterTextSplitter, SentenceTransformersTokenTextSplitter
+from langchain.text_splitter import (
+    RecursiveCharacterTextSplitter,
+    SentenceTransformersTokenTextSplitter,
+)
 from langchain_ollama import OllamaEmbeddings
 from flask import jsonify
 
@@ -35,14 +38,14 @@ class SyllabusModel:
             "Grading System": r"Grading System.*?(?=Evaluation Strategies)",
             "Evaluation Strategies": r"Evaluation Strategies.*?(?=Bibliography)",
             "Bibliography": r"Bibliography.*?(?=Course Outcomes)",
-            "Course Outcomes": r"Course Outcomes.*?(?=According to Law 51|Academic Integrity)"
+            "Course Outcomes": r"Course Outcomes.*?(?=According to Law 51|Academic Integrity)",
         }
 
         cleaned_data = {}
         for section, pattern in patterns.items():
             match = re.search(pattern, raw_text, re.DOTALL)
             if match:
-                cleaned_section = re.sub(r'\s+', ' ', match.group(0)).strip()
+                cleaned_section = re.sub(r"\s+", " ", match.group(0)).strip()
                 cleaned_data[section] = cleaned_section
 
         return cleaned_data
@@ -50,12 +53,16 @@ class SyllabusModel:
     def process_file(self, filepath):
         """Process a single syllabus file and store it in the database."""
         try:
-            course_info = (os.path.basename(filepath)[:-4] + " ").split('-')
+            course_info = (os.path.basename(filepath)[:-4] + " ").split("-")
             cname, ccode = course_info[0], course_info[1]
             class_id = self.class_dao.get_class_cid_by_name(cname, ccode)[0][0]
 
             reader = PdfReader(filepath)
-            syllabus_text = [page.extract_text().strip() for page in reader.pages if page.extract_text()]
+            syllabus_text = [
+                page.extract_text().strip()
+                for page in reader.pages
+                if page.extract_text()
+            ]
 
             processed_data = self.preprocess_syllabus(syllabus_text)
             combined_text = "\n\n".join(processed_data.values())
@@ -71,11 +78,17 @@ class SyllabusModel:
             else:
                 split_text = splitter.split_text("\n\n".join(syllabus_text))
 
-            token_splitter = SentenceTransformersTokenTextSplitter(chunk_overlap=0, tokens_per_chunk=256)
-            token_split_text = [chunk for text in split_text for chunk in token_splitter.split_text(text)]
+            token_splitter = SentenceTransformersTokenTextSplitter(
+                chunk_overlap=0, tokens_per_chunk=256
+            )
+            token_split_text = [
+                chunk
+                for text in split_text
+                for chunk in token_splitter.split_text(text)
+            ]
             embedding = OllamaEmbeddings(model=self.model)
             for chunk in token_split_text:
-                chunk = cname + " " + ccode + " " + ' '.join(course_info[2:]) + chunk
+                chunk = cname + " " + ccode + " " + " ".join(course_info[2:]) + chunk
                 emb = embedding.embed_query(chunk)
                 self.syllabus_dao.post_syllabus(class_id, str(emb), chunk)
 
@@ -98,7 +111,7 @@ class SyllabusModel:
         @return: JSON and HTTP response code
         """
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500  # Internal Server Error
+            return jsonify(f"Failed to retrieve data"), 500  # Internal Server Error
 
         result = []
         for syllabus in response:
@@ -131,7 +144,7 @@ class SyllabusModel:
             syllabus_attributes = {key: data[key] for key in attributes}
         except KeyError as e:  # bad request
             missing_attribute = e.args[0]
-            return jsonify(f'Missing required attribute: {missing_attribute}'), 400
+            return jsonify(f"Missing required attribute: {missing_attribute}"), 400
 
         course_id = syllabus_attributes["courseid"]
         embedding_text = syllabus_attributes["embedding_text"]
@@ -140,9 +153,9 @@ class SyllabusModel:
         response = self.syllabus_dao.post_syllabus(course_id, embedding_text, chunk)
 
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
+            return jsonify(f"Failed to create syllabus record."), 500
 
-        return jsonify(f'Syllabus has been created with chunk_id: {response[1]}'), 201
+        return jsonify(f"Syllabus has been created with chunk_id: {response[1]}"), 201
 
     def get_syllabus_by_id(self, chunk_id):
         """
@@ -172,8 +185,8 @@ class SyllabusModel:
         """
         response = self.syllabus_dao.put_syllabus_by_chunk_id(int(chunk_id), data)
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(f'Syllabus {chunk_id} has been updated'), 200
+            return jsonify(f"Failed to update syllabus record with ID {chunk_id}."), 500
+        return jsonify(f"Syllabus {chunk_id} has been updated"), 200
 
     def delete_syllabus(self, chunk_id):
         """
@@ -183,5 +196,9 @@ class SyllabusModel:
         """
         response = self.syllabus_dao.delete(int(chunk_id))
         if False in response:
-            return jsonify(f'{response[1]}: {response[2]}'), 500
-        return jsonify(f'Syllabus {chunk_id} has been deleted'), 200
+            return jsonify(f"Failed to delete syllabus record with ID {chunk_id}."), 500
+        return jsonify(f"Syllabus {chunk_id} has been deleted"), 200
+
+if __name__ == '__main__':
+    s = SyllabusModel()
+    s.load_syllabuses()
