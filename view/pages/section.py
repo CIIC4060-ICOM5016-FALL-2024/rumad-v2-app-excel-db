@@ -47,5 +47,7 @@ with global_tab:
         sections_per_year = post_data(stat_call)
         if sections_per_year is not None:
             st.line_chart(sections_per_year, x="year", y="total_sections", y_label="Sections",x_label="Year")
+            st.write(sections_per_year)
         else:
             display_error("No sections found")
+            

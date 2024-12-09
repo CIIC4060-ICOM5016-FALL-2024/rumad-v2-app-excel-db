@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import altair as alt
 
 general_api = 'https://rumad-v2-app-excel-db-881d3c171d54.herokuapp.com/excel_db'
 
@@ -63,6 +64,26 @@ with global_tab:
         stat_call = general_api + f'/most/meeting'
         meetings_w_most_sections_pd = post_data(stat_call)
         if meetings_w_most_sections_pd is not None:
-            st.bar_chart(meetings_w_most_sections_pd, x="mid", y="frequency", y_label="Sections", color="mid")
+            bar_chart = (
+                alt.Chart(meetings_w_most_sections_pd)
+                .mark_bar()
+                .encode(
+                    x=alt.X(
+                        "mid",axis=alt.Axis(labelAngle=0),
+                        title="Meeting Id",
+                        type="nominal",
+                        sort=alt.EncodingSortField(field="frequency", order="ascending"),
+                    ),
+                    y=alt.Y("frequency", title="Sections"),
+                    # color=alt.Color("mid", title="Class Description"),
+                )
+                .properties(
+                    title="Top 5 Meeting with the Most Sections",
+                    width=600,
+                    height=400,
+                )
+            )
+            st.altair_chart(bar_chart)
+            st.write(meetings_w_most_sections_pd)
         else:
             display_error("No meetings found")

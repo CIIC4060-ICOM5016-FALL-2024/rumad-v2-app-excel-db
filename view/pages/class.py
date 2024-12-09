@@ -97,6 +97,7 @@ with local_tab:
                 )
             )
             st.altair_chart(bar_chart, use_container_width=True)
+            st.write(per_room_pd)
         else:
             display_error("Couldn't find classes for that room")
 
@@ -140,6 +141,7 @@ with local_tab:
                     )
                 )
                 st.altair_chart(bar_chart, use_container_width=True)
+                st.write(per_term_per_year_pd)
             else:
                 display_error("Couldn't find classes for that term")
 
@@ -169,6 +171,7 @@ with global_tab:
                 )
             )
             st.altair_chart(bar_chart, use_container_width=True)
+            st.write(most_prerequisite_pd)
         else:
             display_error("Couldn't find classes with prerequisites")
 
@@ -195,6 +198,7 @@ with global_tab:
                 )
             )
             st.altair_chart(bar_chart, use_container_width=True)
+            st.write(least_pd)
         else:
             display_error("Couldn't find any classes")
 

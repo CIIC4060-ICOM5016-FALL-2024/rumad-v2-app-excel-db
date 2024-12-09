@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import requests
+import altair as alt
 
 import matplotlib.pyplot as plt
 
@@ -88,7 +89,26 @@ with local_tab:
                 stat_call = room_api + f'/{selected_building}/capacity'
                 rooms_w_most_capacity_pd = post_data(stat_call)
                 if rooms_w_most_capacity_pd is not None:
-                    st.bar_chart(rooms_w_most_capacity_pd, x="rid", y="capacity", y_label="Capacity", color="rid")
+                    bar_chart = (
+                        alt.Chart(rooms_w_most_capacity_pd)
+                        .mark_bar()
+                        .encode(
+                            x=alt.X(
+                                "rid",axis=alt.Axis(labelAngle=0),
+                                title="Room Id",
+                                type="nominal",
+                                sort=alt.EncodingSortField(field="capacity", order="ascending"),
+                            ),
+                            y=alt.Y("capacity", title="Capacity")
+                        )
+                        .properties(
+                            title="Bar Chart by Class Description",
+                            width=600,
+                            height=400,
+                        )
+                    )
+                    st.altair_chart(bar_chart, use_container_width=True)
+                    st.write(rooms_w_most_capacity_pd)
                 else:
                     display_error("No rooms found")
             else:
@@ -127,6 +147,7 @@ with local_tab:
                             )
                             ax.axis('equal')  # Equal aspect ensures a circular pie chart.
                             st.pyplot(fig)
+                            st.write(rooms_w_most_capacity_pd)
                 else:
                     display_error("No rooms found")
             else:
