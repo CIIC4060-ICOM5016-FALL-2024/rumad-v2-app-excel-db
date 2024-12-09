@@ -139,7 +139,6 @@ class UserModel:
             valid, processed_data = UserModel.validate_and_process_user_data(user_attributes)
             if not valid:
                 return jsonify(processed_data), 400
-            print(processed_data)
             dao = UserDAO()
             try:
                 # Update user in the database
@@ -284,16 +283,15 @@ class UserModel:
         password = data.get("password")
 
         dao = UserDAO()
-        print(username, email, password)
 
         # Check if username already exists
-        if username:
+        if username != None:
             existing_user = dao.get_user_by_username(username)
             if not False in existing_user:
                 return False, {"error": f"Username is already taken"}
 
         # Check if email already exists
-        if email:
+        if email != None:
             existing_user = dao.get_user_by_email(email)
             if not False in  existing_user:
                 return False, {"error": f"Email is already registered"}
@@ -303,7 +301,7 @@ class UserModel:
             return False, {"error": "Invalid email format. Must follow: firstname.lastname@upr.edu"}
 
         # Validate and hash password
-        if password:
+        if password != None:
             if UserModel.is_valid_password(password):
                 return False, {"error": "Password does not meet the requirements:\n"
                                         "- At least 8 characters in length\n"
