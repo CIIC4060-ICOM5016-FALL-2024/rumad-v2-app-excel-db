@@ -6,9 +6,11 @@ from chat.chat import SyllabusChatBot
 def initialize_session_state():
     """Initialize session state variables."""
     if "chats" not in st.session_state:
-        st.session_state.chats = {}  # Dictionary to store chat histories
+        st.session_state.chats = {"Chat 1": []}  # Dictionary to store chat histories
     if "active_chat" not in st.session_state:
-        st.session_state.active_chat = None  # Active chat ID
+        st.session_state.active_chat = "Chat 1"  # Set Chat 1 as the active chat
+
+initialize_session_state()
 
 def create_chat():
     """Create a new chat and add it to the session state."""
@@ -37,7 +39,7 @@ def chatbot(chat_id):
         st.subheader("Chat Settings")
         use_history = st.toggle("Enable History")
         local = st.toggle("Run Ollama locally")
-        temp = st.slider("Chat temp", 0.00, 1.00, 0.45, 0.05)
+        temp = st.slider("Chat temp (Deterministic--> Creative)", 0.00, 1.00, 0.45, 0.05)
         
     display_chat()
     
