@@ -14,30 +14,34 @@ with st.form("register"):
     username = st.text_input(label="Username")
     email = st.text_input(label="Email *(upr.edu)*", placeholder="@upr.edu")
     password = st.text_input(label="Password", type="password")
+    confirm_password = st.text_input(label="Confirm Password", type="password")
     submit = st.form_submit_button("Create account", type='primary')
 
 if submit:
-    with st.status("post_account") as status:
-        status.update(label="Creating account...", state="running", expanded=False)
-        body = {
-            "username": username,
-            "email": email,
-            "password": password,
-        }
+    if password != confirm_password:
+        st.error("Passwords do not match. Please try again.")
+    else:
+        with st.status("post_account") as status:
+            status.update(label="Creating account...", state="running", expanded=False)
+            body = {
+                "username": username,
+                "email": email,
+                "password": password,
+            }
 
-        response = requests.post(user_api, json=body)
+            response = requests.post(user_api, json=body)
 
-        if response.status_code == 201:
-            st.session_state.logged_in = True
-            st.session_state.username = username
-            st.session_state.email = email
-            status.update(label="Registered!", state="complete", expanded=False)
-            st.rerun()
+            if response.status_code == 201:
+                st.session_state.logged_in = True
+                st.session_state.username = username
+                st.session_state.email = email
+                status.update(label="Registered!", state="complete", expanded=False)
+                st.rerun()
 
-        else:
-            status.update(label="Couldn't create account", state="error", expanded=True)
-            error = response.json().get("error", "Something went wrong. Please try again.")
-            st.write(error)
+            else:
+                status.update(label="Couldn't create account", state="error", expanded=True)
+                error = response.json().get("error", "Something went wrong. Please try again.")
+                st.write(error)
 
 
 
